@@ -1,0 +1,84 @@
+/* Example: Use Inter or fallback to sans-serif */
+body {
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+}
+
+.calendar-scrollable {
+    max-height: 600px;
+    overflow: auto;
+    padding-right: 16px;
+    /* Add space for scrollbar */
+}
+
+.form-scrollable {
+    max-height: 600px;
+    overflow: auto;
+    padding-right: 16px;
+    /* Add space for scrollbar */
+}
+
+/* Custom scrollbar for scrollable containers */
+.form-scrollable,
+.calendar-scrollable {
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: #bbb #f5f5f5;
+    /* Firefox */
+}
+
+/* Chrome, Edge, Safari */
+.form-scrollable::-webkit-scrollbar,
+.calendar-scrollable::-webkit-scrollbar {
+    width: 8px;
+    background: #f5f5f5;
+}
+
+.form-scrollable::-webkit-scrollbar-thumb,
+.calendar-scrollable::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 8px;
+}
+
+.form-scrollable::-webkit-scrollbar-thumb:hover,
+.calendar-scrollable::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+.header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    /* Above other content */
+}
+
+/* Make calendar area font black */
+.calendar-scrollable,
+.calendar-scrollable .border,
+.calendar-scrollable .bg-white {
+    color: #222 !important;
+}
+
+/* FullCalendar event styles */
+.fc {
+    color: #222 !important;
+}
+
+.fc .fc-daygrid-day,
+.fc .fc-timegrid-slot {
+    color: #222 !important;
+}
+
+.fc .fc-event {
+    color: #fff !important;
+    /* White text */
+    background: #6f6b6b !important;
+    /* Dark background */
+    border: none !important;
+    font-weight: 600;
+}
+
+.fc .fc-toolbar-title,
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number {
+    color: #222 !important;
+}

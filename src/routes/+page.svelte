@@ -1,2 +1,15 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script>
+    import CreatePostForm from "$lib/components/scheduler/CreatePostForm.svelte";
+    import SchedulerCalendar from "$lib/components/scheduler/SchedulerCalendar.svelte";
+</script>
+
+<div class="row g-4">
+    <!-- Left Panel: Post Creation Form -->
+    <div class="col-md-4">
+        <CreatePostForm />
+    </div>
+    <!-- Right Panel: Calendar View -->
+    <div class="col-md-8">
+        <SchedulerCalendar />
+    </div>
+</div>

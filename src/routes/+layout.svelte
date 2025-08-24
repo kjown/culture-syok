@@ -1,10 +1,18 @@
 <script>
-	import favicon from '$lib/assets/favicon.svg';
+	import Sidebar from "$lib/components/layout/Sidebar.svelte";
+	import Header from "$lib/components/layout/Header.svelte";
+
+	$: title = "Ayam Debugging";
 </script>
 
-<svelte:head>
-
-	<link rel="icon" href={favicon} />
-</svelte:head>
-
-<slot/>
+<div class="d-flex flex-row min-vh-100">
+	<!-- Main content area -->
+	<div class="flex-grow-1 d-flex flex-column">
+		<!-- Header -->
+		<Header title={title}/>
+		<!-- Page content -->
+		<div class="flex-grow-1 p-4">
+			<slot />
+		</div>
+	</div>
+</div>
