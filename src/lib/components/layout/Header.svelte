@@ -10,8 +10,9 @@
     </div>
     <div class="d-flex align-items-center gap-3">
         <a class="nav-link" href="/">Home</a>
-        <a class="nav-link" href="/dashboard">Dashboard</a>
-        <a class="nav-link" href="/trends">Trends</a>
+        <a class="nav-link" href="/scheduler">Scheduler</a>
+        <a class="nav-link" href="/inspiration">Inspiration</a>
+        <a class="nav-link" href="/collaborate">Collaborate</a>
         <a class="nav-link" href="/library">Library</a>
         <button class="btn btn-primary">Connect Google Calendar</button>
         <img
