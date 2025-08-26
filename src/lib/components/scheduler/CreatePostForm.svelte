@@ -1,6 +1,8 @@
 <script>
     import { selectedDate } from "$lib/stores/userStore.js";
     import { events } from "$lib/stores/eventsStore.js";
+    import { createEventDispatcher } from "svelte";
+    const dispatch = createEventDispatcher();
 
     /**
      * @typedef {Object} CalendarEvent
@@ -25,6 +27,9 @@
     let isUploading = false;
 
     let postTitle = "";
+    let postContent = "";
+    let scheduleDate = "";
+    let isSubmitting = false;
 
     // Use $selectedDate directly for date and time fields
     $: date = $selectedDate.date;
@@ -121,12 +126,44 @@
 
         clearForm();
     }
+
+    async function handleSchedule() {
+        if (!postContent || !scheduleDate) {
+            alert('Please fill in both the content and the schedule date.');
+            return;
+        }
+        isSubmitting = true;
+
+        const startTime = new Date(scheduleDate);
+        const endTime = new Date(startTime.getTime() + 30 * 60000);
+
+        const response = await fetch('/api/calendar/events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                summary: `[Social Post] ${postContent.substring(0, 30)}...`,
+                description: postContent,
+                start: startTime.toISOString(),
+                end: endTime.toISOString()
+            })
+        });
+
+        isSubmitting = false;
+        if (response.ok) {
+            alert('Post scheduled successfully!');
+            postContent = '';
+            scheduleDate = '';
+            dispatch('postsUpdated');
+        } else {
+            const result = await response.json();
+            alert(`Error: ${result.error}`);
+        }
+    }
 </script>
 
-<div class="form-scrollable">
+<!-- <div class="form-scrollable">
     <h3 class="fw-bold mb-3">Create a New Post</h3>
     <form on:submit|preventDefault={handleSubmit}>
-        <!-- Title Input -->
         <div class="mb-3">
             <label class="form-label" for="titleInput">Title</label>
             <input
@@ -139,7 +176,6 @@
             />
         </div>
 
-        <!-- Content Input -->
         <div class="mb-3">
             <label class="form-label" for="contentInput">Content</label>
             <textarea
@@ -154,7 +190,6 @@
             <small class="text-muted">{charCount}/{maxChars} characters</small>
         </div>
 
-        <!-- Media Upload Area -->
         <div class="mb-3">
             <label class="form-label" for="mediaInput">Media</label>
             {#if !mediaFile}
@@ -222,7 +257,6 @@
             {/if}
         </div>
 
-        <!-- Date Picker -->
         <div class="mb-3">
             <label class="form-label" for="dateInput">Date</label>
             <input
@@ -233,7 +267,6 @@
                 on:input={() => selectedDate.set({ date, time })}
             />
         </div>
-        <!-- Time Picker -->
         <div class="mb-3">
             <label class="form-label" for="timeInput">Time</label>
             <input
@@ -244,7 +277,6 @@
                 on:input={() => selectedDate.set({ date, time })}
             />
         </div>
-        <!-- Calendar Selection -->
         <div class="mb-3">
             <label class="form-label" for="calendarSelect"
                 >Select Calendar</label
@@ -255,10 +287,8 @@
                 bind:value={calendar}
             >
                 <option value="">Primary Calendar</option>
-                <!-- Populate with user's calendars after auth -->
             </select>
         </div>
-        <!-- Reminder Configuration -->
         <div class="mb-3">
             <div class="form-check form-switch">
                 <input
@@ -297,7 +327,6 @@
                 </div>
             {/if}
         </div>
-        <!-- Action Buttons -->
         <div class="d-flex justify-content-end gap-2 mt-4">
             <button type="submit" class="btn btn-primary">Schedule Post</button>
             <button
@@ -307,4 +336,39 @@
             >
         </div>
     </form>
+</div> -->
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Create a New Post</h5>
+        <form on:submit|preventDefault={handleSchedule}>
+            <div class="mb-3">
+                <label for="postContent" class="form-label">Content</label>
+                <textarea
+                    class="form-control"
+                    id="postContent"
+                    rows="4"
+                    bind:value={postContent}
+                ></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="scheduleDate" class="form-label"
+                    >Schedule Date & Time</label
+                >
+                <input
+                    type="datetime-local"
+                    class="form-control"
+                    id="scheduleDate"
+                    bind:value={scheduleDate}
+                />
+            </div>
+            <button
+                type="submit"
+                class="btn btn-primary"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Scheduling..." : "Schedule Post"}
+            </button>
+        </form>
+    </div>
 </div>

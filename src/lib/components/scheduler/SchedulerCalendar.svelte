@@ -5,55 +5,81 @@
     import interactionPlugin from "@fullcalendar/interaction";
     import { Calendar } from "@fullcalendar/core";
     import { selectedDate } from "$lib/stores/userStore.js";
-    import { events } from "$lib/stores/eventsStore.js";
     import PostDetailsModal from "./PostDetailsModal.svelte";
 
-    /**
-     * @typedef {Object} CalendarEvent
-     * @property {string} id
-     * @property {string} title
-     * @property {string} start
-     * @property {string} content
-     * @property {string} [calendar]
-     * @property {boolean} [reminderEnabled]
-     * @property {number} [reminderMinutes]
-     * @property {string} [reminderType]
-     * @property {File|null} [mediaFile]
-     * @property {string} [mediaType]
-     * @property {string} [mediaPreview]
-     */
+    /** @type {Array<any>} */
+    export let calendarEvents = [];
 
     /** @type {HTMLElement} */
     let calendarEl;
-    /** @type {import('@fullcalendar/core').Calendar|null} */
+    /** @type {Calendar | null} */
     let calendar = null;
     /** @type {string} */
     let view = "dayGridMonth";
     /** @type {string} */
     let currentTitle = "";
+    /** @type {boolean} */
+    let showModal = false;
+    /** @type {any} */
+    let selectedEvent = undefined;
 
-    /** @type {CalendarEvent[]} */
-    let calendarEvents = [];
-    const unsubscribe = events.subscribe((evts) => {
-        calendarEvents = /** @type {CalendarEvent[]} */ (evts);
-        if (calendar) {
-            calendar.removeAllEvents();
-            calendar.addEventSource(calendarEvents);
-        }
+    // Update calendar when events prop changes
+    $: if (calendar && calendarEvents) {
+        calendar.removeAllEvents();
+        calendar.addEventSource(calendarEvents);
+    }
+
+    onMount(() => {
+        calendar = new Calendar(calendarEl, {
+            plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+            initialView: view,
+            events: calendarEvents,
+            height: "auto",
+            headerToolbar: false,
+            selectable: true,
+            selectMirror: true,
+            eventClick: function (/** @type {any} */ info) {
+                selectedEvent = {
+                    id: info.event.id,
+                    title: info.event.title,
+                    start: info.event.startStr,
+                    content: info.event.extendedProps?.description || "",
+                };
+                showModal = true;
+            },
+            dateClick: function (/** @type {any} */ info) {
+                selectedDate.set({
+                    date: info.dateStr,
+                    time: "",
+                });
+            },
+            select: function (/** @type {any} */ info) {
+                const startDate = info.start.toISOString().split("T")[0];
+                const startTime = info.start.toTimeString().slice(0, 5);
+
+                selectedDate.set({
+                    date: startDate,
+                    time: startTime,
+                });
+
+                if (calendar) {
+                    calendar.unselect();
+                }
+            },
+        });
+        calendar.render();
+        updateTitle();
     });
 
-    /** @param {string} newView */
-    function setView(newView) {
-        view = newView;
+    function updateTitle() {
         if (calendar) {
-            calendar.changeView(newView);
-            updateTitle();
+            currentTitle = calendar.view.title;
         }
     }
 
-    function goNext() {
+    function goToday() {
         if (calendar) {
-            calendar.next();
+            calendar.today();
             updateTitle();
         }
     }
@@ -65,80 +91,23 @@
         }
     }
 
-    function goToday() {
+    function goNext() {
         if (calendar) {
-            calendar.today();
+            calendar.next();
             updateTitle();
         }
     }
 
-    function updateTitle() {
+    /**
+     * @param {string} newView
+     */
+    function setView(newView) {
         if (calendar) {
-            currentTitle = calendar.view.title;
+            view = newView;
+            calendar.changeView(newView);
+            updateTitle();
         }
     }
-
-    let showModal = false;
-    /** @type {CalendarEvent | undefined} */
-    let selectedEvent = undefined;
-
-    onMount(() => {
-        calendar = new Calendar(calendarEl, {
-            plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-            initialView: view,
-            events: calendarEvents,
-            height: "auto",
-            headerToolbar: false,
-            selectable: true,
-            selectMirror: true,
-            eventClick: function (info) {
-                // Open modal and pass event details
-                selectedEvent = {
-                    id: info.event.id,
-                    title: info.event.title,
-                    start: info.event.startStr,
-                    content: info.event.extendedProps?.content || "",
-                    calendar: typeof info.event.extendedProps?.calendar === "string"
-                        ? info.event.extendedProps.calendar
-                        : "",
-                    reminderEnabled:
-                        info.event.extendedProps?.reminderEnabled ?? false,
-                    reminderMinutes:
-                        info.event.extendedProps?.reminderMinutes ?? 10,
-                    reminderType:
-                        info.event.extendedProps?.reminderType || "minutes",
-                    mediaFile: info.event.extendedProps?.mediaFile ?? null,
-                    mediaType: info.event.extendedProps?.mediaType || "",
-                    mediaPreview: info.event.extendedProps?.mediaPreview || "",
-                };
-                showModal = true;
-            },
-            dateClick: function (info) {
-                // Only date (month view all-day), clear time
-                selectedDate.set({
-                    date: info.dateStr,
-                    time: "",
-                });
-            },
-            select: function (info) {
-                // Handle time slot selection in week/day views
-                const startDate = info.start.toISOString().split("T")[0];
-                const startTime = info.start.toTimeString().slice(0, 5);
-
-                selectedDate.set({
-                    date: startDate,
-                    time: startTime,
-                });
-
-                // Clear the selection
-                if (calendar) {
-                    calendar.unselect();
-                }
-            },
-        });
-        calendar.render();
-        updateTitle();
-    });
 
     function closeModal() {
         showModal = false;
@@ -146,16 +115,10 @@
     }
 
     /**
-     * @param {CustomEvent<CalendarEvent>} e
+     * @param {any} e
      */
     function handleEdit(e) {
-        const updated = e.detail;
-        events.update((evts) =>
-            evts.map((ev) =>
-                ev.id === updated.id ? { ...ev, ...updated } : ev,
-            ),
-        );
-        selectedEvent = updated;
+        // Handle edit logic here
         showModal = false;
     }
 
@@ -163,74 +126,64 @@
         if (calendar) {
             calendar.destroy();
         }
-        unsubscribe();
     });
 </script>
 
 <div>
-    <!-- Calendar Header: All controls in a horizontal row -->
+    <!-- Calendar Header -->
     <div
         class="d-flex align-items-center justify-content-between gap-3 mb-3 flex-wrap"
     >
-        <!-- Today Button -->
         <button
             type="button"
             class="btn btn-outline-secondary"
             on:click={goToday}
-            title="Today"
         >
             Today
         </button>
-        <!-- Navigation Arrows -->
-        <button
-            type="button"
-            class="btn btn-light border"
-            on:click={goPrev}
-            title="Previous"
-            aria-label="Previous month"
-        >
+        <button type="button" class="btn btn-light border" on:click={goPrev}>
             &lt;
         </button>
-        <!-- Month/Year Title -->
         <span
             class="fw-bold fs-5 px-3"
-            style="min-width: 160px; text-align: center;">{currentTitle}</span
+            style="min-width: 160px; text-align: center;"
         >
-        <!-- Navigation Arrows -->
-        <button
-            type="button"
-            class="btn btn-light border"
-            on:click={goNext}
-            title="Next"
-            aria-label="Next month"
-        >
+            {currentTitle}
+        </span>
+        <button type="button" class="btn btn-light border" on:click={goNext}>
             &gt;
         </button>
-        <!-- View Switcher -->
         <div class="btn-group" role="group">
             <button
                 type="button"
                 class="btn btn-outline-primary {view === 'dayGridMonth'
                     ? 'active'
                     : ''}"
-                on:click={() => setView("dayGridMonth")}>Month</button
+                on:click={() => setView("dayGridMonth")}
             >
+                Month
+            </button>
             <button
                 type="button"
                 class="btn btn-outline-primary {view === 'timeGridWeek'
                     ? 'active'
                     : ''}"
-                on:click={() => setView("timeGridWeek")}>Week</button
+                on:click={() => setView("timeGridWeek")}
             >
+                Week
+            </button>
             <button
                 type="button"
                 class="btn btn-outline-primary {view === 'timeGridDay'
                     ? 'active'
                     : ''}"
-                on:click={() => setView("timeGridDay")}>Day</button
+                on:click={() => setView("timeGridDay")}
             >
+                Day
+            </button>
         </div>
     </div>
+
     <div class="calendar-scrollable">
         <div class="border rounded p-2 bg-white" style="min-height: 400px;">
             <div bind:this={calendarEl}></div>
