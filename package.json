@@ -25,6 +25,7 @@
 		"@fullcalendar/interaction": "^6.1.19",
 		"@fullcalendar/timegrid": "^6.1.19",
 		"bootstrap": "^5.3.7",
+		"cloudinary": "^2.7.0",
 		"googleapis": "^157.0.0"
 	}
 }
