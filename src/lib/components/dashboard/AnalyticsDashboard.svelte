@@ -1,7 +1,258 @@
 <script>
-    let powerBIUrl = "https://app.powerbi.com/view?r=YOUR_REPORT_ID";
+    // @ts-nocheck
+    import { onMount, onDestroy } from 'svelte';
+    
     let selectedRange = "Last 30 days";
     let ranges = ["Last 7 days", "Last 30 days", "Last 90 days"];
+    
+    // Post selection
+    let selectedPost = "All Posts";
+    let posts = [
+        "All Posts",
+        "Summer Campaign Launch",
+        "Product Feature Update",
+        "Behind the Scenes Video",
+        "Customer Success Story",
+        "Weekly Tips & Tricks",
+        "Brand Partnership Announcement",
+        "User Generated Content",
+        "Flash Sale Promotion"
+    ];
+    
+    // Social media platform tracking
+    let selectedPlatform = "All Platforms";
+    let platforms = [
+        "All Platforms",
+        "Instagram", 
+        "Facebook", 
+        "TikTok", 
+        "Twitter/X",
+        "LinkedIn", 
+    ];
+    
+    // Platform-specific data multipliers for different growth rates
+    let platformMultipliers = {
+        "All Platforms": { likes: 1.0, comments: 1.0, shares: 1.0 },
+        "Instagram": { likes: 1.8, comments: 0.9, shares: 0.5 }, // High likes, fewer shares
+        "Facebook": { likes: 1.2, comments: 1.4, shares: 1.3 }, // Balanced, good sharing
+        "LinkedIn": { likes: 0.6, comments: 1.1, shares: 0.9 }, // Professional, thoughtful engagement
+        "TikTok": { likes: 2.5, comments: 1.8, shares: 0.3 }, // Viral likes & comments, low shares
+        "Twitter/X": { likes: 1.0, comments: 1.6, shares: 2.2 }, // High conversation & sharing
+    };
+    
+    // Post-specific data multipliers for different performance
+    let postMultipliers = {
+        "All Posts": { likes: 1.0, comments: 1.0, shares: 1.0 },
+        "Summer Campaign Launch": { likes: 2.2, comments: 1.8, shares: 2.5 }, // High performing campaign
+        "Product Feature Update": { likes: 1.4, comments: 2.1, shares: 1.6 }, // Good engagement, lots of questions
+        "Behind the Scenes Video": { likes: 1.9, comments: 1.5, shares: 1.2 }, // High likes, moderate sharing
+        "Customer Success Story": { likes: 1.3, comments: 1.7, shares: 2.0 }, // Inspiring, gets shared
+        "Weekly Tips & Tricks": { likes: 1.1, comments: 1.3, shares: 1.4 }, // Steady, useful content
+        "Brand Partnership Announcement": { likes: 1.6, comments: 0.8, shares: 1.8 }, // Good reach, fewer comments
+        "User Generated Content": { likes: 2.0, comments: 1.9, shares: 1.7 }, // Community loves it
+        "Flash Sale Promotion": { likes: 1.5, comments: 0.9, shares: 2.3 } // High shares, fewer comments
+    };
+    
+
+    
+    // Chart.js variables
+    let chartCanvas;
+    let chart = null;
+    let labels = [];
+    let likes = [];
+    let comments = [];
+    let shares = [];
+    let totalLikes = 0;
+    let totalComments = 0;
+    let totalShares = 0;
+    let t = 0;
+    let chartInterval = null;
+
+    onMount(() => {
+        // Initialize with zero starting values like the original
+        totalLikes = 0;
+        totalComments = 0;
+        totalShares = 0;
+        t = 0;
+        labels = [];
+        likes = [];
+        comments = [];
+        shares = [];
+        
+        // Wait a bit for Chart.js to load, then initialize
+        setTimeout(() => {
+            initChart();
+        }, 100);
+    });
+
+    function initChart() {
+        if (chartCanvas && typeof Chart !== 'undefined') {
+            const ctx = chartCanvas.getContext('2d');
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Likes',
+                            data: likes,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'white',
+                            pointBorderColor: 'rgba(54, 162, 235, 1)'
+                        },
+                        {
+                            label: 'Comments',
+                            data: comments,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'white',
+                            pointBorderColor: 'rgba(75, 192, 192, 1)'
+                        },
+                        {
+                            label: 'Shares',
+                            data: shares,
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'white',
+                            pointBorderColor: 'rgba(255, 159, 64, 1)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    animation: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: { size: 14 },
+                                color: '#333'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 },
+                            padding: 10,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Time (s)', color: '#666', font: { size: 14 } },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { color: '#666' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Count', color: '#666', font: { size: 14 } },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { color: '#666' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Start the real-time data simulation immediately
+            startDataSimulation();
+        } else {
+            // If Chart.js isn't loaded yet, try again after a delay
+            setTimeout(initChart, 100);
+        }
+    }
+
+    function startDataSimulation() {
+        if (chartInterval) {
+            clearInterval(chartInterval);
+        }
+        
+        chartInterval = setInterval(() => {
+            const platformMultiplier = platformMultipliers[selectedPlatform];
+            const postMultiplier = postMultipliers[selectedPost];
+            
+            // Apply both platform and post-specific growth rates
+            const combinedLikesMultiplier = platformMultiplier.likes * postMultiplier.likes;
+            const combinedCommentsMultiplier = platformMultiplier.comments * postMultiplier.comments;
+            const combinedSharesMultiplier = platformMultiplier.shares * postMultiplier.shares;
+            
+            const likesIncrease = Math.floor(Math.random() * 10) * combinedLikesMultiplier;
+            const commentsIncrease = Math.floor(Math.random() * 5) * combinedCommentsMultiplier;
+            const sharesIncrease = Math.floor(Math.random() * 3) * combinedSharesMultiplier;
+            
+            totalLikes += likesIncrease;
+            totalComments += commentsIncrease;
+            totalShares += sharesIncrease;
+            t += 1;
+
+            labels.push(t);
+            likes.push(totalLikes);
+            comments.push(totalComments);
+            shares.push(totalShares);
+
+            if (labels.length > 50) {
+                labels.shift();
+                likes.shift();
+                comments.shift();
+                shares.shift();
+            }
+
+            if (chart) {
+                chart.update();
+            }
+        }, 5000);
+    }
+
+    // Function to reset chart data when platform changes
+    function resetChartData() {
+        labels = [];
+        likes = [];
+        comments = [];
+        shares = [];
+        totalLikes = 0;
+        totalComments = 0;
+        totalShares = 0;
+        t = 0;
+        
+        if (chart) {
+            chart.update();
+        }
+    }
+    
+    // Function to handle platform changes
+    function handlePlatformChange(event) {
+        const newPlatform = event.target.value;
+        selectedPlatform = newPlatform;
+        // No need to restart data simulation, just let current cycle apply new multipliers
+    }
+
+    function handlePostChange(event) {
+        const newPost = event.target.value;
+        selectedPost = newPost;
+        // No need to restart data simulation, just let current cycle apply new multipliers
+    }
+
+    onDestroy(() => {
+        if (chartInterval) {
+            clearInterval(chartInterval);
+        }
+        if (chart) {
+            chart.destroy();
+        }
+    });
 </script>
 
 <div class="container py-4">
@@ -170,20 +421,41 @@
         </div>
     </div>
 
-    <!-- PowerBI Embed Placeholder -->
+    <!-- Live Social Media Analytics Dashboard -->
     <div class="card shadow-sm mt-5">
         <div class="card-body">
-            <h5 class="card-title">PowerBI Analytics</h5>
-            <div class="ratio ratio-16x9" style="background:#f5f5fa; border-radius:8px;">
-                <iframe
-                    src={powerBIUrl}
-                    title="PowerBI Dashboard"
-                    allowfullscreen
-                    style="width:100%;height:100%;border:0;"
-                ></iframe>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Live Social Media Analytics</h5>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center">
+                        <label for="platformSelect" class="form-label me-2 mb-0" style="font-size:0.9rem;">Platform:</label>
+                        <select id="platformSelect" class="form-select form-select-sm" style="width:auto;" bind:value={selectedPlatform} on:change={handlePlatformChange}>
+                            {#each platforms as platform}
+                                <option value={platform}>{platform}</option>
+                            {/each}
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <label for="postSelect" class="form-label me-2 mb-0" style="font-size:0.9rem;">Post:</label>
+                        <select id="postSelect" class="form-select form-select-sm" style="width:auto;" bind:value={selectedPost} on:change={handlePostChange}>
+                            {#each posts as post}
+                                <option value={post}>{post}</option>
+                            {/each}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-2">
+                <span class="badge bg-primary me-2">{selectedPlatform}</span>
+                <span class="badge bg-success me-2">{selectedPost}</span>
+            </div>
+        
+            <div style="background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px;">
+                <canvas bind:this={chartCanvas} width="800" height="400"></canvas>
             </div>
             <div class="text-muted mt-2" style="font-size:0.95rem;">
-                Your PowerBI analytics will appear here. Replace the embed URL with your own report.
+                Real-time analytics showing likes, comments, and shares. Data updates every 5 seconds.
             </div>
         </div>
     </div>
