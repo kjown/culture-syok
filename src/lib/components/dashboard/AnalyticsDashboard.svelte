@@ -155,7 +155,12 @@
                         x: {
                             title: { display: true, text: 'Time (s)', color: '#666', font: { size: 14 } },
                             grid: { color: 'rgba(0,0,0,0.05)' },
-                            ticks: { color: '#666' }
+                            ticks: { 
+                                color: '#666',
+                                callback: function(value, index, values) {
+                                    return (value * 5);
+                                }
+                            }
                         },
                         y: {
                             title: { display: true, text: 'Count', color: '#666', font: { size: 14 } },
