@@ -379,7 +379,7 @@
                     <div class="card-body">
                         <div class="text-muted small mb-1">Engagement</div>
                         <div class="h4 mb-1">{postData.metrics.engagement.value.toLocaleString()}</div>
-                        <div class="text-success small">+{postData.metrics.engagement.change}%</div>
+                        <div class="text-success small">+{postData.metrics.engagement.change}% from yesterday</div>
                     </div>
                 </div>
             </div>
@@ -388,7 +388,7 @@
                     <div class="card-body">
                         <div class="text-muted small mb-1">Reach</div>
                         <div class="h4 mb-1">{postData.metrics.reach.value.toLocaleString()}</div>
-                        <div class="text-success small">+{postData.metrics.reach.change}%</div>
+                        <div class="text-success small">+{postData.metrics.reach.change}% from yesterday</div>
                     </div>
                 </div>
             </div>
@@ -397,7 +397,7 @@
                     <div class="card-body">
                         <div class="text-muted small mb-1">Impressions</div>
                         <div class="h4 mb-1">{postData.metrics.impressions.value.toLocaleString()}</div>
-                        <div class="text-success small">+{postData.metrics.impressions.change}%</div>
+                        <div class="text-success small">+{postData.metrics.impressions.change}% from yesterday</div>
                     </div>
                 </div>
             </div>
@@ -418,8 +418,8 @@
                     </div>
                 </div>
                 
-                <div style="height: 200px; position: relative;">
-                    <canvas bind:this={chartCanvas}></canvas>
+                <div style="height: 300px; position: relative; width: 100%;">
+                    <canvas bind:this={chartCanvas} style="width: 100% !important; height: 100% !important;"></canvas>
                 </div>
             </div>
         </div>
