@@ -340,7 +340,7 @@
     <div class="mb-4">
         <div class="fw-bold mb-2">Top Posts by Engagement</div>
         <div class="card">
-            <div class="card-body p-0">
+            <div class="card-body px-4 py-2">
                 <table class="table mb-0">
                     <thead>
                         <tr>
@@ -352,31 +352,31 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="rounded bg-light px-2 py-1 me-2">📸</span>Instagram</td>
+                            <td><span class="rounded px-2 py-1 me-2" style="background:linear-gradient(135deg,#fdc468 0%,#df4996 50%,#4f5bd5 100%);"><i class="fab fa-instagram" style="color:white;"></i></span>Instagram</td>
                             <td>Instagram</td>
                             <td>1,234</td>
                             <td>2,345</td>
                         </tr>
                         <tr>
-                            <td><span class="rounded bg-light px-2 py-1 me-2">📘</span>Facebook</td>
+                            <td><span class="rounded px-2 py-1 me-2" style="background:#1877F3;"><i class="fab fa-facebook" style="color:white;"></i></span>Facebook</td>
                             <td>Facebook</td>
                             <td>1,122</td>
                             <td>2,233</td>
                         </tr>
                         <tr>
-                            <td><span class="rounded bg-light px-2 py-1 me-2">🐦</span>Twitter</td>
+                            <td><span class="rounded px-2 py-1 me-2" style="background:#1DA1F2;"><i class="fab fa-twitter" style="color:white;"></i></span>Twitter</td>
                             <td>Twitter</td>
                             <td>1,010</td>
-                            <td>2,121</td>
+                            <td>2,121</td>      
                         </tr>
                         <tr>
-                            <td><span class="rounded bg-light px-2 py-1 me-2">💼</span>LinkedIn</td>
+                            <td><span class="rounded px-2 py-1 me-2" style="background:#0a66c2;"><i class="fab fa-linkedin" style="color:white;"></i></span>LinkedIn</td>
                             <td>LinkedIn</td>
                             <td>800</td>
                             <td>2,010</td>
                         </tr>
                         <tr>
-                            <td><span class="rounded bg-light px-2 py-1 me-2">🎵</span>TikTok</td>
+                            <td><span class="rounded px-2 py-1 me-2" style="background:#000000;"><i class="fab fa-tiktok" style="color:white;"></i></span>TikTok</td>
                             <td>TikTok</td>
                             <td>800</td>
                             <td>1,900</td>
@@ -396,7 +396,7 @@
             <div class="mb-2">
                 <span class="fw-bold text-primary">Instagram</span>
                 <div style="height:10px; background:#e0e7ef; border-radius:5px;">
-                    <div style="width:70%; height:10px; background:#2563eb; border-radius:5px;"></div>
+                    <div style="width:70%; height:10px; justify-content:center; background:#2563eb; border-radius:5px;"></div>
                 </div>
             </div>
             <div class="mb-2">
