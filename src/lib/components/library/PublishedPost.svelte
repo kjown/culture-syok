@@ -1,7 +1,11 @@
 <script>
+    import { goto } from "$app/navigation";
+
     let posts = [
         {
-            content: "Check out my latest blog post on sustainable living! #ecofriendly #sustainability",
+            id: "1",
+            content:
+                "Check out my latest blog post on sustainable living! #ecofriendly #sustainability",
             channel: "Blog",
             published: "2023-08-15",
             impressions: 1200,
@@ -10,7 +14,9 @@
             shares: 5,
         },
         {
-            content: "Just finished a great workout! Feeling energized and ready to tackle the day. #fitness #healthylifestyle",
+            id: "2",
+            content:
+                "Just finished a great workout! Feeling energized and ready to tackle the day. #fitness #healthylifestyle",
             channel: "Instagram",
             published: "2023-08-14",
             impressions: 1500,
@@ -19,7 +25,9 @@
             shares: 8,
         },
         {
-            content: "Excited to announce our new partnership with GreenTech Solutions! Together, we'll be working towards a greener future. #collaboration #innovation",
+            id: "3",
+            content:
+                "Excited to announce our new partnership with GreenTech Solutions! Together, we'll be working towards a greener future. #collaboration #innovation",
             channel: "LinkedIn",
             published: "2023-08-13",
             impressions: 1800,
@@ -28,7 +36,9 @@
             shares: 10,
         },
         {
-            content: "Happy Friday everyone! What are your plans for the weekend? #weekendvibes #friyay",
+            id: "4",
+            content:
+                "Happy Friday everyone! What are your plans for the weekend? #weekendvibes #friyay",
             channel: "Twitter",
             published: "2023-08-12",
             impressions: 2000,
@@ -37,7 +47,9 @@
             shares: 12,
         },
         {
-            content: "Throwback to our team retreat last month. Such a fun and productive time! #teamwork #retreat",
+            id: "5",
+            content:
+                "Throwback to our team retreat last month. Such a fun and productive time! #teamwork #retreat",
             channel: "Facebook",
             published: "2023-08-11",
             impressions: 2200,
@@ -51,9 +63,34 @@
     let selectedChannel = "Channel";
     let selectedDate = "Date Range";
     let selectedSort = "Sort";
-    let channels = ["Channel", "Blog", "Instagram", "LinkedIn", "Twitter", "Facebook"];
-    let dateRanges = ["Date Range", "Last 7 days", "Last 30 days", "Last 90 days"];
-    let sortOptions = ["Sort", "Newest", "Oldest", "Most Impressions", "Most Likes"];
+    let channels = [
+        "Channel",
+        "Blog",
+        "Instagram",
+        "LinkedIn",
+        "Twitter",
+        "Facebook",
+    ];
+    let dateRanges = [
+        "Date Range",
+        "Last 7 days",
+        "Last 30 days",
+        "Last 90 days",
+    ];
+    let sortOptions = [
+        "Sort",
+        "Newest",
+        "Oldest",
+        "Most Impressions",
+        "Most Likes",
+    ];
+
+    /**
+     * @param {string} id
+     */
+    function viewPost(id) {
+        goto(`/library/${id}`);
+    }
 </script>
 
 <div class="container py-4">
@@ -108,7 +145,9 @@
                 <tbody>
                     {#each posts as post}
                         <tr>
-                            <td style="max-width:220px;white-space:pre-line;">{post.content}</td>
+                            <td style="max-width:220px;white-space:pre-line;"
+                                >{post.content}</td
+                            >
                             <td>{post.channel}</td>
                             <td>{post.published}</td>
                             <td>{post.impressions}</td>
@@ -116,7 +155,13 @@
                             <td>{post.comments}</td>
                             <td>{post.shares}</td>
                             <td>
-                                <a href="#" class="fw-bold text-primary">View Analytics</a>
+                                <button
+                                    class="btn btn-link fw-bold text-primary p-0"
+                                    type="button"
+                                    on:click={() => viewPost(post.id)}
+                                >
+                                    View Analytics
+                                </button>
                             </td>
                         </tr>
                     {/each}
