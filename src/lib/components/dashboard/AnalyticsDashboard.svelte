@@ -17,7 +17,7 @@
         "Brand Partnership Announcement",
         "User Generated Content",
         "Flash Sale Promotion"
-    ];
+    ]; // Mock data --> should be fetched from backend in real app
     
     // Social media platform tracking
     let selectedPlatform = "All Platforms";
@@ -153,12 +153,18 @@
                     },
                     scales: {
                         x: {
-                            title: { display: true, text: 'Time (s)', color: '#666', font: { size: 14 } },
+                            title: { display: true, text: 'Time', color: '#666', font: { size: 14 } },
                             grid: { color: 'rgba(0,0,0,0.05)' },
                             ticks: { 
                                 color: '#666',
                                 callback: function(value, index, values) {
-                                    return (value * 5);
+                                    // Get the actual label value from the labels array
+                                    const labelValue = this.chart.data.labels[index];
+                                    if (labelValue !== undefined) {
+                                        const hours = labelValue % 24;
+                                        return `${hours.toString().padStart(2, '0')}:00`;
+                                    }
+                                    return '';
                                 }
                             }
                         },
@@ -167,6 +173,38 @@
                             grid: { color: 'rgba(0,0,0,0.05)' },
                             ticks: { color: '#666' },
                             beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: { size: 14 },
+                                color: '#333'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 },
+                            padding: 10,
+                            cornerRadius: 8
+                        },
+                        annotation: {
+                            annotations: {
+                                dayLine: {
+                                    type: 'line',
+                                    xMin: 0,
+                                    xMax: 0,
+                                    borderColor: 'rgba(255, 0, 0, 0.5)',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    label: {
+                                        content: 'Day Boundary',
+                                        enabled: true,
+                                        position: 'start'
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -198,17 +236,45 @@
             const commentsIncrease = Math.floor(Math.random() * 5) * combinedCommentsMultiplier;
             const sharesIncrease = Math.floor(Math.random() * 3) * combinedSharesMultiplier;
             
-            totalLikes += likesIncrease;
-            totalComments += commentsIncrease;
-            totalShares += sharesIncrease;
-            t += 1;
+            // Add random spikes for all engagement types
+            let finalLikesIncrease = likesIncrease;
+            let finalCommentsIncrease = commentsIncrease;
+            let finalSharesIncrease = sharesIncrease;
+            
+            // Likes spikes (10% chance)
+            if (Math.random() < 0.1) {
+                const spikeMultiplier = 3 + Math.random() * 5;
+                finalLikesIncrease = likesIncrease * spikeMultiplier;
+            }
+            
+            // Comments spikes (8% chance, slightly less frequent)
+            if (Math.random() < 0.08) {
+                const spikeMultiplier = 2.5 + Math.random() * 4;
+                finalCommentsIncrease = commentsIncrease * spikeMultiplier;
+            }
+            
+            // Shares spikes (6% chance, least frequent but can be very viral)
+            if (Math.random() < 0.06) {
+                const spikeMultiplier = 4 + Math.random() * 6;
+                finalSharesIncrease = sharesIncrease * spikeMultiplier;
+            }
+            
+            totalLikes += finalLikesIncrease;
+            totalComments += finalCommentsIncrease;
+            totalShares += finalSharesIncrease;
 
-            labels.push(t);
+            // Cycle time from 0-23, but keep data continuous
+            const displayTime = t % 24;
+
+            labels.push(displayTime);
             likes.push(totalLikes);
             comments.push(totalComments);
             shares.push(totalShares);
+            
+            t += 1;
 
-            if (labels.length > 50) {
+            // Keep only 24 hours of data (one day)
+            if (labels.length > 24) {
                 labels.shift();
                 likes.shift();
                 comments.shift();
@@ -460,7 +526,7 @@
                 <canvas bind:this={chartCanvas} width="800" height="400"></canvas>
             </div>
             <div class="text-muted mt-2" style="font-size:0.95rem;">
-                Real-time analytics showing likes, comments, and shares. Data updates every 5 seconds.
+                Real-time analytics showing likes, comments, and shares. Data updates every hour.
             </div>
         </div>
     </div>
