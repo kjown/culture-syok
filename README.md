@@ -7,7 +7,7 @@
 4. Own Kai Jian
 5. ⁠Wan Muhammad Hisham Bin Md Edlan Jafny
 
-# Problems and Solution Summary
+# Problems 
 ### 1. Lack of insight into trending topics
 Growth-stage companies often operate with small marketing teams that are too busy executing daily tasks to monitor what’s trending online. As a result, they miss opportunities to align content with topics that are currently drawing attention. Without these insights, their posts feel disconnected from audience conversations and fail to gain traction.
 
