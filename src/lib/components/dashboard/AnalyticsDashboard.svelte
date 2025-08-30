@@ -27,7 +27,7 @@
         "Instagram", 
         "Facebook", 
         "TikTok", 
-        "Twitter/X",
+        "X",
         "LinkedIn", 
     ];
     
@@ -38,7 +38,7 @@
         "Facebook": { likes: 1.2, comments: 1.4, shares: 1.3 }, // Balanced, good sharing
         "LinkedIn": { likes: 0.6, comments: 1.1, shares: 0.9 }, // Professional, thoughtful engagement
         "TikTok": { likes: 2.5, comments: 1.8, shares: 0.3 }, // Viral likes & comments, low shares
-        "Twitter/X": { likes: 1.0, comments: 1.6, shares: 2.2 }, // High conversation & sharing
+        "X": { likes: 1.0, comments: 1.6, shares: 2.2 }, // High conversation & sharing
     };
     
     // Post-specific data multipliers for different performance
@@ -448,14 +448,18 @@
     });
 </script>
 
-<div class="container py-4">
-    <h1 class="mb-2">Analytics Overview</h1>
-    <div class="text-muted mb-4" style="font-size:1.05rem;">
-        Analyze your social media performance across all connected accounts.
+<div class="container py-4 mt-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 100vh;">
+    <div class="mb-4 text-center">
+        <h1 class="mb-2" style="font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 2.5rem;">
+            <i class="fas fa-chart-line me-3" style="color: #667eea;"></i>Analytics Overview
+        </h1>
+        <div class="text-muted mb-4" style="font-size:1.1rem; color: #718096 !important; font-weight: 500;">
+            Analyze your social media performance across all connected accounts.
+        </div>
     </div>
 
-    <div class="mb-3">
-        <select class="form-select w-auto" bind:value={selectedRange}>
+    <div class="mb-4 d-flex justify-content-center">
+        <select class="form-select" style="width: auto; border-radius: 15px; border: 2px solid #e2e8f0; padding: 10px 20px; font-weight: 600; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" bind:value={selectedRange}>
             {#each ranges as range}
                 <option value={range}>{range}</option>
             {/each}
@@ -464,83 +468,120 @@
 
     <div class="row mb-4 g-3">
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div class="fw-bold" style="font-size:1.5rem;">12,345</div>
-                    <div class="text-muted">Total Reach</div>
-                    <div class="text-success mt-1" style="font-size:0.95rem;">+10%</div>
+            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                        <i class="fas fa-eye" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                    <div class="fw-bold" style="font-size:1.8rem;">12,345</div>
+                    <div style="opacity: 0.9; font-weight: 500;">Total Reach</div>
+                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                        <i class="fas fa-arrow-up me-1"></i>+10%
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div class="fw-bold" style="font-size:1.5rem;">6,789</div>
-                    <div class="text-muted">Engagement</div>
-                    <div class="text-danger mt-1" style="font-size:0.95rem;">-5%</div>
+            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                        <i class="fas fa-heart" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                    <div class="fw-bold" style="font-size:1.8rem;">6,789</div>
+                    <div style="opacity: 0.9; font-weight: 500;">Engagement</div>
+                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                        <i class="fas fa-arrow-down me-1"></i>-5%
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div class="fw-bold" style="font-size:1.5rem;">5.5%</div>
-                    <div class="text-muted">Engagement Rate</div>
-                    <div class="text-success mt-1" style="font-size:0.95rem;">+2%</div>
+            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                        <i class="fas fa-chart-line" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                    <div class="fw-bold" style="font-size:1.8rem;">5.5%</div>
+                    <div style="opacity: 0.9; font-weight: 500;">Engagement Rate</div>
+                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                        <i class="fas fa-arrow-up me-1"></i>+2%
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div class="fw-bold" style="font-size:1.5rem;">456</div>
-                    <div class="text-muted">New Followers</div>
-                    <div class="text-success mt-1" style="font-size:0.95rem;">+8%</div>
+            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                        <i class="fas fa-user-plus" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                    <div class="fw-bold" style="font-size:1.8rem;">456</div>
+                    <div style="opacity: 0.9; font-weight: 500;">New Followers</div>
+                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                        <i class="fas fa-arrow-up me-1"></i>+8%
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Tabs for Engagement/Reach -->
-    <div class="d-flex mb-3" style="background-color: #f8f9fa; border-radius: 12px; padding: 4px; width: 100%;">
+    <div class="d-flex mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 6px; width: 100%; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
         <button 
             class="btn flex-fill" 
             type="button" 
-            style="background-color: {activeTab === 'Engagement' ? 'white' : 'transparent'}; border: none; border-radius: 8px; font-weight: 500; padding: 8px 16px; margin: 0; {activeTab === 'Engagement' ? 'box-shadow: 0 1px 3px rgba(0,0,0,0.1);' : ''} color: {activeTab === 'Engagement' ? '#000' : '#6c757d'};"
+            style="background-color: {activeTab === 'Engagement' ? 'white' : 'transparent'}; border: none; border-radius: 12px; font-weight: 600; padding: 12px 20px; margin: 0; transition: all 0.3s ease; {activeTab === 'Engagement' ? 'box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px);' : ''} color: {activeTab === 'Engagement' ? '#667eea' : 'rgba(255,255,255,0.8)'};"
             on:click={() => switchTab('Engagement')}
         >
+            <i class="fas fa-heart me-2"></i>
             Engagement
         </button>
         <button 
             class="btn flex-fill" 
             type="button" 
-            style="background-color: {activeTab === 'Reach' ? 'white' : 'transparent'}; border: none; border-radius: 8px; font-weight: 500; padding: 8px 16px; margin: 0; {activeTab === 'Reach' ? 'box-shadow: 0 1px 3px rgba(0,0,0,0.1);' : ''} color: {activeTab === 'Reach' ? '#000' : '#6c757d'};"
+            style="background-color: {activeTab === 'Reach' ? 'white' : 'transparent'}; border: none; border-radius: 12px; font-weight: 600; padding: 12px 20px; margin: 0; transition: all 0.3s ease; {activeTab === 'Reach' ? 'box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px);' : ''} color: {activeTab === 'Reach' ? '#667eea' : 'rgba(255,255,255,0.8)'};"
             on:click={() => switchTab('Reach')}
         >
+            <i class="fas fa-eye me-2"></i>
             Reach
         </button>
     </div>
 
     <!-- Engagement Over Time Chart -->
     <div class="mb-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title mb-1">Performance Over Time</h5>
-                <p class="text-muted small mb-3">{activeTab} {activeTab === 'Engagement' ? 'Rate' : ''}</p>
+        <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%); border-radius: 20px;">
+            <div class="card-body" style="padding: 2rem;">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-chart-area text-white" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-1" style="color: #2d3748; font-weight: 700;">Performance Over Time</h5>
+                        <p class="text-muted small mb-0" style="color: #718096 !important;">{activeTab} {activeTab === 'Engagement' ? 'Rate' : ''}</p>
+                    </div>
+                </div>
                 
                 <div class="row align-items-center mb-4">
                     <div class="col-md-6">
                         {#if activeTab === 'Engagement'}
-                            <div class="fw-bold" style="font-size:2rem;">2.5%</div>
-                            <div class="text-muted">Last 30 Days <span class="text-success">+2%</span></div>
+                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">2.5%</div>
+                            <div class="text-muted">Last 30 Days 
+                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
+                                    <i class="fas fa-arrow-up me-1"></i>+2%
+                                </span>
+                            </div>
                         {:else}
-                            <div class="fw-bold" style="font-size:2rem;">12.5K</div>
-                            <div class="text-muted">Last 30 Days <span class="text-success">+15%</span></div>
+                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">12.5K</div>
+                            <div class="text-muted">Last 30 Days 
+                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
+                                    <i class="fas fa-arrow-up me-1"></i>+15%
+                                </span>
+                            </div>
                         {/if}
                     </div>
                 </div>
                 
-                <div style="height: 300px; position: relative; width: 100%;">
+                <div style="height: 300px; position: relative; width: 100%; background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
                     <canvas bind:this={engagementChartCanvas} style="width: 100% !important; height: 100% !important;"></canvas>
                 </div>
             </div>
@@ -549,42 +590,72 @@
 
     <!-- Top Platforms Table -->
     <div class="mb-4">
-        <div class="fw-bold mb-2">Top Platforms</div>
-        <div class="card">
-            <div class="card-body px-4 py-2">
-                <table class="table mb-0">
-                    <thead>
+        <div class="d-flex align-items-center mb-3">
+            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <i class="fas fa-share-alt text-white" style="font-size: 1.1rem;"></i>
+            </div>
+            <div class="fw-bold" style="font-size: 1.3rem; color: #2d3748;">Top Platforms</div>
+        </div>
+        <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+            <div class="card-body px-0 py-0">
+                <table class="table mb-0" style="border-radius: 20px; overflow: hidden;">
+                    <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                         <tr>
-                            <th>Platform</th>
-                            <th>Engagement</th>
-                            <th>Reach</th>
+                            <th style="border: none; padding: 1rem 2rem; font-weight: 600;">Platform</th>
+                            <th style="border: none; padding: 1rem 1rem; font-weight: 600;">Engagement</th>
+                            <th style="border: none; padding: 1rem 2rem; font-weight: 600;">Reach</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:linear-gradient(135deg,#fdc468 0%,#df4996 50%,#4f5bd5 100%);"><i class="fab fa-instagram" style="color:white;"></i></span>Instagram</td>
-                            <td>1,234</td>
-                            <td>2,345</td>
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:linear-gradient(135deg,#fdc468 0%,#df4996 50%,#4f5bd5 100%); box-shadow: 0 4px 12px rgba(253, 196, 104, 0.4);">
+                                    <i class="fab fa-instagram" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">Instagram</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,234</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,345</td>
                         </tr>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:#1877F3;"><i class="fab fa-facebook" style="color:white;"></i></span>Facebook</td>
-                            <td>1,122</td>
-                            <td>2,233</td>
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#1877F3; box-shadow: 0 4px 12px rgba(24, 119, 243, 0.4);">
+                                    <i class="fab fa-facebook" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">Facebook</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,122</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,233</td>
                         </tr>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:#1DA1F2;"><i class="fab fa-twitter" style="color:white;"></i></span>Twitter</td>
-                            <td>1,010</td>
-                            <td>2,121</td>      
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
+                                    <i class="fab fa-x-twitter" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">X</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,010</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,121</td>      
                         </tr>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:#0a66c2;"><i class="fab fa-linkedin" style="color:white;"></i></span>LinkedIn</td>
-                            <td>800</td>
-                            <td>2,010</td>
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#0a66c2; box-shadow: 0 4px 12px rgba(10, 102, 194, 0.4);">
+                                    <i class="fab fa-linkedin" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">LinkedIn</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">800</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,010</td>
                         </tr>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:#000000;"><i class="fab fa-tiktok" style="color:white;"></i></span>TikTok</td>
-                            <td>800</td>
-                            <td>1,900</td>
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; border-bottom: none;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
+                                    <i class="fab fa-tiktok" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">TikTok</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; border-bottom: none; font-weight: 600; color: #4a5568;">800</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; border-bottom: none; font-weight: 600; color: #4a5568;">1,900</td>
                         </tr>
                     </tbody>
                 </table>
@@ -593,22 +664,30 @@
     </div>
 
     <!-- Live Social Media Analytics Dashboard -->
-    <div class="card shadow-sm mt-5">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Live Social Media Analytics</h5>
+    <div class="card border-0 shadow-lg mt-5" style="border-radius: 20px; background: linear-gradient(135deg, #fafbff 0%, #f0f4ff 100%);">
+        <div class="card-body" style="padding: 2rem;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <i class="fas fa-broadcast-tower text-white" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-0" style="color: #2d3748; font-weight: 700;">Live Social Media Analytics</h5>
+                        <p class="text-muted mb-0" style="font-size: 0.9rem;">Real-time engagement tracking</p>
+                    </div>
+                </div>
                 <div class="d-flex align-items-center gap-3">
                     <div class="d-flex align-items-center">
-                        <label for="platformSelect" class="form-label me-2 mb-0" style="font-size:0.9rem;">Platform:</label>
-                        <select id="platformSelect" class="form-select form-select-sm" style="width:auto;" bind:value={selectedPlatform} on:change={handlePlatformChange}>
+                        <label for="platformSelect" class="form-label me-2 mb-0" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Platform:</label>
+                        <select id="platformSelect" class="form-select form-select-sm" style="width:auto; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPlatform} on:change={handlePlatformChange}>
                             {#each platforms as platform}
                                 <option value={platform}>{platform}</option>
                             {/each}
                         </select>
                     </div>
                     <div class="d-flex align-items-center">
-                        <label for="postSelect" class="form-label me-2 mb-0" style="font-size:0.9rem;">Post:</label>
-                        <select id="postSelect" class="form-select form-select-sm" style="width:auto;" bind:value={selectedPost} on:change={handlePostChange}>
+                        <label for="postSelect" class="form-label me-2 mb-0" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Post:</label>
+                        <select id="postSelect" class="form-select form-select-sm" style="width:auto; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPost} on:change={handlePostChange}>
                             {#each posts as post}
                                 <option value={post}>{post}</option>
                             {/each}
@@ -617,16 +696,21 @@
                 </div>
             </div>
             
-            <div class="mb-2">
-                <span class="badge bg-primary me-2">{selectedPlatform}</span>
-                <span class="badge bg-success me-2">{selectedPost}</span>
+            <div class="mb-4">
+                <span class="badge me-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 500;">
+                    <i class="fas fa-broadcast-tower me-2"></i>{selectedPlatform}
+                </span>
+                <span class="badge" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 500;">
+                    <i class="fas fa-file-alt me-2"></i>{selectedPost}
+                </span>
             </div>
         
-            <div style="background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px;">
+            <div style="background: white; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); padding: 25px; border: 1px solid rgba(102, 126, 234, 0.1);">
                 <canvas bind:this={chartCanvas} width="800" height="400"></canvas>
             </div>
-            <div class="text-muted mt-2" style="font-size:0.95rem;">
-                Real-time analytics showing likes, comments, and shares. Data updates every hour.
+            <div class="text-muted mt-3 d-flex align-items-center" style="font-size:0.95rem;">
+                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 8px; height: 8px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);"></div>
+                Real-time analytics showing likes, comments, and shares. Data updates every 5 seconds.
             </div>
         </div>
     </div>
