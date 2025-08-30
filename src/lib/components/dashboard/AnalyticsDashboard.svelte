@@ -8,6 +8,7 @@
     
     // Post selection
     let selectedPost = "All Posts";
+    // TODO: FETCH FROM API - Replace with API call to get user's posts
     let posts = [
         "All Posts",
         "Summer Campaign Launch",
@@ -22,6 +23,7 @@
     
     // Social media platform tracking
     let selectedPlatform = "All Platforms";
+    // TODO: FETCH FROM API - Replace with API call to get user's connected platforms
     let platforms = [
         "All Platforms",
         "Instagram", 
@@ -32,6 +34,7 @@
     ];
     
     // Platform-specific data multipliers for different growth rates
+    // TODO: FETCH FROM API - Replace with real-time platform analytics data
     let platformMultipliers = {
         "All Platforms": { likes: 1.0, comments: 1.0, shares: 1.0 },
         "Instagram": { likes: 1.8, comments: 0.9, shares: 0.5 }, // High likes, fewer shares
@@ -42,6 +45,7 @@
     };
     
     // Post-specific data multipliers for different performance
+    // TODO: FETCH FROM API - Replace with real post performance metrics
     let postMultipliers = {
         "All Posts": { likes: 1.0, comments: 1.0, shares: 1.0 },
         "Summer Campaign Launch": { likes: 2.2, comments: 1.8, shares: 2.5 }, // High performing campaign
@@ -229,6 +233,7 @@
         if (engagementChartCanvas && typeof Chart !== 'undefined') {
             const ctx = engagementChartCanvas.getContext('2d');
             
+            // TODO: FETCH FROM API - Replace with real engagement rate data over time
             // Sample engagement rate data over time - showing positive growth trend
             const data = [0.8, 1.2, 1.0, 1.4, 1.7, 1.5, 1.9, 2.1, 2.0, 2.3, 2.4, 2.5];
             const labels = ['4W Ago', '', '', '3W Ago', '', '', '2W Ago', '', '', '1W Ago', '', 'Now'];
@@ -310,9 +315,11 @@
     function updateChartData() {
         if (!engagementChart) return;
         
+        // TODO: FETCH FROM API - Replace with real-time data based on selected tab
         let data, chartTitle, chartValue, chartChange, chartChangeClass;
         
         if (activeTab === "Engagement") {
+            // TODO: FETCH FROM API - Get real engagement rate data
             // Engagement data - showing positive growth trend
             data = [0.8, 1.2, 1.0, 1.4, 1.7, 1.5, 1.9, 2.1, 2.0, 2.3, 2.4, 2.5];
             chartTitle = "Engagement Rate";
@@ -320,6 +327,7 @@
             chartChange = "+2%";
             chartChangeClass = "text-success";
         } else {
+            // TODO: FETCH FROM API - Get real reach data
             // Reach data - showing different trend
             data = [8.2, 9.1, 8.8, 10.2, 11.5, 10.8, 12.1, 13.2, 12.8, 14.1, 13.7, 12.5];
             chartTitle = "Reach Rate";
@@ -337,10 +345,12 @@
             clearInterval(chartInterval);
         }
         
+        // TODO: REPLACE WITH REAL-TIME API CALLS - This entire simulation should be replaced with WebSocket or periodic API calls
         chartInterval = setInterval(() => {
             const platformMultiplier = platformMultipliers[selectedPlatform];
             const postMultiplier = postMultipliers[selectedPost];
             
+            // TODO: FETCH FROM API - Get real-time engagement data instead of simulation
             // Apply both platform and post-specific growth rates
             const combinedLikesMultiplier = platformMultiplier.likes * postMultiplier.likes;
             const combinedCommentsMultiplier = platformMultiplier.comments * postMultiplier.comments;
@@ -473,8 +483,10 @@
                     <div class="mb-2">
                         <i class="fas fa-eye" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
+                    <!-- TODO: FETCH FROM API - Replace with real total reach data -->
                     <div class="fw-bold" style="font-size:1.8rem;">12,345</div>
                     <div style="opacity: 0.9; font-weight: 500;">Total Reach</div>
+                    <!-- TODO: FETCH FROM API - Replace with real percentage change -->
                     <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-up me-1"></i>+10%
                     </div>
@@ -487,8 +499,10 @@
                     <div class="mb-2">
                         <i class="fas fa-heart" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
+                    <!-- TODO: FETCH FROM API - Replace with real engagement data -->
                     <div class="fw-bold" style="font-size:1.8rem;">6,789</div>
                     <div style="opacity: 0.9; font-weight: 500;">Engagement</div>
+                    <!-- TODO: FETCH FROM API - Replace with real percentage change -->
                     <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-down me-1"></i>-5%
                     </div>
@@ -501,8 +515,10 @@
                     <div class="mb-2">
                         <i class="fas fa-chart-line" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
+                    <!-- TODO: FETCH FROM API - Replace with real engagement rate data -->
                     <div class="fw-bold" style="font-size:1.8rem;">5.5%</div>
                     <div style="opacity: 0.9; font-weight: 500;">Engagement Rate</div>
+                    <!-- TODO: FETCH FROM API - Replace with real percentage change -->
                     <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-up me-1"></i>+2%
                     </div>
@@ -515,8 +531,10 @@
                     <div class="mb-2">
                         <i class="fas fa-user-plus" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
+                    <!-- TODO: FETCH FROM API - Replace with real new followers data -->
                     <div class="fw-bold" style="font-size:1.8rem;">456</div>
                     <div style="opacity: 0.9; font-weight: 500;">New Followers</div>
+                    <!-- TODO: FETCH FROM API - Replace with real percentage change -->
                     <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-up me-1"></i>+8%
                     </div>
@@ -564,6 +582,7 @@
                 <div class="row align-items-center mb-4">
                     <div class="col-md-6">
                         {#if activeTab === 'Engagement'}
+                            <!-- TODO: FETCH FROM API - Replace with real engagement rate and trend data -->
                             <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">2.5%</div>
                             <div class="text-muted">Last 30 Days 
                                 <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
@@ -571,6 +590,7 @@
                                 </span>
                             </div>
                         {:else}
+                            <!-- TODO: FETCH FROM API - Replace with real reach data and trend -->
                             <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">12.5K</div>
                             <div class="text-muted">Last 30 Days 
                                 <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">

@@ -7,7 +7,8 @@
     
     $: postId = $page.params.post_id;
     
-    // To be replaced with real data fetching logic
+    // TODO: FETCH FROM API - Replace with real post data fetching logic
+    // Example: fetchPostData(postId) to get post details by ID
     let postData = {
         title: "Summer Product Launch Campaign",
         description: "Introducing our latest collection with vibrant summer colors and sustainable materials. This campaign focuses on eco-friendly fashion choices for the conscious consumer.",
@@ -34,7 +35,8 @@
     let conversionChartCanvas;
     let conversionChart = null;
     
-    // Engagement breakdown by channel
+    // TODO: FETCH FROM API - Replace with real engagement breakdown data by platform
+    // Example: getChannelEngagementData(postId) to get platform-specific engagement metrics
     let channelData = {
         Instagram: 45,
         Facebook: 25,
@@ -43,7 +45,8 @@
         TikTok: 5
     };
     
-    // Conversion rate breakdown by action type
+    // TODO: FETCH FROM API - Replace with real conversion rate data by action type
+    // Example: getConversionData(postId) to get action-specific conversion metrics
     let conversionData = {
         Purchase: 40,
         Signup: 35,
@@ -51,7 +54,8 @@
         "Newsletter": 10
     };
     
-    // Sentiment analysis data
+    // TODO: FETCH FROM API - Replace with real sentiment analysis data
+    // Example: getSentimentAnalysis(postId) to get AI-powered sentiment breakdown
     let sentimentData = {
         Positive: 65,
         Neutral: 25,
@@ -76,7 +80,8 @@
         if (chartCanvas && typeof Chart !== 'undefined') {
             const ctx = chartCanvas.getContext('2d');
             
-            // Sample engagement rate data over time
+            // TODO: FETCH FROM API - Replace with real engagement rate data over time
+            // Example: getPerformanceTimeline(postId) to get historical engagement data
             const data = [2.1, 2.8, 2.3, 2.9, 2.2, 1.8, 2.0, 2.4, 2.7, 3.2, 2.8, 2.5];
             const labels = ['4W Ago', '', '', '3W Ago', '', '', '2W Ago', '', '', '1W Ago', '', 'Now'];
             
@@ -149,6 +154,8 @@
         if (pieChartCanvas && typeof Chart !== 'undefined') {
             const ctx = pieChartCanvas.getContext('2d');
             
+            // TODO: FETCH FROM API - Replace with real channel data and platform colors
+            // Example: getChannelBreakdown(postId) and getPlatformBranding()
             const labels = Object.keys(channelData);
             const data = Object.values(channelData);
             const colors = [
@@ -210,6 +217,8 @@
         if (conversionChartCanvas && typeof Chart !== 'undefined') {
             const ctx = conversionChartCanvas.getContext('2d');
             
+            // TODO: FETCH FROM API - Replace with real conversion action data and colors
+            // Example: getConversionBreakdown(postId) for action-specific metrics
             const labels = Object.keys(conversionData);
             const data = Object.values(conversionData);
             const colors = [
@@ -269,6 +278,9 @@
     function initSentimentChart() {
         if (sentimentChartCanvas && typeof Chart !== 'undefined') {
             const ctx = sentimentChartCanvas.getContext('2d');
+            
+            // TODO: FETCH FROM API - Replace with real AI-powered sentiment analysis data
+            // Example: getSentimentAnalysis(postId) for emotion detection from comments/interactions
             const labels = Object.keys(sentimentData);
             const data = Object.values(sentimentData);
             const colors = [
@@ -363,6 +375,7 @@
                     </div>
                 </div>
                 <div class="col-md-8">
+                    <!-- TODO: FETCH FROM API - Replace with real post content data -->
                     <h3 class="h5 mb-2">{postData.title}</h3>
                     <p class="text-muted mb-3">{postData.description}</p>
                 </div>
@@ -377,6 +390,7 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
+                        <!-- TODO: FETCH FROM API - Replace with real engagement metrics -->
                         <div class="text-muted small mb-1">Engagement</div>
                         <div class="h4 mb-1">{postData.metrics.engagement.value.toLocaleString()}</div>
                         <div class="text-success small">+{postData.metrics.engagement.change}% from yesterday</div>
@@ -386,6 +400,7 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
+                        <!-- TODO: FETCH FROM API - Replace with real reach metrics -->
                         <div class="text-muted small mb-1">Reach</div>
                         <div class="h4 mb-1">{postData.metrics.reach.value.toLocaleString()}</div>
                         <div class="text-success small">+{postData.metrics.reach.change}% from yesterday</div>
@@ -395,6 +410,7 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body">
+                        <!-- TODO: FETCH FROM API - Replace with real impressions metrics -->
                         <div class="text-muted small mb-1">Impressions</div>
                         <div class="h4 mb-1">{postData.metrics.impressions.value.toLocaleString()}</div>
                         <div class="text-success small">+{postData.metrics.impressions.change}% from yesterday</div>
@@ -412,6 +428,7 @@
                 
                 <div class="row align-items-center mb-4">
                     <div class="col-md-6">
+                        <!-- TODO: FETCH FROM API - Replace with real engagement rate data -->
                         <div class="text-muted small mb-1">Engagement Rate</div>
                         <div class="h2 mb-1">{postData.engagementRate.value}%</div>
                         <div class="text-success small">Last 30 Days +{postData.engagementRate.change}%</div>
@@ -465,6 +482,7 @@
                 
                 <div class="row align-items-center mb-4">
                     <div class="col-md-6">
+                        <!-- TODO: FETCH FROM API - Replace with real overall conversion rate data -->
                         <div class="text-muted small mb-1">Overall Conversion Rate</div>
                         <div class="h2 mb-1">3.2%</div>
                         <div class="text-success small">+0.8% from last month</div>
@@ -505,6 +523,7 @@
                 
                 <div class="row align-items-center mb-4">
                     <div class="col-md-6">
+                        <!-- TODO: FETCH FROM API - Replace with real AI-powered sentiment score -->
                         <div class="text-muted small mb-1">Overall Sentiment Score</div>
                         <div class="h2 mb-1">7.8/10</div>
                         <div class="text-success small">Predominantly positive audience reaction</div>
@@ -532,6 +551,7 @@
                             <!-- Key insights -->
                             <div class="mt-4 pt-3 border-top">
                                 <h6 class="small fw-bold text-muted mb-2">KEY INSIGHTS</h6>
+                                <!-- TODO: FETCH FROM API - Replace with real AI-generated sentiment insights -->
                                 <div class="small text-muted mb-2">
                                     <i class="fas fa-heart text-success me-2"></i>
                                     High positive engagement from younger demographics
