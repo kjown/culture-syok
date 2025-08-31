@@ -1,12 +1,12 @@
-<img width="2848" height="990" alt="image" src="https://github.com/user-attachments/assets/0d7870a3-8599-4212-8bd7-c20b6fd1bf45" /><img width="2872" height="1002" alt="image" src="https://github.com/user-attachments/assets/9ebce3b8-c851-4a5d-8980-104cf0e496c8" /># CultureSyok
+# CultureSyok
 
 **Your AI Marketing *Kawan* for the Malaysian Market.**
 
 CultureSyok is an AI-powered marketing assistant designed to help SMEs and startups plan, create, and manage their social media content that truly resonates with the local audience. The platform automatically scrapes social media trends using PRAW (Reddit API) and other data sources, then feeds this information into an AI model to generate fresh, relevant content ideas. Teams can draft and schedule posts directly from the platform, and once published, the tool tracks engagement metrics with intuitive dashboards.
 
-Beyond basic analytics, it also uses AI-driven sentiment analysis to evaluate audience reactions, helping marketing teams continuously refine their campaigns without needing a dedicated analytics department. The system streamlines the entire workflow—trend detection, content generation, post scheduling, and performance improvement into one seamless tool.
+Beyond basic analytics, it also uses AI-driven sentiment analysis to evaluate audience reactions, helping marketing teams continuously refine their campaigns without needing a dedicated 
 
-![CultureSyok Image](./assets/screenshot)
+<img width="2872" height="1002" alt="image" src="https://github.com/user-attachments/assets/9ebce3b8-c851-4a5d-8980-104cf0e496c8" />
 
 ## Setup Instructions
 ### 1. Clone the repository
