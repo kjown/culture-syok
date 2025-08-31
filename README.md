@@ -6,7 +6,24 @@
 git clone https://github.com/kjown/ayam-debugging-frontend.git
 cd ayam-debugging-frontend
 ```
-### 2. Create an .env file in the project root
+### 2. Set up a Python virtual environment
+It’s recommended to use a virtual environment to isolate dependencies:
+```
+python -m venv venv
+```
+
+Activate it:
+
+On macOS/Linux:
+```
+source venv/bin/activate
+```
+
+On Windows (Command Prompt):
+```
+venv\Scripts\activate
+```
+### 3. Create an .env file in the project root
 ```
 # Google Calendar
 GOOGLE_CLIENT_ID="YOUR_CLIENT_ID"
@@ -34,21 +51,21 @@ Get your cloudinary credentials here: https://cloudinary.com/console
 Get your reddit credentials by creating an app here: https://www.reddit.com/prefs/apps
 
 Generate your API key here: https://aistudio.google.com/apikey
-### 3. Install Python dependencies
+### 4. Install Python dependencies
 ```
 pip install -r requirements.txt
 ```
-### 4. Start the backend (FastAPI server)
+### 5. Start the backend (FastAPI server)
 ```
 uvicorn main:app --reload
 ```
 
-### 5. Install frontend dependencies
+### 6. Install frontend dependencies
 ```
 npm install
 ```
 
-### 6. Start the frontend development server
+### 7. Start the frontend development server
 ```
 npm run dev
 ```
