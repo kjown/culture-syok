@@ -1,19 +1,24 @@
-	<script>
+<script>
 		import Header from "$lib/components/layout/Header.svelte";
+		import ToastContainer from "$lib/components/layout/ToastContainer.svelte";
 
 		$: title = "Ayam Debugging";
 	</script>
 
-	<div class="d-flex flex-column min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
-		<!-- Header -->
-		<div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1020; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">
-			<Header title={title}/>
-		</div>
-		<!-- Page content -->
-		<div class="flex-grow-1" style="background: transparent; padding: 0;">
-			<slot />
+	<div class="app-layout">
+		<!-- <Sidebar /> -->
+		<div class="main-content">
+			<div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1020; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">
+				<Header title={title}/>
+			</div>
+			<!-- Page content -->
+			<main class="page-content" style="background: transparent; padding: 0;">
+				<slot />
+			</main>
 		</div>
 	</div>
+
+	<ToastContainer />
 
 	<style>
 		:global(body) {

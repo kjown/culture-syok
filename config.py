@@ -1,16 +1,16 @@
 from google.genai import types
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-class Settings(BaseSettings):
+# class Settings(BaseSettings):
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+#     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-    GEMINI_API_KEY: str
-    REDDIT_CLIENT_ID: str
-    REDDIT_CLIENT_SECRET: str
-    REDDIT_USER_AGENT: str
+#     GEMINI_API_KEY: str
+#     REDDIT_CLIENT_ID: str
+#     REDDIT_CLIENT_SECRET: str
+#     REDDIT_USER_AGENT: str
 
-settings = Settings()
+# settings = Settings()
 
 # REDDIT CONFIG
 TARGET_SUBREDDITS = [
