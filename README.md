@@ -42,13 +42,21 @@ REDDIT_USER_AGENT='YOUR_USER_AGENT'
 
 # Gemini
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+
+# X
+X_USERNAME=YOUR_USER_NAME
+X_API_KEY=YOUR_API_KEY
+X_API_SECRET_KEY=YOUR_SECRET_KEY
+X_BEARER_TOKEN=YOUR_BEARER_TOKEN
  
 ```
-Get your google calendar credentials here: https://console.cloud.google.com/apis/credentials
+Get your Google Calendar credentials here: https://console.cloud.google.com/apis/credentials
 
-Get your cloudinary credentials here: https://cloudinary.com/console
+Get your Cloudinary credentials here: https://cloudinary.com/console
 
-Get your reddit credentials by creating an app here: https://www.reddit.com/prefs/apps
+Get your Reddit credentials by creating an app here: https://www.reddit.com/prefs/apps
+
+Get your X credentials here: https://developer.x.com/en
 
 Generate your API key here: https://aistudio.google.com/apikey
 ### 4. Install Python dependencies
