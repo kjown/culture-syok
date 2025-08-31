@@ -28,7 +28,7 @@
     let loadingTrends = true;
     let isGenerating = false;
 
-    // Form fields matching your PlanRequest model
+    // form fields
     let product = '';
     let objective = '';
     let call_to_action = '';
@@ -56,12 +56,20 @@
 
     // 1. Fetch trends from your Python backend on component mount
     onMount(async () => {
+        const cachedTrends = sessionStorage.getItem('trendsData');
+        
+        if (cachedTrends) {
+            availableTrends = JSON.parse(cachedTrends);
+            loadingTrends = false;
+            return; 
+        }
         try {
             // NOTE: Ensure your FastAPI server is running on port 8000
             const response = await fetch('http://127.0.0.1:8000/api/get-trends');
             if (response.ok) {
                 const data = await response.json();
                 availableTrends = data.trends || [];
+                sessionStorage.setItem('trendsData', JSON.stringify(availableTrends));
             } else {
                 console.error('Failed to fetch trends:', response.status);
                 alert('Could not load trends from the backend. Please ensure the server is running.');
