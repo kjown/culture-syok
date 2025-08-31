@@ -1,6 +1,6 @@
 # Project Title
 
-# Setup Instructions
+## Setup Instructions
 ### 1. Clone the repository
 ```
 git clone https://github.com/kjown/ayam-debugging-frontend.git
@@ -53,14 +53,14 @@ npm install
 npm run dev
 ```
 
-# Team Members
+## Team Members
 1. ⁠Tee Kai Xin
 2. ⁠Chang Kai Le
 3. Nathaniel Inn Tsin Qian
 4. Own Kai Jian
 5. ⁠Wan Muhammad Hisham Bin Md Edlan Jafny
 
-# Problems 
+## Problems 
 ### 1. Lack of insight into trending topics
 Growth-stage companies often operate with small marketing teams that are too busy executing daily tasks to monitor what’s trending online. As a result, they miss opportunities to align content with topics that are currently drawing attention. Without these insights, their posts feel disconnected from audience conversations and fail to gain traction.
 
@@ -76,7 +76,7 @@ Even if campaigns are launched successfully, teams struggle to gather performanc
 ### 5.⁠ ⁠No feedback loop for improvement
 Because performance data is fragmented, teams do not know what is working and why. They cannot identify which topics resonate with the audience or which post formats generate the highest engagement. Without structured learning, every campaign starts from scratch instead of building on past success.
 
-# Proposed solutions
+## Proposed solutions
 ### 1.⁠ ⁠Automated trend detection
 Implement web scraping tools such as PRAW for Reddit, along with other APIs, to continuously track conversations and identify rising topics. By scoring topics based on engagement velocity and relevance, the tool surfaces what audiences are talking about right now. This helps companies stay current and publish content that naturally attracts attention.
 
@@ -92,21 +92,7 @@ Collect metrics such as impressions, likes, shares, comments, and click-through 
 ### 5.⁠ ⁠Continuous improvement loop
 Leverage AI to highlight which campaigns performed best and explain why certain posts resonated. The system can recommend new angles, content formats, or posting strategies for future campaigns. This creates a feedback loop where every marketing effort becomes smarter and more effective over time.
 
-# Tech Stacks
-1. ⁠Svetlekit
-2. ⁠⁠Chart.js
-3. ⁠⁠n8n
-4. ⁠⁠Gemini LLM
-5. ⁠⁠Docker
-6. PRAW
-7. ⁠FastAPI
-8. ⁠⁠Ngrok
-9. ⁠GenAI SDK
-10. Twitter API v2
-11. Google Calendar API
-12. Cloudinary
-
-# Challenges
+## Challenges
 
 ### 1. Difficulty integrating different components
 The backend scraping logic, AI content generation, scheduling system, and frontend dashboard all had to work together. Making these pieces communicate reliably required more time than expected, especially when connecting APIs with different formats and authentication requirements.
@@ -121,7 +107,7 @@ Business accounts for Meta and X APIs require paid subscriptions. Without these,
 Testing every feature manually was time-consuming and error-prone. It was difficult to repeatedly verify that scraping, AI generation, posting, and dashboard features all worked correctly together.
 
 
-# Learnings
+## Learnings
 ### 1. Modular design is essential
 Breaking the system into smaller, well-defined modules (scraper, AI service, scheduler, dashboard) makes integration easier. Well-documented APIs between these modules reduce friction when different parts of the team work in parallel.
 
@@ -130,3 +116,17 @@ Even a lightweight cloud deployment (using free tiers) early in development help
 
 ### 3. Automated testing is worth the investment
 Implementing even a small suite of unit tests or API tests early would have reduced the manual testing burden. Automated tests can verify that key features continue working after code changes, saving time and reducing bugs.
+
+## Tech Stacks
+1. ⁠Svetlekit
+2. ⁠⁠Chart.js
+3. ⁠⁠n8n
+4. ⁠⁠Gemini LLM
+5. ⁠⁠Docker
+6. PRAW
+7. ⁠FastAPI
+8. ⁠⁠Ngrok
+9. ⁠GenAI SDK
+10. Twitter API v2
+11. Google Calendar API
+12. Cloudinary
