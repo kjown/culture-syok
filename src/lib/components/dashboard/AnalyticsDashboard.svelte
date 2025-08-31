@@ -2,46 +2,265 @@
     // @ts-nocheck
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
+
+
+    // IF USING A REAL API, REPLACE THE MOCK DATA WITH API CALLS
+    // API endpoint URLs (these should point to backend/server routes that fetch from GCS)
+    const X_API_URL = "http://127.0.0.1:8000/api/x/"; // Should return tweets.json from GCS
+    const IG_API_URL = "http://127.0.0.1:8000/api/instagram/"; // Should return instagram.json from GCS
+    const FB_API_URL = "http://127.0.0.1:8000/api/facebook/"; // Should return facebook_post.json from GCS
+
+
+    // State for fetched data
+    let xData = null;
+    let instagramData = null;
+    let facebookData = null;
+
+
+    // Fetch data from Google Cloud Storage (GCS)
+    async function fetchGCSData() {
+        console.log('Starting to fetch data from backend...');
+        try {
+            console.log('Fetching from URLs:', { X_API_URL, IG_API_URL, FB_API_URL });
+            
+            // Fetch X/Twitter data (this should work)
+            try {
+                const xRes = await fetch(X_API_URL);
+                console.log('X API response status:', xRes.status);
+                if (xRes.ok) {
+                    xData = await xRes.json();
+                    console.log('X data fetched successfully:', xData);
+                } else {
+                    console.warn('X API failed with status:', xRes.status);
+                }
+            } catch (err) {
+                console.error('Error fetching X data:', err);
+            }
+            
+            // Fetch Instagram data (may have permission issues)
+            try {
+                const igRes = await fetch(IG_API_URL);
+                console.log('Instagram API response status:', igRes.status);
+                if (igRes.ok) {
+                    const igResult = await igRes.json();
+                    // Check if it's an error response from Instagram API
+                    if (igResult.error) {
+                        console.warn('Instagram API returned error:', igResult.error);
+                        instagramData = null;
+                    } else {
+                        instagramData = igResult;
+                        console.log('Instagram data fetched successfully:', instagramData);
+                    }
+                } else {
+                    console.warn('Instagram API failed with status:', igRes.status);
+                }
+            } catch (err) {
+                console.error('Error fetching Instagram data:', err);
+            }
+            
+            // Fetch Facebook data (may not exist in GCS)
+            try {
+                const fbRes = await fetch(FB_API_URL);
+                console.log('Facebook API response status:', fbRes.status);
+                if (fbRes.ok) {
+                    facebookData = await fbRes.json();
+                    console.log('Facebook data fetched successfully:', facebookData);
+                } else {
+                    console.warn('Facebook API failed with status:', fbRes.status);
+                }
+            } catch (err) {
+                console.error('Error fetching Facebook data:', err);
+            }
+            
+            console.log('Final data state:', { 
+                hasXData: !!xData, 
+                hasInstagramData: !!instagramData, 
+                hasFacebookData: !!facebookData 
+            });
+            
+        } catch (err) {
+            console.error("Error fetching GCS data:", err);
+        }
+    }
+
+
+    // Example of how to display fetched data (replace dummy data)
+    // For X (Twitter) metrics
+    $: xMetrics = xData
+        ? {
+            totalTweets: xData.data.length,
+            totalLikes: xData.data.reduce((sum, t) => sum + t.public_metrics.like_count, 0),
+            totalRetweets: xData.data.reduce((sum, t) => sum + t.public_metrics.retweet_count, 0),
+            totalReplies: xData.data.reduce((sum, t) => sum + t.public_metrics.reply_count, 0),
+            totalImpressions: xData.data.reduce((sum, t) => sum + (t.public_metrics.impression_count || 0), 0)
+        }
+        : {
+            totalTweets: 0,
+            totalLikes: 0,
+            totalRetweets: 0,
+            totalReplies: 0,
+            totalImpressions: 0
+        };
+
+    // For Instagram metrics
+    $: igMetrics = instagramData
+        ? {
+            totalPosts: instagramData.data.length,
+            totalLikes: instagramData.data.reduce((sum, p) => sum + (p.like_count || 0), 0),
+            totalComments: instagramData.data.reduce((sum, p) => sum + (p.comments_count || 0), 0)
+        }
+        : {
+            totalPosts: 0,
+            totalLikes: 0,
+            totalComments: 0
+        };
+
+    // For Facebook metrics
+    $: fbMetrics = facebookData
+        ? {
+            totalPosts: facebookData.data.length,
+            totalLikes: facebookData.data.reduce((sum, p) => sum + (p.likes?.summary?.total_count || 0), 0),
+            totalComments: facebookData.data.reduce((sum, p) => sum + (p.comments?.summary?.total_count || 0), 0)
+        }
+        : {
+            totalPosts: 0,
+            totalLikes: 0,
+            totalComments: 0
+        };
     
+
+    // Engagement, Reach, New Followers for each platform
+    $: instagramEngagement = instagramData
+        ? instagramData.data.reduce((sum, post) => sum + (post.like_count || 0) + (post.comments_count || 0), 0)
+        : 0;
+
+    $: instagramReach = instagramData
+        ? instagramData.data.reduce((sum, post) => sum + (post.reach || 0), 0) // If reach is available per post
+        : 0;
+
+    $: instagramNewFollowers = instagramData
+        ? (instagramData.new_followers || 0)
+        : 0;
+
+    // X (Twitter)
+    $: xEngagement = xData
+        ? xData.data.reduce((sum, tweet) => sum + tweet.public_metrics.like_count + tweet.public_metrics.retweet_count + tweet.public_metrics.reply_count, 0)
+        : 0;
+
+    $: xReach = xData
+        ? xData.data.reduce((sum, tweet) => sum + (tweet.public_metrics.impression_count || 0), 0)
+        : 0;
+
+    $: xNewFollowers = xData
+        ? (xData.new_followers || 0)
+        : 0;
+
+    // Facebook
+    $: fbEngagement = facebookData
+        ? facebookData.data.reduce((sum, post) => sum + (post.likes?.summary?.total_count || 0) + (post.comments?.summary?.total_count || 0), 0)
+        : 0;
+
+    $: fbReach = facebookData
+        ? (facebookData.insights?.page_impressions || 0)
+        : 0;
+
+    $: fbNewFollowers = facebookData
+        ? (facebookData.insights?.page_fans || 0)
+        : 0;
+
+    // Total across all platforms
+    $: totalEngagement = instagramEngagement + xEngagement + fbEngagement;
+    $: totalReach = instagramReach + xReach + fbReach;
+    $: totalNewFollowers = instagramNewFollowers + xNewFollowers + fbNewFollowers;
+    
+    // Calculate overall engagement rate from all platforms
+    $: overallEngagementRate = totalReach > 0 ? ((totalEngagement / totalReach) * 100) : 0;
+    
+    // Format engagement rate for display
+    $: formattedEngagementRate = overallEngagementRate.toFixed(1);
+    
+    // Format reach for display
+    $: formattedReach = totalReach > 1000 ? `${(totalReach/1000).toFixed(1)}K` : totalReach.toLocaleString();
+    
+
     let selectedRange = "Last 30 days";
     let ranges = ["Last 7 days", "Last 30 days", "Last 90 days"];
-    
-    // Post selection
-    let selectedPost = "All Posts";
-    let posts = [
-        "All Posts",
-        "Summer Campaign Launch",
-        "Product Feature Update",
-        "Behind the Scenes Video",
-        "Customer Success Story",
-        "Weekly Tips & Tricks",
-        "Brand Partnership Announcement",
-        "User Generated Content",
-        "Flash Sale Promotion"
-    ]; // Mock data --> should be fetched from backend in real app
-    
+
+
     // Social media platform tracking
     let selectedPlatform = "All Platforms";
+
     let platforms = [
         "All Platforms",
         "Instagram", 
         "Facebook", 
         "TikTok", 
-        "Twitter/X",
+        "X",
         "LinkedIn", 
-    ];
+    ];  
+
     
+    // Post selection
+    let selectedPost = "All Posts";
+
+    // Helper function to truncate text for display
+    function truncateText(text, maxLength = 50) {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        // Try to break at word boundary if possible
+        const truncated = text.substring(0, maxLength);
+        const lastSpaceIndex = truncated.lastIndexOf(' ');
+        if (lastSpaceIndex > maxLength * 0.7) { // Only break at word if it's not too short
+            return truncated.substring(0, lastSpaceIndex) + '...';
+        }
+        return truncated + '...';
+    }
+
+    // Store mapping of truncated text to original text for reference
+    let postTextMapping = {};
+
+    // Dynamically filter posts based on selectedPlatform and loaded API data
+    $: posts = (() => {
+        postTextMapping = {}; // Reset mapping
+        
+        let rawPosts = [];
+        if (selectedPlatform === "All Platforms") {
+            rawPosts = [
+                ...(xData?.data || []),
+                ...(instagramData?.data || []),
+                ...(facebookData?.data || [])
+            ].map(post => post.text || post.caption || post.message).filter(Boolean);
+        } else if (selectedPlatform === "Instagram") {
+            rawPosts = (instagramData?.data || []).map(post => post.caption).filter(Boolean);
+        } else if (selectedPlatform === "Facebook") {
+            rawPosts = (facebookData?.data || []).map(post => post.message).filter(Boolean);
+        } else if (selectedPlatform === "X") {
+            rawPosts = (xData?.data || []).map(post => post.text).filter(Boolean);
+        }
+        
+        // Create truncated versions and maintain mapping
+        return rawPosts.map(originalText => {
+            const truncatedText = truncateText(originalText);
+            postTextMapping[truncatedText] = originalText;
+            return truncatedText;
+        });
+    })();
+    
+
     // Platform-specific data multipliers for different growth rates
+    // TODO: FETCH FROM API - Replace with real-time platform analytics data
     let platformMultipliers = {
         "All Platforms": { likes: 1.0, comments: 1.0, shares: 1.0 },
         "Instagram": { likes: 1.8, comments: 0.9, shares: 0.5 }, // High likes, fewer shares
         "Facebook": { likes: 1.2, comments: 1.4, shares: 1.3 }, // Balanced, good sharing
         "LinkedIn": { likes: 0.6, comments: 1.1, shares: 0.9 }, // Professional, thoughtful engagement
         "TikTok": { likes: 2.5, comments: 1.8, shares: 0.3 }, // Viral likes & comments, low shares
-        "Twitter/X": { likes: 1.0, comments: 1.6, shares: 2.2 }, // High conversation & sharing
+        "X": { likes: 1.0, comments: 1.6, shares: 2.2 }, // High conversation & sharing
     };
     
+
     // Post-specific data multipliers for different performance
+    // TODO: FETCH FROM API - Replace with real post performance metrics
     let postMultipliers = {
         "All Posts": { likes: 1.0, comments: 1.0, shares: 1.0 },
         "Summer Campaign Launch": { likes: 2.2, comments: 1.8, shares: 2.5 }, // High performing campaign
@@ -53,7 +272,6 @@
         "User Generated Content": { likes: 2.0, comments: 1.9, shares: 1.7 }, // Community loves it
         "Flash Sale Promotion": { likes: 1.5, comments: 0.9, shares: 2.3 } // High shares, fewer comments
     };
-    
 
     
     // Chart.js variables
@@ -71,10 +289,37 @@
     let t = 0;
     let chartInterval = null;
 
+
     // Tab state for Engagement/Reach
     let activeTab = "Engagement";
 
+
+    // Helper: Get current engagement and reach data from all platforms
+    function getCurrentData() {
+        // Since timeline data isn't available, return current accumulated values
+        // This will be used for the Performance Over Time chart
+        
+        if (!instagramData && !xData && !facebookData) {
+            return { 
+                currentEngagementRate: 0,
+                currentReach: 0,
+                hasData: false
+            };
+        }
+        
+        return {
+            currentEngagementRate: overallEngagementRate,
+            currentReach: totalReach,
+            hasData: true
+        };
+    }
+
+
     onMount(() => {
+        // Use dummy data for now
+        // When ready, call fetchGCSData() to use real data
+        fetchGCSData();
+
         // Initialize with zero starting values like the original
         totalLikes = 0;
         totalComments = 0;
@@ -92,14 +337,23 @@
         }, 100);
     });
 
+
+    // Live Social Media Analytics
     function initChart() {
         if (chartCanvas && typeof Chart !== 'undefined') {
             const ctx = chartCanvas.getContext('2d');
-            
+
+            // --- Real API data fetching (commented out for now) ---
+            // const timeline = getTimelineData();
+            // const labels = timeline.labels;
+            // const likes = timeline.likes;
+            // const comments = timeline.comments;
+            // const shares = timeline.shares;
+
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: labels, // dummy/simulated data for now
                     datasets: [
                         {
                             label: 'Likes',
@@ -225,14 +479,26 @@
         }
     }
 
+
+    // Performance Over Time Chart
     function initEngagementChart() {
         if (engagementChartCanvas && typeof Chart !== 'undefined') {
             const ctx = engagementChartCanvas.getContext('2d');
+
+            // Use dummy data aligned with KPI cards
+            let labels = [];
+            let data = [];
             
-            // Sample engagement rate data over time - showing positive growth trend
-            const data = [0.8, 1.2, 1.0, 1.4, 1.7, 1.5, 1.9, 2.1, 2.0, 2.3, 2.4, 2.5];
-            const labels = ['4W Ago', '', '', '3W Ago', '', '', '2W Ago', '', '', '1W Ago', '', 'Now'];
-            
+            if (activeTab === "Engagement") {
+                // Dummy engagement rate data building up to 6.6% (matching KPI card)
+                data = [4.2, 5.1, 4.8, 5.9, 6.6];
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
+            } else {
+                // Dummy reach data building up to 125.3K (matching KPI card)
+                data = [87.7, 100.3, 112.8, 119.5, 125.3];
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
+            }
+
             engagementChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -266,7 +532,11 @@
                             displayColors: false,
                             callbacks: {
                                 label: function(context) {
-                                    return `Engagement Rate: ${context.parsed.y}%`;
+                                    if (activeTab === "Engagement") {
+                                        return `Engagement Rate: ${context.parsed.y.toFixed(1)}%`;
+                                    } else {
+                                        return `Reach: ${context.parsed.y.toFixed(1)}K`;
+                                    }
                                 }
                             }
                         }
@@ -298,6 +568,7 @@
         }
     }
 
+
     // Function to handle tab changes
     function switchTab(tabName) {
         activeTab = tabName;
@@ -305,42 +576,41 @@
             updateChartData();
         }
     }
+    
 
     // Function to update chart data based on active tab
     function updateChartData() {
         if (!engagementChart) return;
-        
-        let data, chartTitle, chartValue, chartChange, chartChangeClass;
+
+        // Use dummy data aligned with KPI cards
+        let data;
         
         if (activeTab === "Engagement") {
-            // Engagement data - showing positive growth trend
-            data = [0.8, 1.2, 1.0, 1.4, 1.7, 1.5, 1.9, 2.1, 2.0, 2.3, 2.4, 2.5];
-            chartTitle = "Engagement Rate";
-            chartValue = "2.5%";
-            chartChange = "+2%";
-            chartChangeClass = "text-success";
+            // Dummy engagement rate data building up to 6.6% (matching KPI card)
+            data = [4.2, 5.1, 4.8, 5.9, 6.6];
         } else {
-            // Reach data - showing different trend
-            data = [8.2, 9.1, 8.8, 10.2, 11.5, 10.8, 12.1, 13.2, 12.8, 14.1, 13.7, 12.5];
-            chartTitle = "Reach Rate";
-            chartValue = "12.5K";
-            chartChange = "+15%";
-            chartChangeClass = "text-success";
+            // Dummy reach data building up to 125.3K (matching KPI card)
+            data = [87.7, 100.3, 112.8, 119.5, 125.3];
         }
         
+        // Update labels to match
+        engagementChart.data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
         engagementChart.data.datasets[0].data = data;
         engagementChart.update();
     }
+
 
     function startDataSimulation() {
         if (chartInterval) {
             clearInterval(chartInterval);
         }
         
+        // TODO: REPLACE WITH REAL-TIME API CALLS - This entire simulation should be replaced with WebSocket or periodic API calls
         chartInterval = setInterval(() => {
             const platformMultiplier = platformMultipliers[selectedPlatform];
             const postMultiplier = postMultipliers[selectedPost];
             
+            // TODO: FETCH FROM API - Get real-time engagement data instead of simulation
             // Apply both platform and post-specific growth rates
             const combinedLikesMultiplier = platformMultiplier.likes * postMultiplier.likes;
             const combinedCommentsMultiplier = platformMultiplier.comments * postMultiplier.comments;
@@ -401,6 +671,7 @@
         }, 5000);
     }
 
+
     // Function to reset chart data when platform changes
     function resetChartData() {
         labels = [];
@@ -417,12 +688,15 @@
         }
     }
     
+
     // Function to handle platform changes
     function handlePlatformChange(event) {
         const newPlatform = event.target.value;
         selectedPlatform = newPlatform;
-        // No need to restart data simulation, just let current cycle apply new multipliers
+            // posts will update automatically due to reactive statement above
+            // No need to restart data simulation, just let current cycle apply new multipliers
     }
+
 
     function handlePostChange(event) {
         const newPost = event.target.value;
@@ -430,10 +704,12 @@
         // No need to restart data simulation, just let current cycle apply new multipliers
     }
 
+
     // Function to handle post clicks and redirect to library/PublishedPost
     function handlePostClick() {
         goto('/library/PublishedPost');
     }
+
 
     onDestroy(() => {
         if (chartInterval) {
@@ -448,14 +724,18 @@
     });
 </script>
 
-<div class="container py-4">
-    <h1 class="mb-2">Analytics Overview</h1>
-    <div class="text-muted mb-4" style="font-size:1.05rem;">
-        Analyze your social media performance across all connected accounts.
+<div class="container py-4 mt-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 100vh;">
+    <div class="mb-4 text-center">
+        <h1 class="mb-2" style="font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 2.5rem;">
+            <i class="fas fa-chart-line me-3" style="color: #667eea;"></i>Analytics Overview
+        </h1>
+        <div class="text-muted mb-4" style="font-size:1.1rem; color: #718096 !important; font-weight: 500;">
+            Analyze your social media performance across all connected accounts.
+        </div>
     </div>
 
-    <div class="mb-3">
-        <select class="form-select w-auto" bind:value={selectedRange}>
+    <div class="mb-4 d-flex justify-content-center">
+        <select class="form-select" style="width: auto; border-radius: 15px; border: 2px solid #e2e8f0; padding: 10px 20px; font-weight: 600; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" bind:value={selectedRange}>
             {#each ranges as range}
                 <option value={range}>{range}</option>
             {/each}
@@ -464,83 +744,130 @@
 
     <div class="row mb-4 g-3">
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div class="fw-bold" style="font-size:1.5rem;">12,345</div>
-                    <div class="text-muted">Total Reach</div>
-                    <div class="text-success mt-1" style="font-size:0.95rem;">+10%</div>
+            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                        <i class="fas fa-eye" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                    <!-- Dummy Total Reach -->
+                    <div class="fw-bold" style="font-size:1.8rem;">125,340</div>
+                    <div style="opacity: 0.9; font-weight: 500;">Total Reach</div>
+                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                        <i class="fas fa-arrow-up me-1"></i>+12%
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div class="fw-bold" style="font-size:1.5rem;">6,789</div>
-                    <div class="text-muted">Engagement</div>
-                    <div class="text-danger mt-1" style="font-size:0.95rem;">-5%</div>
+            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                        <i class="fas fa-heart" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                    <!-- Dummy Total Engagement -->
+                    <div class="fw-bold" style="font-size:1.8rem;">8,234</div>
+                    <div style="opacity: 0.9; font-weight: 500;">Engagement</div>
+                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                        <i class="fas fa-arrow-up me-1"></i>+8%
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div class="fw-bold" style="font-size:1.5rem;">5.5%</div>
-                    <div class="text-muted">Engagement Rate</div>
-                    <div class="text-success mt-1" style="font-size:0.95rem;">+2%</div>
+            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                        <i class="fas fa-chart-line" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                    <!-- Dummy Engagement Rate -->
+                    <div class="fw-bold" style="font-size:1.8rem;">6.6%</div>
+                    <div style="opacity: 0.9; font-weight: 500;">Engagement Rate</div>
+                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                        <i class="fas fa-arrow-up me-1"></i>+2%
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <div class="fw-bold" style="font-size:1.5rem;">456</div>
-                    <div class="text-muted">New Followers</div>
-                    <div class="text-success mt-1" style="font-size:0.95rem;">+8%</div>
+            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                        <i class="fas fa-user-plus" style="font-size: 2rem; opacity: 0.8;"></i>
+                    </div>
+                    <!-- Dummy New Followers -->
+                    <div class="fw-bold" style="font-size:1.8rem;">1,247</div>
+                    <div style="opacity: 0.9; font-weight: 500;">New Followers</div>
+                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                        <i class="fas fa-arrow-up me-1"></i>+15%
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Tabs for Engagement/Reach -->
-    <div class="d-flex mb-3" style="background-color: #f8f9fa; border-radius: 12px; padding: 4px; width: 100%;">
+    <div class="d-flex mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 6px; width: 100%; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
         <button 
             class="btn flex-fill" 
             type="button" 
-            style="background-color: {activeTab === 'Engagement' ? 'white' : 'transparent'}; border: none; border-radius: 8px; font-weight: 500; padding: 8px 16px; margin: 0; {activeTab === 'Engagement' ? 'box-shadow: 0 1px 3px rgba(0,0,0,0.1);' : ''} color: {activeTab === 'Engagement' ? '#000' : '#6c757d'};"
+            style="background-color: {activeTab === 'Engagement' ? 'white' : 'transparent'}; border: none; border-radius: 12px; font-weight: 600; padding: 12px 20px; margin: 0; transition: all 0.3s ease; {activeTab === 'Engagement' ? 'box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px);' : ''} color: {activeTab === 'Engagement' ? '#667eea' : 'rgba(255,255,255,0.8)'};"
             on:click={() => switchTab('Engagement')}
         >
+            <i class="fas fa-heart me-2"></i>
             Engagement
         </button>
         <button 
             class="btn flex-fill" 
             type="button" 
-            style="background-color: {activeTab === 'Reach' ? 'white' : 'transparent'}; border: none; border-radius: 8px; font-weight: 500; padding: 8px 16px; margin: 0; {activeTab === 'Reach' ? 'box-shadow: 0 1px 3px rgba(0,0,0,0.1);' : ''} color: {activeTab === 'Reach' ? '#000' : '#6c757d'};"
+            style="background-color: {activeTab === 'Reach' ? 'white' : 'transparent'}; border: none; border-radius: 12px; font-weight: 600; padding: 12px 20px; margin: 0; transition: all 0.3s ease; {activeTab === 'Reach' ? 'box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px);' : ''} color: {activeTab === 'Reach' ? '#667eea' : 'rgba(255,255,255,0.8)'};"
             on:click={() => switchTab('Reach')}
         >
+            <i class="fas fa-eye me-2"></i>
             Reach
         </button>
     </div>
 
     <!-- Engagement Over Time Chart -->
     <div class="mb-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title mb-1">Performance Over Time</h5>
-                <p class="text-muted small mb-3">{activeTab} {activeTab === 'Engagement' ? 'Rate' : ''}</p>
+        <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%); border-radius: 20px;">
+            <div class="card-body" style="padding: 2rem;">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-chart-area text-white" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-1" style="color: #2d3748; font-weight: 700;">Performance Over Time</h5>
+                        <p class="text-muted small mb-0" style="color: #718096 !important;">{activeTab} {activeTab === 'Engagement' ? 'Rate' : ''}</p>
+                    </div>
+                </div>
                 
                 <div class="row align-items-center mb-4">
                     <div class="col-md-6">
                         {#if activeTab === 'Engagement'}
-                            <div class="fw-bold" style="font-size:2rem;">2.5%</div>
-                            <div class="text-muted">Last 30 Days <span class="text-success">+2%</span></div>
+                            <!-- Dummy engagement rate data aligned with KPI cards -->
+                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                6.6%
+                            </div>
+                            <div class="text-muted">Current Engagement Rate
+                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
+                                    <i class="fas fa-chart-line me-1"></i>Demo Data
+                                </span>
+                            </div>
                         {:else}
-                            <div class="fw-bold" style="font-size:2rem;">12.5K</div>
-                            <div class="text-muted">Last 30 Days <span class="text-success">+15%</span></div>
+                            <!-- Dummy reach data aligned with KPI cards -->
+                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                125.3K
+                            </div>
+                            <div class="text-muted">Current Total Reach
+                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
+                                    <i class="fas fa-chart-line me-1"></i>Demo Data
+                                </span>
+                            </div>
                         {/if}
                     </div>
                 </div>
                 
-                <div style="height: 300px; position: relative; width: 100%;">
+                <div style="height: 300px; position: relative; width: 100%; background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
                     <canvas bind:this={engagementChartCanvas} style="width: 100% !important; height: 100% !important;"></canvas>
                 </div>
             </div>
@@ -549,42 +876,72 @@
 
     <!-- Top Platforms Table -->
     <div class="mb-4">
-        <div class="fw-bold mb-2">Top Platforms</div>
-        <div class="card">
-            <div class="card-body px-4 py-2">
-                <table class="table mb-0">
-                    <thead>
+        <div class="d-flex align-items-center mb-3">
+            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <i class="fas fa-share-alt text-white" style="font-size: 1.1rem;"></i>
+            </div>
+            <div class="fw-bold" style="font-size: 1.3rem; color: #2d3748;">Top Platforms</div>
+        </div>
+        <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+            <div class="card-body px-0 py-0">
+                <table class="table mb-0" style="border-radius: 20px; overflow: hidden;">
+                    <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                         <tr>
-                            <th>Platform</th>
-                            <th>Engagement</th>
-                            <th>Reach</th>
+                            <th style="border: none; padding: 1rem 2rem; font-weight: 600;">Platform</th>
+                            <th style="border: none; padding: 1rem 1rem; font-weight: 600;">Engagement</th>
+                            <th style="border: none; padding: 1rem 2rem; font-weight: 600;">Reach</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:linear-gradient(135deg,#fdc468 0%,#df4996 50%,#4f5bd5 100%);"><i class="fab fa-instagram" style="color:white;"></i></span>Instagram</td>
-                            <td>1,234</td>
-                            <td>2,345</td>
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:linear-gradient(135deg,#fdc468 0%,#df4996 50%,#4f5bd5 100%); box-shadow: 0 4px 12px rgba(253, 196, 104, 0.4);">
+                                    <i class="fab fa-instagram" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">Instagram</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,234</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,345</td>
                         </tr>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:#1877F3;"><i class="fab fa-facebook" style="color:white;"></i></span>Facebook</td>
-                            <td>1,122</td>
-                            <td>2,233</td>
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#1877F3; box-shadow: 0 4px 12px rgba(24, 119, 243, 0.4);">
+                                    <i class="fab fa-facebook" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">Facebook</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,122</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,233</td>
                         </tr>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:#1DA1F2;"><i class="fab fa-twitter" style="color:white;"></i></span>Twitter</td>
-                            <td>1,010</td>
-                            <td>2,121</td>      
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
+                                    <i class="fab fa-x-twitter" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">X</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,010</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,121</td>      
                         </tr>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:#0a66c2;"><i class="fab fa-linkedin" style="color:white;"></i></span>LinkedIn</td>
-                            <td>800</td>
-                            <td>2,010</td>
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#0a66c2; box-shadow: 0 4px 12px rgba(10, 102, 194, 0.4);">
+                                    <i class="fab fa-linkedin" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">LinkedIn</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">800</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,010</td>
                         </tr>
-                        <tr style="cursor: pointer;">
-                            <td><span class="rounded px-2 py-1 me-2" style="background:#000000;"><i class="fab fa-tiktok" style="color:white;"></i></span>TikTok</td>
-                            <td>800</td>
-                            <td>1,900</td>
+                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; border-bottom: none;">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
+                                    <i class="fab fa-tiktok" style="color:white; font-size: 1.2rem;"></i>
+                                </span>
+                                <span style="font-weight: 600; color: #2d3748;">TikTok</span>
+                            </td>
+                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; border-bottom: none; font-weight: 600; color: #4a5568;">800</td>
+                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; border-bottom: none; font-weight: 600; color: #4a5568;">1,900</td>
                         </tr>
                     </tbody>
                 </table>
@@ -593,41 +950,85 @@
     </div>
 
     <!-- Live Social Media Analytics Dashboard -->
-    <div class="card shadow-sm mt-5">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Live Social Media Analytics</h5>
+    <div class="card border-0 shadow-lg mt-5" style="border-radius: 20px; background: linear-gradient(135deg, #fafbff 0%, #f0f4ff 100%);">
+        <div class="card-body" style="padding: 2rem;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <i class="fas fa-broadcast-tower text-white" style="font-size: 1.2rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-0" style="color: #2d3748; font-weight: 700;">Live Social Media Analytics</h5>
+                        <p class="text-muted mb-0" style="font-size: 0.9rem;">Real-time engagement tracking</p>
+                    </div>
+                </div>
                 <div class="d-flex align-items-center gap-3">
                     <div class="d-flex align-items-center">
-                        <label for="platformSelect" class="form-label me-2 mb-0" style="font-size:0.9rem;">Platform:</label>
-                        <select id="platformSelect" class="form-select form-select-sm" style="width:auto;" bind:value={selectedPlatform} on:change={handlePlatformChange}>
+                        <label for="platformSelect" class="form-label me-2 mb-0" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Platform:</label>
+                        <select id="platformSelect" class="form-select form-select-sm" style="width:auto; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPlatform} on:change={handlePlatformChange}>
                             {#each platforms as platform}
                                 <option value={platform}>{platform}</option>
                             {/each}
                         </select>
                     </div>
                     <div class="d-flex align-items-center">
-                        <label for="postSelect" class="form-label me-2 mb-0" style="font-size:0.9rem;">Post:</label>
-                        <select id="postSelect" class="form-select form-select-sm" style="width:auto;" bind:value={selectedPost} on:change={handlePostChange}>
+                        <label for="postSelect" class="form-label me-2 mb-0" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Post:</label>
+                        <select id="postSelect" class="form-select form-select-sm post-select" style="max-width: 300px; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPost} on:change={handlePostChange}>
+                            <option value="All Posts">All Posts</option>
                             {#each posts as post}
-                                <option value={post}>{post}</option>
+                                <option value={post} title={post}>{post}</option>
                             {/each}
                         </select>
                     </div>
                 </div>
             </div>
             
-            <div class="mb-2">
-                <span class="badge bg-primary me-2">{selectedPlatform}</span>
-                <span class="badge bg-success me-2">{selectedPost}</span>
+            <div class="mb-4">
+                <span class="badge me-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 500;">
+                    <i class="fas fa-broadcast-tower me-2"></i>{selectedPlatform}
+                </span>
+                <span class="badge" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 500;">
+                    <i class="fas fa-file-alt me-2"></i>{selectedPost}
+                </span>
             </div>
         
-            <div style="background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px;">
+            <div style="background: white; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); padding: 25px; border: 1px solid rgba(102, 126, 234, 0.1);">
                 <canvas bind:this={chartCanvas} width="800" height="400"></canvas>
             </div>
-            <div class="text-muted mt-2" style="font-size:0.95rem;">
-                Real-time analytics showing likes, comments, and shares. Data updates every hour.
+            <div class="text-muted mt-3 d-flex align-items-center" style="font-size:0.95rem;">
+                <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 8px; height: 8px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);"></div>
+                Real-time analytics showing likes, comments, and shares. Data updates every 5 seconds.
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Post selection dropdown styling */
+    .post-select {
+        min-width: 200px;
+        max-width: 300px;
+    }
+    
+    .post-select option {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+    }
+    
+    /* Ensure dropdowns don't break layout on mobile */
+    @media (max-width: 768px) {
+        .post-select {
+            max-width: 250px;
+            min-width: 150px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .post-select {
+            max-width: 200px;
+            min-width: 120px;
+        }
+    }
+</style>

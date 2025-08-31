@@ -7,60 +7,165 @@
     
     $: postId = $page.params.post_id;
     
-    // To be replaced with real data fetching logic
-    let postData = {
-        title: "Summer Product Launch Campaign",
-        description: "Introducing our latest collection with vibrant summer colors and sustainable materials. This campaign focuses on eco-friendly fashion choices for the conscious consumer.",
-        image: "/api/placeholder/300/200",
-        metrics: {
-            engagement: { value: 250, change: 15 },
-            reach: { value: 500, change: 10 },
-            impressions: { value: 1200, change: 12 }
-        },
-        engagementRate: { value: 2.5, change: 0.5 },
-        comments: 26,
-        shares: 15
-    };
-    
+
     // Chart variables for performance over time
     let chartCanvas;
     let chart = null;
-    
+
     // Chart variables for engagement breakdown
     let pieChartCanvas;
     let pieChart = null;
-    
+
     // Chart variables for conversion rate breakdown
     let conversionChartCanvas;
     let conversionChart = null;
-    
-    // Engagement breakdown by channel
-    let channelData = {
-        Instagram: 45,
-        Facebook: 25,
-        Twitter: 15,
-        LinkedIn: 10,
-        TikTok: 5
-    };
-    
-    // Conversion rate breakdown by action type
-    let conversionData = {
-        Purchase: 40,
-        Signup: 35,
-        "Download": 15,
-        "Newsletter": 10
-    };
-    
-    // Sentiment analysis data
-    let sentimentData = {
-        Positive: 65,
-        Neutral: 25,
-        Negative: 10
-    };
-    
+
     // Chart variables for sentiment chart
     let sentimentChartCanvas;
     let sentimentChart = null;
+
+    // Data variables
+    let postData = null;
+    let channelData = null;
+    let conversionData = null;
+    let sentimentData = null;
+
+    // Data processing functions for real API data (ready for when API is available)
+    function processPostData(xData, instagramData, facebookData) {
+        // Process individual post metrics from multiple platforms
+        const totalEngagement = (xData.engagement || 0) + (instagramData.engagement || 0) + (facebookData.engagement || 0);
+        const totalReach = (xData.reach || 0) + (instagramData.reach || 0) + (facebookData.reach || 0);
+        const totalImpressions = (xData.impressions || 0) + (instagramData.impressions || 0) + (facebookData.impressions || 0);
+        
+        return {
+            title: xData.title || instagramData.title || facebookData.title || "Post Title",
+            description: xData.description || instagramData.description || facebookData.description || "Post description",
+            image: xData.image || instagramData.image || facebookData.image || "/api/placeholder/300/200",
+            metrics: {
+                engagement: { value: totalEngagement, change: calculateChange(totalEngagement, 'engagement') },
+                reach: { value: totalReach, change: calculateChange(totalReach, 'reach') },
+                impressions: { value: totalImpressions, change: calculateChange(totalImpressions, 'impressions') }
+            },
+            engagementRate: { 
+                value: totalReach > 0 ? ((totalEngagement / totalReach) * 100).toFixed(1) : 0, 
+                change: 0.8 
+            },
+            comments: (xData.comments || 0) + (instagramData.comments || 0) + (facebookData.comments || 0),
+            shares: (xData.shares || 0) + (instagramData.shares || 0) + (facebookData.shares || 0)
+        };
+    }
+
+    function processChannelBreakdown(xData, instagramData, facebookData) {
+        const total = (xData.engagement || 0) + (instagramData.engagement || 0) + (facebookData.engagement || 0);
+        if (total === 0) return { Instagram: 0, Facebook: 0, Twitter: 0, LinkedIn: 0, TikTok: 0 };
+        
+        return {
+            Instagram: Math.round(((instagramData.engagement || 0) / total) * 100),
+            Facebook: Math.round(((facebookData.engagement || 0) / total) * 100),
+            Twitter: Math.round(((xData.engagement || 0) / total) * 100),
+            LinkedIn: 0, // Add when LinkedIn API is available
+            TikTok: 0   // Add when TikTok API is available
+        };
+    }
+
+    function processConversionData(xData, instagramData, facebookData) {
+        // Process conversion actions from click tracking and UTM parameters
+        const purchases = (xData.conversions?.purchase || 0) + (instagramData.conversions?.purchase || 0) + (facebookData.conversions?.purchase || 0);
+        const signups = (xData.conversions?.signup || 0) + (instagramData.conversions?.signup || 0) + (facebookData.conversions?.signup || 0);
+        const downloads = (xData.conversions?.download || 0) + (instagramData.conversions?.download || 0) + (facebookData.conversions?.download || 0);
+        const newsletter = (xData.conversions?.newsletter || 0) + (instagramData.conversions?.newsletter || 0) + (facebookData.conversions?.newsletter || 0);
+        
+        const total = purchases + signups + downloads + newsletter;
+        if (total === 0) return { Purchase: 0, Signup: 0, Download: 0, Newsletter: 0 };
+        
+        return {
+            Purchase: Math.round((purchases / total) * 100),
+            Signup: Math.round((signups / total) * 100),
+            Download: Math.round((downloads / total) * 100),
+            Newsletter: Math.round((newsletter / total) * 100)
+        };
+    }
+
+    function processSentimentData(xData, instagramData, facebookData) {
+        // Process AI sentiment analysis from comments and interactions
+        const sentiments = [xData.sentiment, instagramData.sentiment, facebookData.sentiment].filter(Boolean);
+        if (sentiments.length === 0) return { Positive: 0, Neutral: 0, Negative: 0 };
+        
+        const avgPositive = sentiments.reduce((sum, s) => sum + (s.positive || 0), 0) / sentiments.length;
+        const avgNeutral = sentiments.reduce((sum, s) => sum + (s.neutral || 0), 0) / sentiments.length;
+        const avgNegative = sentiments.reduce((sum, s) => sum + (s.negative || 0), 0) / sentiments.length;
+        
+        return {
+            Positive: Math.round(avgPositive),
+            Neutral: Math.round(avgNeutral),
+            Negative: Math.round(avgNegative)
+        };
+    }
+
+    function calculateChange(currentValue, metricType) {
+        // Calculate percentage change from previous period
+        // This would use historical data from your API
+        return Math.floor(Math.random() * 20) + 5; // Placeholder - replace with real calculation
+    }
+
+    // Fetch all analytics for this post using same API structure as AnalyticsDashboard
+    async function fetchPostAnalytics(postId) {
+        try {
+            // Use same API endpoints as dashboard but with post-specific parameters
+            // const xResponse = await fetch(`http://127.0.0.1:8000/api/x/posts/${postId}/analytics`);
+            // const instagramResponse = await fetch(`http://127.0.0.1:8000/api/instagram/posts/${postId}/analytics`);
+            // const facebookResponse = await fetch(`http://127.0.0.1:8000/api/facebook/posts/${postId}/analytics`);
+            
+            // const xData = await xResponse.json();
+            // const instagramData = await instagramResponse.json();
+            // const facebookData = await facebookData.json();
+
+            // Process real API data when available
+            // postData = processPostData(xData, instagramData, facebookData);
+            // channelData = processChannelBreakdown(xData, instagramData, facebookData);
+            // conversionData = processConversionData(xData, instagramData, facebookData);
+            // sentimentData = processSentimentData(xData, instagramData, facebookData);
+
+        } catch (err) {
+            console.log('Using dummy data for post analytics');
+        }
+        
+        // Using dummy data for now - aligned with dashboard values but post-specific
+        postData = {
+            title: "Summer Product Launch Campaign",
+            description: "Introducing our latest collection with vibrant summer colors and sustainable materials. This campaign focuses on eco-friendly fashion choices for the conscious consumer.",
+            image: "/api/placeholder/300/200",
+            metrics: {
+                engagement: { value: 8234, change: 15 },
+                reach: { value: 125340, change: 12 },
+                impressions: { value: 147200, change: 18 }
+            },
+            engagementRate: { value: 6.6, change: 0.8 },
+            comments: 142,
+            shares: 89
+        };
+        channelData = {
+            Instagram: 45,
+            Facebook: 25,
+            Twitter: 15,
+            LinkedIn: 10,
+            TikTok: 5
+        };
+        conversionData = {
+            Purchase: 40,
+            Signup: 35,
+            "Download": 15,
+            "Newsletter": 10
+        };
+        sentimentData = {
+            Positive: 65,
+            Neutral: 25,
+            Negative: 10
+        };
+    }
+
+    // Fetch data when postId changes
+    $: fetchPostAnalytics(postId);
     
     onMount(() => {
         // Wait for Chart.js to load, then initialize
@@ -76,9 +181,11 @@
         if (chartCanvas && typeof Chart !== 'undefined') {
             const ctx = chartCanvas.getContext('2d');
             
-            // Sample engagement rate data over time
-            const data = [2.1, 2.8, 2.3, 2.9, 2.2, 1.8, 2.0, 2.4, 2.7, 3.2, 2.8, 2.5];
-            const labels = ['4W Ago', '', '', '3W Ago', '', '', '2W Ago', '', '', '1W Ago', '', 'Now'];
+            // Post performance timeline - shows engagement rate from post publish to current
+            // API endpoint: GET /api/posts/${postId}/performance-timeline
+            // Would return: { timestamps: [], engagement_rates: [], reach_data: [], impression_data: [] }
+            const data = [4.2, 4.8, 5.1, 5.9, 6.2, 6.1, 6.4, 6.3, 6.5, 6.7, 6.4, 6.6];
+            const labels = ['Day 1', '', '', '', 'Day 5', '', '', '', 'Day 9', '', '', 'Current'];
             
             chart = new Chart(ctx, {
                 type: 'line',
@@ -149,6 +256,9 @@
         if (pieChartCanvas && typeof Chart !== 'undefined') {
             const ctx = pieChartCanvas.getContext('2d');
             
+            // Channel engagement breakdown using same API pattern as dashboard
+            // API endpoint: GET /api/posts/${postId}/channels
+            // Would return: { instagram: {engagement: 123}, facebook: {engagement: 89}, twitter: {engagement: 45} }
             const labels = Object.keys(channelData);
             const data = Object.values(channelData);
             const colors = [
@@ -210,6 +320,9 @@
         if (conversionChartCanvas && typeof Chart !== 'undefined') {
             const ctx = conversionChartCanvas.getContext('2d');
             
+            // Conversion actions breakdown using UTM tracking and analytics
+            // API endpoint: GET /api/posts/${postId}/conversions  
+            // Would return: { purchase: 120, signup: 89, download: 45, newsletter: 23 }
             const labels = Object.keys(conversionData);
             const data = Object.values(conversionData);
             const colors = [
@@ -269,6 +382,10 @@
     function initSentimentChart() {
         if (sentimentChartCanvas && typeof Chart !== 'undefined') {
             const ctx = sentimentChartCanvas.getContext('2d');
+            
+            // AI-powered sentiment analysis from comments and interactions
+            // API endpoint: GET /api/posts/${postId}/sentiment
+            // Would return: { positive: 65, neutral: 25, negative: 10, insights: [...] }
             const labels = Object.keys(sentimentData);
             const data = Object.values(sentimentData);
             const colors = [
