@@ -1,10 +1,8 @@
-import requests
 import json
 import os
-import base64
 from google import genai
 from google.genai import types
-from config import analyze_config, content_config
+from .config import analyze_config, content_config
 
 client = genai.Client(
   api_key=os.environ.get("GEMINI_API_KEY"),

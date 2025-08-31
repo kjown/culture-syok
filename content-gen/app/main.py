@@ -2,20 +2,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import time
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, HttpUrl
-from typing import List, Dict, Any, Optional
-from processor import analyze_trends, generate_content_plan
-from scraper import scrape_reddit_trends
-from models import *
-from config import TARGET_SUBREDDITS
-import json
-import time
+from typing import Dict, Any
+from .processor import analyze_trends, generate_content_plan
+from .scraper import scrape_reddit_trends
+from .models import TrendResponse, PlanRequest, PlanResponse
+from .config import TARGET_SUBREDDITS
+
 
 app = FastAPI(
     title="Trend Spotter API",
-    description="An API that scrapes Reddit for trends and analyzes them with Gemini."
+    description=
+    "An API that scrapes data for trends and analyzes them with Gemini, then generates content creation plans"
 )
 
 app.add_middleware(

@@ -1,18 +1,7 @@
 from google.genai import types
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# class Settings(BaseSettings):
-
-#     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
-
-#     GEMINI_API_KEY: str
-#     REDDIT_CLIENT_ID: str
-#     REDDIT_CLIENT_SECRET: str
-#     REDDIT_USER_AGENT: str
-
-# settings = Settings()
-
-# REDDIT CONFIG
+# --- REDDIT CONFIG ---
 TARGET_SUBREDDITS = [
     'TikTokCringe',     # Direct TikTok content
     'memes',            # Mainstream trend barometer
@@ -24,10 +13,10 @@ TARGET_SUBREDDITS = [
     'TikTok'            # More official TikTok trends
 ]
 
-# GOOGLE GEMINI CONFIG
+# --- GOOGLE GEMINI CONFIG ---
 analyze_config = types.GenerateContentConfig(
-    temperature=1,
-    top_p=1,
+    temperature=0.8,
+    top_p=0.95,
     max_output_tokens=65535,
     response_mime_type="application/json",
     response_schema={
