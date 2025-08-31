@@ -2,28 +2,194 @@
     // @ts-nocheck
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
+
+
+    // IF USING A REAL API, REPLACE THE MOCK DATA WITH API CALLS
+    // API endpoint URLs (these should point to backend/server routes that fetch from GCS)
+    const X_API_URL = "http://127.0.0.1:8000/api/x/"; // Should return tweets.json from GCS
+    const IG_API_URL = "http://127.0.0.1:8000/api/instagram/"; // Should return instagram.json from GCS
+    const FB_API_URL = "http://127.0.0.1:8000/api/facebook/"; // Should return facebook_post.json from GCS
+
+
+    // State for fetched data
+    let xData = null;
+    let instagramData = null;
+    let facebookData = null;
+
+
+    // Fetch data from Google Cloud Storage (GCS)
+    async function fetchGCSData() {
+        console.log('Starting to fetch data from backend...');
+        try {
+            console.log('Fetching from URLs:', { X_API_URL, IG_API_URL, FB_API_URL });
+            
+            // Fetch X/Twitter data (this should work)
+            try {
+                const xRes = await fetch(X_API_URL);
+                console.log('X API response status:', xRes.status);
+                if (xRes.ok) {
+                    xData = await xRes.json();
+                    console.log('X data fetched successfully:', xData);
+                } else {
+                    console.warn('X API failed with status:', xRes.status);
+                }
+            } catch (err) {
+                console.error('Error fetching X data:', err);
+            }
+            
+            // Fetch Instagram data (may have permission issues)
+            try {
+                const igRes = await fetch(IG_API_URL);
+                console.log('Instagram API response status:', igRes.status);
+                if (igRes.ok) {
+                    const igResult = await igRes.json();
+                    // Check if it's an error response from Instagram API
+                    if (igResult.error) {
+                        console.warn('Instagram API returned error:', igResult.error);
+                        instagramData = null;
+                    } else {
+                        instagramData = igResult;
+                        console.log('Instagram data fetched successfully:', instagramData);
+                    }
+                } else {
+                    console.warn('Instagram API failed with status:', igRes.status);
+                }
+            } catch (err) {
+                console.error('Error fetching Instagram data:', err);
+            }
+            
+            // Fetch Facebook data (may not exist in GCS)
+            try {
+                const fbRes = await fetch(FB_API_URL);
+                console.log('Facebook API response status:', fbRes.status);
+                if (fbRes.ok) {
+                    facebookData = await fbRes.json();
+                    console.log('Facebook data fetched successfully:', facebookData);
+                } else {
+                    console.warn('Facebook API failed with status:', fbRes.status);
+                }
+            } catch (err) {
+                console.error('Error fetching Facebook data:', err);
+            }
+            
+            console.log('Final data state:', { 
+                hasXData: !!xData, 
+                hasInstagramData: !!instagramData, 
+                hasFacebookData: !!facebookData 
+            });
+            
+        } catch (err) {
+            console.error("Error fetching GCS data:", err);
+        }
+    }
+
+
+    // Example of how to display fetched data (replace dummy data)
+    // For X (Twitter) metrics
+    $: xMetrics = xData
+        ? {
+            totalTweets: xData.data.length,
+            totalLikes: xData.data.reduce((sum, t) => sum + t.public_metrics.like_count, 0),
+            totalRetweets: xData.data.reduce((sum, t) => sum + t.public_metrics.retweet_count, 0),
+            totalReplies: xData.data.reduce((sum, t) => sum + t.public_metrics.reply_count, 0),
+            totalImpressions: xData.data.reduce((sum, t) => sum + (t.public_metrics.impression_count || 0), 0)
+        }
+        : {
+            totalTweets: 0,
+            totalLikes: 0,
+            totalRetweets: 0,
+            totalReplies: 0,
+            totalImpressions: 0
+        };
+
+    // For Instagram metrics
+    $: igMetrics = instagramData
+        ? {
+            totalPosts: instagramData.data.length,
+            totalLikes: instagramData.data.reduce((sum, p) => sum + (p.like_count || 0), 0),
+            totalComments: instagramData.data.reduce((sum, p) => sum + (p.comments_count || 0), 0)
+        }
+        : {
+            totalPosts: 0,
+            totalLikes: 0,
+            totalComments: 0
+        };
+
+    // For Facebook metrics
+    $: fbMetrics = facebookData
+        ? {
+            totalPosts: facebookData.data.length,
+            totalLikes: facebookData.data.reduce((sum, p) => sum + (p.likes?.summary?.total_count || 0), 0),
+            totalComments: facebookData.data.reduce((sum, p) => sum + (p.comments?.summary?.total_count || 0), 0)
+        }
+        : {
+            totalPosts: 0,
+            totalLikes: 0,
+            totalComments: 0
+        };
     
+
+    // Engagement, Reach, New Followers for each platform
+    $: instagramEngagement = instagramData
+        ? instagramData.data.reduce((sum, post) => sum + (post.like_count || 0) + (post.comments_count || 0), 0)
+        : 0;
+
+    $: instagramReach = instagramData
+        ? instagramData.data.reduce((sum, post) => sum + (post.reach || 0), 0) // If reach is available per post
+        : 0;
+
+    $: instagramNewFollowers = instagramData
+        ? (instagramData.new_followers || 0)
+        : 0;
+
+    // X (Twitter)
+    $: xEngagement = xData
+        ? xData.data.reduce((sum, tweet) => sum + tweet.public_metrics.like_count + tweet.public_metrics.retweet_count + tweet.public_metrics.reply_count, 0)
+        : 0;
+
+    $: xReach = xData
+        ? xData.data.reduce((sum, tweet) => sum + (tweet.public_metrics.impression_count || 0), 0)
+        : 0;
+
+    $: xNewFollowers = xData
+        ? (xData.new_followers || 0)
+        : 0;
+
+    // Facebook
+    $: fbEngagement = facebookData
+        ? facebookData.data.reduce((sum, post) => sum + (post.likes?.summary?.total_count || 0) + (post.comments?.summary?.total_count || 0), 0)
+        : 0;
+
+    $: fbReach = facebookData
+        ? (facebookData.insights?.page_impressions || 0)
+        : 0;
+
+    $: fbNewFollowers = facebookData
+        ? (facebookData.insights?.page_fans || 0)
+        : 0;
+
+    // Total across all platforms
+    $: totalEngagement = instagramEngagement + xEngagement + fbEngagement;
+    $: totalReach = instagramReach + xReach + fbReach;
+    $: totalNewFollowers = instagramNewFollowers + xNewFollowers + fbNewFollowers;
+    
+    // Calculate overall engagement rate from all platforms
+    $: overallEngagementRate = totalReach > 0 ? ((totalEngagement / totalReach) * 100) : 0;
+    
+    // Format engagement rate for display
+    $: formattedEngagementRate = overallEngagementRate.toFixed(1);
+    
+    // Format reach for display
+    $: formattedReach = totalReach > 1000 ? `${(totalReach/1000).toFixed(1)}K` : totalReach.toLocaleString();
+    
+
     let selectedRange = "Last 30 days";
     let ranges = ["Last 7 days", "Last 30 days", "Last 90 days"];
-    
-    // Post selection
-    let selectedPost = "All Posts";
-    // TODO: FETCH FROM API - Replace with API call to get user's posts
-    let posts = [
-        "All Posts",
-        "Summer Campaign Launch",
-        "Product Feature Update",
-        "Behind the Scenes Video",
-        "Customer Success Story",
-        "Weekly Tips & Tricks",
-        "Brand Partnership Announcement",
-        "User Generated Content",
-        "Flash Sale Promotion"
-    ]; // Mock data --> should be fetched from backend in real app
-    
+
+
     // Social media platform tracking
     let selectedPlatform = "All Platforms";
-    // TODO: FETCH FROM API - Replace with API call to get user's connected platforms
+
     let platforms = [
         "All Platforms",
         "Instagram", 
@@ -31,8 +197,56 @@
         "TikTok", 
         "X",
         "LinkedIn", 
-    ];
+    ];  
+
     
+    // Post selection
+    let selectedPost = "All Posts";
+
+    // Helper function to truncate text for display
+    function truncateText(text, maxLength = 50) {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        // Try to break at word boundary if possible
+        const truncated = text.substring(0, maxLength);
+        const lastSpaceIndex = truncated.lastIndexOf(' ');
+        if (lastSpaceIndex > maxLength * 0.7) { // Only break at word if it's not too short
+            return truncated.substring(0, lastSpaceIndex) + '...';
+        }
+        return truncated + '...';
+    }
+
+    // Store mapping of truncated text to original text for reference
+    let postTextMapping = {};
+
+    // Dynamically filter posts based on selectedPlatform and loaded API data
+    $: posts = (() => {
+        postTextMapping = {}; // Reset mapping
+        
+        let rawPosts = [];
+        if (selectedPlatform === "All Platforms") {
+            rawPosts = [
+                ...(xData?.data || []),
+                ...(instagramData?.data || []),
+                ...(facebookData?.data || [])
+            ].map(post => post.text || post.caption || post.message).filter(Boolean);
+        } else if (selectedPlatform === "Instagram") {
+            rawPosts = (instagramData?.data || []).map(post => post.caption).filter(Boolean);
+        } else if (selectedPlatform === "Facebook") {
+            rawPosts = (facebookData?.data || []).map(post => post.message).filter(Boolean);
+        } else if (selectedPlatform === "X") {
+            rawPosts = (xData?.data || []).map(post => post.text).filter(Boolean);
+        }
+        
+        // Create truncated versions and maintain mapping
+        return rawPosts.map(originalText => {
+            const truncatedText = truncateText(originalText);
+            postTextMapping[truncatedText] = originalText;
+            return truncatedText;
+        });
+    })();
+    
+
     // Platform-specific data multipliers for different growth rates
     // TODO: FETCH FROM API - Replace with real-time platform analytics data
     let platformMultipliers = {
@@ -44,6 +258,7 @@
         "X": { likes: 1.0, comments: 1.6, shares: 2.2 }, // High conversation & sharing
     };
     
+
     // Post-specific data multipliers for different performance
     // TODO: FETCH FROM API - Replace with real post performance metrics
     let postMultipliers = {
@@ -57,7 +272,6 @@
         "User Generated Content": { likes: 2.0, comments: 1.9, shares: 1.7 }, // Community loves it
         "Flash Sale Promotion": { likes: 1.5, comments: 0.9, shares: 2.3 } // High shares, fewer comments
     };
-    
 
     
     // Chart.js variables
@@ -75,10 +289,37 @@
     let t = 0;
     let chartInterval = null;
 
+
     // Tab state for Engagement/Reach
     let activeTab = "Engagement";
 
+
+    // Helper: Get current engagement and reach data from all platforms
+    function getCurrentData() {
+        // Since timeline data isn't available, return current accumulated values
+        // This will be used for the Performance Over Time chart
+        
+        if (!instagramData && !xData && !facebookData) {
+            return { 
+                currentEngagementRate: 0,
+                currentReach: 0,
+                hasData: false
+            };
+        }
+        
+        return {
+            currentEngagementRate: overallEngagementRate,
+            currentReach: totalReach,
+            hasData: true
+        };
+    }
+
+
     onMount(() => {
+        // Use dummy data for now
+        // When ready, call fetchGCSData() to use real data
+        fetchGCSData();
+
         // Initialize with zero starting values like the original
         totalLikes = 0;
         totalComments = 0;
@@ -96,14 +337,23 @@
         }, 100);
     });
 
+
+    // Live Social Media Analytics
     function initChart() {
         if (chartCanvas && typeof Chart !== 'undefined') {
             const ctx = chartCanvas.getContext('2d');
-            
+
+            // --- Real API data fetching (commented out for now) ---
+            // const timeline = getTimelineData();
+            // const labels = timeline.labels;
+            // const likes = timeline.likes;
+            // const comments = timeline.comments;
+            // const shares = timeline.shares;
+
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: labels, // dummy/simulated data for now
                     datasets: [
                         {
                             label: 'Likes',
@@ -229,15 +479,26 @@
         }
     }
 
+
+    // Performance Over Time Chart
     function initEngagementChart() {
         if (engagementChartCanvas && typeof Chart !== 'undefined') {
             const ctx = engagementChartCanvas.getContext('2d');
+
+            // Use dummy data aligned with KPI cards
+            let labels = [];
+            let data = [];
             
-            // TODO: FETCH FROM API - Replace with real engagement rate data over time
-            // Sample engagement rate data over time - showing positive growth trend
-            const data = [0.8, 1.2, 1.0, 1.4, 1.7, 1.5, 1.9, 2.1, 2.0, 2.3, 2.4, 2.5];
-            const labels = ['4W Ago', '', '', '3W Ago', '', '', '2W Ago', '', '', '1W Ago', '', 'Now'];
-            
+            if (activeTab === "Engagement") {
+                // Dummy engagement rate data building up to 6.6% (matching KPI card)
+                data = [4.2, 5.1, 4.8, 5.9, 6.6];
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
+            } else {
+                // Dummy reach data building up to 125.3K (matching KPI card)
+                data = [87.7, 100.3, 112.8, 119.5, 125.3];
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
+            }
+
             engagementChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -271,7 +532,11 @@
                             displayColors: false,
                             callbacks: {
                                 label: function(context) {
-                                    return `Engagement Rate: ${context.parsed.y}%`;
+                                    if (activeTab === "Engagement") {
+                                        return `Engagement Rate: ${context.parsed.y.toFixed(1)}%`;
+                                    } else {
+                                        return `Reach: ${context.parsed.y.toFixed(1)}K`;
+                                    }
                                 }
                             }
                         }
@@ -303,6 +568,7 @@
         }
     }
 
+
     // Function to handle tab changes
     function switchTab(tabName) {
         activeTab = tabName;
@@ -310,35 +576,29 @@
             updateChartData();
         }
     }
+    
 
     // Function to update chart data based on active tab
     function updateChartData() {
         if (!engagementChart) return;
-        
-        // TODO: FETCH FROM API - Replace with real-time data based on selected tab
-        let data, chartTitle, chartValue, chartChange, chartChangeClass;
+
+        // Use dummy data aligned with KPI cards
+        let data;
         
         if (activeTab === "Engagement") {
-            // TODO: FETCH FROM API - Get real engagement rate data
-            // Engagement data - showing positive growth trend
-            data = [0.8, 1.2, 1.0, 1.4, 1.7, 1.5, 1.9, 2.1, 2.0, 2.3, 2.4, 2.5];
-            chartTitle = "Engagement Rate";
-            chartValue = "2.5%";
-            chartChange = "+2%";
-            chartChangeClass = "text-success";
+            // Dummy engagement rate data building up to 6.6% (matching KPI card)
+            data = [4.2, 5.1, 4.8, 5.9, 6.6];
         } else {
-            // TODO: FETCH FROM API - Get real reach data
-            // Reach data - showing different trend
-            data = [8.2, 9.1, 8.8, 10.2, 11.5, 10.8, 12.1, 13.2, 12.8, 14.1, 13.7, 12.5];
-            chartTitle = "Reach Rate";
-            chartValue = "12.5K";
-            chartChange = "+15%";
-            chartChangeClass = "text-success";
+            // Dummy reach data building up to 125.3K (matching KPI card)
+            data = [87.7, 100.3, 112.8, 119.5, 125.3];
         }
         
+        // Update labels to match
+        engagementChart.data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'];
         engagementChart.data.datasets[0].data = data;
         engagementChart.update();
     }
+
 
     function startDataSimulation() {
         if (chartInterval) {
@@ -411,6 +671,7 @@
         }, 5000);
     }
 
+
     // Function to reset chart data when platform changes
     function resetChartData() {
         labels = [];
@@ -427,12 +688,15 @@
         }
     }
     
+
     // Function to handle platform changes
     function handlePlatformChange(event) {
         const newPlatform = event.target.value;
         selectedPlatform = newPlatform;
-        // No need to restart data simulation, just let current cycle apply new multipliers
+            // posts will update automatically due to reactive statement above
+            // No need to restart data simulation, just let current cycle apply new multipliers
     }
+
 
     function handlePostChange(event) {
         const newPost = event.target.value;
@@ -440,10 +704,12 @@
         // No need to restart data simulation, just let current cycle apply new multipliers
     }
 
+
     // Function to handle post clicks and redirect to library/PublishedPost
     function handlePostClick() {
         goto('/library/PublishedPost');
     }
+
 
     onDestroy(() => {
         if (chartInterval) {
@@ -483,12 +749,11 @@
                     <div class="mb-2">
                         <i class="fas fa-eye" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
-                    <!-- TODO: FETCH FROM API - Replace with real total reach data -->
-                    <div class="fw-bold" style="font-size:1.8rem;">12,345</div>
+                    <!-- Dummy Total Reach -->
+                    <div class="fw-bold" style="font-size:1.8rem;">125,340</div>
                     <div style="opacity: 0.9; font-weight: 500;">Total Reach</div>
-                    <!-- TODO: FETCH FROM API - Replace with real percentage change -->
                     <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
-                        <i class="fas fa-arrow-up me-1"></i>+10%
+                        <i class="fas fa-arrow-up me-1"></i>+12%
                     </div>
                 </div>
             </div>
@@ -499,12 +764,11 @@
                     <div class="mb-2">
                         <i class="fas fa-heart" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
-                    <!-- TODO: FETCH FROM API - Replace with real engagement data -->
-                    <div class="fw-bold" style="font-size:1.8rem;">6,789</div>
+                    <!-- Dummy Total Engagement -->
+                    <div class="fw-bold" style="font-size:1.8rem;">8,234</div>
                     <div style="opacity: 0.9; font-weight: 500;">Engagement</div>
-                    <!-- TODO: FETCH FROM API - Replace with real percentage change -->
                     <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
-                        <i class="fas fa-arrow-down me-1"></i>-5%
+                        <i class="fas fa-arrow-up me-1"></i>+8%
                     </div>
                 </div>
             </div>
@@ -515,10 +779,9 @@
                     <div class="mb-2">
                         <i class="fas fa-chart-line" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
-                    <!-- TODO: FETCH FROM API - Replace with real engagement rate data -->
-                    <div class="fw-bold" style="font-size:1.8rem;">5.5%</div>
+                    <!-- Dummy Engagement Rate -->
+                    <div class="fw-bold" style="font-size:1.8rem;">6.6%</div>
                     <div style="opacity: 0.9; font-weight: 500;">Engagement Rate</div>
-                    <!-- TODO: FETCH FROM API - Replace with real percentage change -->
                     <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-up me-1"></i>+2%
                     </div>
@@ -531,12 +794,11 @@
                     <div class="mb-2">
                         <i class="fas fa-user-plus" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
-                    <!-- TODO: FETCH FROM API - Replace with real new followers data -->
-                    <div class="fw-bold" style="font-size:1.8rem;">456</div>
+                    <!-- Dummy New Followers -->
+                    <div class="fw-bold" style="font-size:1.8rem;">1,247</div>
                     <div style="opacity: 0.9; font-weight: 500;">New Followers</div>
-                    <!-- TODO: FETCH FROM API - Replace with real percentage change -->
                     <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
-                        <i class="fas fa-arrow-up me-1"></i>+8%
+                        <i class="fas fa-arrow-up me-1"></i>+15%
                     </div>
                 </div>
             </div>
@@ -582,19 +844,23 @@
                 <div class="row align-items-center mb-4">
                     <div class="col-md-6">
                         {#if activeTab === 'Engagement'}
-                            <!-- TODO: FETCH FROM API - Replace with real engagement rate and trend data -->
-                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">2.5%</div>
-                            <div class="text-muted">Last 30 Days 
+                            <!-- Dummy engagement rate data aligned with KPI cards -->
+                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                6.6%
+                            </div>
+                            <div class="text-muted">Current Engagement Rate
                                 <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
-                                    <i class="fas fa-arrow-up me-1"></i>+2%
+                                    <i class="fas fa-chart-line me-1"></i>Demo Data
                                 </span>
                             </div>
                         {:else}
-                            <!-- TODO: FETCH FROM API - Replace with real reach data and trend -->
-                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">12.5K</div>
-                            <div class="text-muted">Last 30 Days 
+                            <!-- Dummy reach data aligned with KPI cards -->
+                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                125.3K
+                            </div>
+                            <div class="text-muted">Current Total Reach
                                 <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
-                                    <i class="fas fa-arrow-up me-1"></i>+15%
+                                    <i class="fas fa-chart-line me-1"></i>Demo Data
                                 </span>
                             </div>
                         {/if}
@@ -707,9 +973,10 @@
                     </div>
                     <div class="d-flex align-items-center">
                         <label for="postSelect" class="form-label me-2 mb-0" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Post:</label>
-                        <select id="postSelect" class="form-select form-select-sm" style="width:auto; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPost} on:change={handlePostChange}>
+                        <select id="postSelect" class="form-select form-select-sm post-select" style="max-width: 300px; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPost} on:change={handlePostChange}>
+                            <option value="All Posts">All Posts</option>
                             {#each posts as post}
-                                <option value={post}>{post}</option>
+                                <option value={post} title={post}>{post}</option>
                             {/each}
                         </select>
                     </div>
@@ -735,3 +1002,33 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Post selection dropdown styling */
+    .post-select {
+        min-width: 200px;
+        max-width: 300px;
+    }
+    
+    .post-select option {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+    }
+    
+    /* Ensure dropdowns don't break layout on mobile */
+    @media (max-width: 768px) {
+        .post-select {
+            max-width: 250px;
+            min-width: 150px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .post-select {
+            max-width: 200px;
+            min-width: 120px;
+        }
+    }
+</style>
