@@ -1,5 +1,58 @@
 # Project Title
 
+# Setup Instructions
+### 1. Clone the repository
+```
+git clone https://github.com/kjown/ayam-debugging-frontend.git
+cd ayam-debugging-frontend
+```
+### 2. Create an .env file in the project root
+```
+# Google Calendar
+GOOGLE_CLIENT_ID="YOUR_CLIENT_ID"
+GOOGLE_CLIENT_SECRET="YOUR_CLIENT_SECRET"
+ORIGIN="http://localhost:5173"
+ 
+# Cloudinary
+CLOUDINARY_CLOUD_NAME="YOUR_CLOUDINARY_CLOUD_NAME"
+CLOUDINARY_API_KEY="YOUR_CLOUDINARY_API_KEY"
+CLOUDINARY_API_SECRET="YOUR_CLOUDINARY_API_SECRET"
+
+# Reddit
+REDDIT_CLIENT_ID= YOUR_CLIENT_ID
+REDDIT_CLIENT_SECRET= YOUR_CLIENT_SECRET
+REDDIT_USER_AGENT='YOUR_USER_AGENT'
+
+# Gemini
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+ 
+```
+Get your google calendar credentials here: https://console.cloud.google.com/apis/credentials
+
+Get your cloudinary credentials here: https://cloudinary.com/console
+
+Get your reddit credentials by creating an app here: https://www.reddit.com/prefs/apps
+
+Generate your API key here: https://aistudio.google.com/apikey
+### 3. Install Python dependencies
+```
+pip install -r requirements.txt
+```
+### 4. Start the backend (FastAPI server)
+```
+uvicorn main:app --reload
+```
+
+### 5. Install frontend dependencies
+```
+npm install
+```
+
+### 6. Start the frontend development server
+```
+npm run dev
+```
+
 # Team Members
 1. ⁠Tee Kai Xin
 2. ⁠Chang Kai Le
@@ -53,20 +106,27 @@ Leverage AI to highlight which campaigns performed best and explain why certain 
 11. Google Calendar API
 12. Cloudinary
 
-# Setup Instructions
-1. Clone the repository
-```
-git clone
-```
+# Challenges
 
-2. Install dependencies
-```
-npm install
-```
+### 1. Difficulty integrating different components
+The backend scraping logic, AI content generation, scheduling system, and frontend dashboard all had to work together. Making these pieces communicate reliably required more time than expected, especially when connecting APIs with different formats and authentication requirements.
 
-3. Run the development server
-```
-npm run dev
-```
+### 2. No deployment to cloud platforms yet
+Because the entire stack was running on local machines, collaboration was harder and testing realistic scenarios (with external webhooks or cloud functions) was limited. It also meant that performance and deployment issues were not discovered early.
 
-# Challenges & Learnings
+### 3. Financial constraints limiting API access
+Business accounts for Meta and X APIs require paid subscriptions. Without these, it was difficult to gather richer analytics data or fully automate publishing to those platforms. This restricted testing to only free tiers and workarounds.
+
+### 4. Manual testing inefficiency
+Testing every feature manually was time-consuming and error-prone. It was difficult to repeatedly verify that scraping, AI generation, posting, and dashboard features all worked correctly together.
+
+
+# Learnings
+### 1. Modular design is essential
+Breaking the system into smaller, well-defined modules (scraper, AI service, scheduler, dashboard) makes integration easier. Well-documented APIs between these modules reduce friction when different parts of the team work in parallel.
+
+### 2. Early cloud setup saves time later
+Even a lightweight cloud deployment (using free tiers) early in development helps catch integration and configuration issues before they become bigger problems. It also simplifies testing webhooks and multi-device workflows.
+
+### 3. Automated testing is worth the investment
+Implementing even a small suite of unit tests or API tests early would have reduced the manual testing burden. Automated tests can verify that key features continue working after code changes, saving time and reducing bugs.
