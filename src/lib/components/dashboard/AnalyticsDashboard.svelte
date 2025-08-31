@@ -997,7 +997,7 @@
             </div>
             <div class="text-muted mt-3 d-flex align-items-center" style="font-size:0.95rem;">
                 <div class="rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 8px; height: 8px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);"></div>
-                Real-time analytics showing likes, comments, and shares. Data updates every 5 seconds.
+                Real-time analytics showing likes, comments, and shares. Data updates every hour.
             </div>
         </div>
     </div>
