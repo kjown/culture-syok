@@ -1,4 +1,7 @@
-# Project Title
+# CultureSyok
+This project is an AI-powered marketing assistant designed to help growth-stage companies plan, create, and manage their social media content efficiently. The platform automatically scrapes social media trends using PRAW (Reddit API) and other data sources, then feeds this information into an AI model to generate fresh, relevant content ideas. Teams can draft and schedule posts directly from the platform, and once published, the tool tracks engagement metrics with intuitive dashboards.
+
+Beyond basic analytics, it also uses AI-driven sentiment analysis to evaluate audience reactions, helping marketing teams continuously refine their campaigns without needing a dedicated analytics department. The system streamlines the entire workflow—trend detection, content generation, post scheduling, and performance improvement into one seamless tool.
 
 ## Setup Instructions
 ### 1. Clone the repository
