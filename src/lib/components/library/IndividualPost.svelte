@@ -3,11 +3,9 @@
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
-
     
     export let postId;
     
-
     // Chart variables for performance over time
     let chartCanvas;
     let chart = null;
@@ -448,25 +446,24 @@
 </script>
 
 <div class="post-details-container">
-    <!-- Breadcrumb Navigation -->
-    <nav class="breadcrumb-nav">
-        <button type="button" on:click={goBackToPublishedPosts} class="breadcrumb-btn">
+
+    <!-- Centered Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav centered">
+        <button type="button" on:click={goBackToPublishedPosts} class="breadcrumb-btn centered">
             <i class="fas fa-arrow-left me-2"></i>
             Back to Posts
         </button>
     </nav>
-    
-    <!-- Enhanced Page Header -->
+
+    <!-- Enhanced Page Header (matches Published Posts style) -->
     <div class="page-header">
-        <div class="header-content">
-            <div class="header-icon">
-                <i class="fas fa-chart-line"></i>
-            </div>
-            <div>
-                <h1 class="page-title">Post Performance</h1>
-                <p class="page-subtitle">Detailed analytics and insights for your social media post</p>
-            </div>
-        </div>
+        <h1 class="page-title">
+            <i class="fas fa-chart-line me-3"></i>
+            Post Performance
+        </h1>
+        <p class="page-subtitle">
+            Detailed analytics and insights for your social media post
+        </p>
     </div>
     
     <!-- Enhanced Post Preview Card -->
@@ -739,12 +736,16 @@
         padding: 2rem;
     }
 
-    /* Breadcrumb Navigation - Outside container */
-    .breadcrumb-nav {
+
+    /* Centered Breadcrumb Navigation */
+    .breadcrumb-nav.centered {
         margin-bottom: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
-    .breadcrumb-btn {
+    .breadcrumb-btn.centered {
         background: rgba(102, 126, 234, 0.1);
         border: 1px solid rgba(102, 126, 234, 0.2);
         color: #667eea;
@@ -758,57 +759,53 @@
         align-items: center;
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        margin: 0 auto;
     }
 
-    .breadcrumb-btn:hover {
+    .breadcrumb-btn.centered:hover {
         background: rgba(102, 126, 234, 0.2);
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
     }
 
-    /* Enhanced Page Header */
+
+
+    /* Enhanced Page Header (matches Published Posts) */
     .page-header {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .header-content {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .header-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.8rem;
-        flex-shrink: 0;
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+        position: relative;
     }
 
     .page-title {
-        margin: 0;
-        color: #2d3748;
         font-weight: 700;
-        font-size: 2rem;
-        line-height: 1.2;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .page-title i {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .page-subtitle {
-        margin: 0.5rem 0 0 0;
         color: #718096;
         font-size: 1.1rem;
         font-weight: 500;
+        margin: 0;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     /* Enhanced Post Preview Card */
@@ -1240,22 +1237,23 @@
     }
 
     /* Responsive Design */
+
     @media (max-width: 768px) {
         .post-details-container {
             padding: 1rem;
         }
 
-        .page-header {
+        .page-header.dashboard-header {
             padding: 1.5rem;
         }
 
-        .header-content {
+        .dashboard-header-content {
             flex-direction: column;
             text-align: center;
             gap: 1rem;
         }
 
-        .page-title {
+        .dashboard-page-title {
             font-size: 1.5rem;
         }
 
@@ -1294,7 +1292,7 @@
             gap: 0.75rem;
         }
 
-        .breadcrumb-btn {
+        .breadcrumb-btn.centered {
             width: 100%;
             justify-content: center;
         }
