@@ -292,6 +292,7 @@
         flex-direction: column;
         gap: 2rem;
         max-width: 1400px; /* Match the parent container width */
+        width: 100%;
         margin: 0 auto;
     }
 
