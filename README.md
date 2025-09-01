@@ -46,7 +46,8 @@ Growth-stage companies in Malaysia often operate with small marketing teams. The
 | [Pydantic](https://docs.pydantic.dev/)       | [Chart.js](https://www.chartjs.org/docs/latest/)       | [Gunicorn](https://gunicorn.org/)          | [n8n Workflows](https://docs.n8n.io/)      | [X (Twitter) API v2](https://developer.x.com/en/docs/api-reference-index)      | [Docker](https://docs.docker.com/)     |
 | [Python 3.11+](https://www.python.org/)   | [Bootstrap](https://getbootstrap.com/docs/)      | [VADER Sentiment](https://github.com/cjhutto/vaderSentiment)   |                    | [Google Calendar API](https://developers.google.com/calendar/api/guides/overview)     |            |
 | [Uvicorn](https://www.uvicorn.org/)        |                |                   |                    | [Facebook/Instagram API](https://developers.facebook.com/docs/graph-api/) |            |
-|                |                |                   |                    | [Cloudinary](https://cloudinary.com/documentation)              |            |   |            |
+|                |                |                   |                    | [Cloudinary](https://cloudinary.com/documentation)              |            |
+|                |                |                   |                    | [Google Cloud APIs](https://cloud.google.com/apis)              |            |
 
 ## Setup Instructions
 
