@@ -1,14 +1,57 @@
-# CultureSyok
+<h1 align="center">CultureSyok</h1>
 
-**Your AI Marketing *Kawan* for the Malaysian Market.**
+<p align="center">
+  <strong>Your AI Marketing <i>Kawan</i> for the Malaysian Market.</strong>
+  <br />
+  An AI-powered assistant to discover local trends, generate culturally relevant content, and streamline your entire social media workflow.
+</p>
 
-CultureSyok is an AI-powered marketing assistant designed to help SMEs and startups plan, create, and manage their social media content that truly resonates with the local audience. The platform automatically scrapes social media trends using PRAW (Reddit API) and other data sources, then feeds this information into an AI model to generate fresh, relevant content ideas. Teams can draft and schedule posts directly from the platform, and once published, the tool tracks engagement metrics with intuitive dashboards.
+<p align="center">
+  <img alt="Project Screenshot" src="https://github.com/user-attachments/assets/9ebce3b8-c851-4a5d-8980-104cf0e496c8">
+</p>
 
-Beyond basic analytics, it also uses AI-driven sentiment analysis to evaluate audience reactions, helping marketing teams continuously refine their campaigns without needing a dedicated analytics department. The system streamlines the entire workflow—trend detection, content generation, post scheduling, and performance improvement into one seamless tool. 
+---
 
-<img width="2872" height="1002" alt="image" src="https://github.com/user-attachments/assets/9ebce3b8-c851-4a5d-8980-104cf0e496c8" />
+## 🎯 The Challenge: Why Malaysian Social Media is Hard
+
+Growth-stage companies in Malaysia often operate with small marketing teams. They face a unique set of challenges:
+
+* **Lack of Insight into Trending Topics:** Teams are too busy executing daily tasks to monitor what’s trending locally, missing opportunities to join relevant conversations.
+  
+* **Time-Consuming Content Creation:** Brainstorming fresh, culturally-aware ideas for multiple platforms is a manual and lengthy process, often leading to repetitive content.
+  
+* **Disorganized Posting Workflow:** Juggling spreadsheets, email approvals, and separate scheduling apps leads to confusion, duplicated efforts, and missed deadlines.
+  
+* **Poor Measurement of Results:** Gathering and comparing inconsistent metrics from different platforms makes marketing efforts feel like guesswork, not data-driven decisions.
+  
+* **No Feedback Loop for Improvement:** Without a clear, unified view of performance, teams can't identify what's working and why, forcing every campaign to start from scratch.
+
+## ✨ Our Solution: CultureSyok
+
+* **📈 Automated Trend Detection:** We use APIs like PRAW (for Reddit) to continuously track conversations and identify rising topics in the Malaysian internet space. The tool surfaces what your audience is talking about *right now*.
+  
+* **🤖 AI-Powered Content Generation:** We feed these trends into Google's Gemini model to automatically generate platform-specific post ideas, captions, and creative briefs. Our AI is prompted to understand both local nuances and global trends.
+  
+* **🗓️ Integrated Content Planning & Scheduling:** Our platform provides a centralized calendar to plan, draft, approve, and schedule posts automatically at optimal times. (Utilizing Google Calendar API and n8n for automation)
+  
+* **📊 Unified Performance Dashboards with Sentiment Analysis:** We collect key metrics like likes, comments, click-through rates, etc and display them in an intuitive dashboard. Our sentiment analysis gauges filtered audience reactions audience reactions, turning raw data into actionable insights.
+  
+* **🔁 Continuous Improvement Loop:** We leverage our model to highlight which campaigns resonated best with audiences and recommend new angles, content formats, or posting strategies for future campaigns, making every marketing effort more effective over time.
+
+## 🛠️ Tech Stack
+
+| Backend       | Frontend       | AI & Automation    | APIs & Services         | Deployment |
+|---------------|----------------|--------------------|-------------------------|------------|
+| [FastAPI](https://fastapi.tiangolo.com/)      | [SvelteKit](https://kit.svelte.dev/)      | [Google GenAI SDK](https://googleapis.github.io/python-genai/)   | [Reddit API (PRAW)](https://praw.readthedocs.io/en/stable/)       | [Vercel](https://vercel.com/docs)     |
+| [Pydantic](https://docs.pydantic.dev/)      | [Chart.js](https://www.chartjs.org/docs/latest/)       | [n8n Workflows](https://docs.n8n.io/)      | [Twitter API v2](https://developer.x.com/en/docs/api-reference-index)          | [Docker](https://docs.docker.com/)     |
+| [Python 3.11+](https://www.python.org/)  | [Bootstrap](https://getbootstrap.com/docs/)      |                    | [Google Calendar API](https://developers.google.com/calendar/api/guides/overview)     |            |
+| [Uvicorn](https://www.uvicorn.org/)       |                |                    | [Cloudinary](https://cloudinary.com/documentation)              |            |
 
 ## Setup Instructions
+
+### Local Development
+To get a local copy up and running, follow these steps.
+
 **1. Clone the repository**
 ```
 git clone https://github.com/kjown/ayam-debugging-frontend.git
@@ -86,71 +129,35 @@ npm install
 npm run dev
 ```
 
-## Problems and Status Quo
-### 1. Lack of insight into trending topics
-Growth-stage companies often operate with small marketing teams that are too busy executing daily tasks to monitor what’s trending online. As a result, they miss opportunities to align content with topics that are currently drawing attention. Without these insights, their posts feel disconnected from audience conversations and fail to gain traction.
 
-### 2. Time-consuming content creation
-Brainstorming fresh ideas, drafting copy, and customizing posts for each social media channel is a manual and lengthy process. Teams frequently run out of ideas or fall back on repetitive content that does not stand out. This slows down campaign execution and reduces consistency.
+## Challenges We Faced
 
-### 3. Disorganized posting workflow
-Marketing teams often juggle multiple disconnected tools to plan, approve, and publish content. Ideas may sit in spreadsheets, draft posts get reviewed over email or chat, and scheduling happens in separate applications. This fragmented process leads to confusion, duplicated efforts, and missed deadlines. Without a unified workflow, it becomes difficult to coordinate tasks, maintain version control, and ensure posts go live at the right time across different platforms.
-
-### 4. Poor measurement of results
-Even if campaigns are launched successfully, teams struggle to gather performance data in one place. Metrics from different social media platforms are inconsistent and difficult to compare. Without a clear view of impressions, engagement, and conversions, marketing efforts feel like guesswork rather than data-driven decisions.
-
-### 5.⁠ ⁠No feedback loop for improvement
-Because performance data is fragmented, teams do not know what is working and why. They cannot identify which topics resonate with the audience or which post formats generate the highest engagement. Without structured learning, every campaign starts from scratch instead of building on past success.
-
-## Proposed solutions
-### 1.⁠ ⁠Automated trend detection
-Implement web scraping tools such as PRAW for Reddit, along with other APIs, to continuously track conversations and identify rising topics. By scoring topics based on engagement velocity and relevance, the tool surfaces what audiences are talking about right now. This helps companies stay current and publish content that naturally attracts attention.
-
-### 2.⁠ ⁠AI-powered content generation
-Feed these identified trends into AI models to automatically generate post ideas, captions, and creative briefs tailored to specific platforms. The AI can adapt tone, length, and style for LinkedIn, Twitter (X), Instagram, TikTok, or blogs, giving teams high-quality starting drafts that save hours of manual work.
-
-### 3.⁠ ⁠Integrated content planning and scheduling
-Provide a centralized platform where teams can plan campaigns on a visual calendar, draft and approve content in one place, and schedule posts to go live automatically at optimal times. This reduces friction, improves coordination, and ensures content is published consistently without last-minute rushes.
-
-### 4.⁠ ⁠Performance dashboards with sentiment analysis
-Collect metrics such as impressions, likes, shares, comments, and click-through rates directly from social media APIs and display them in an easy-to-understand dashboard. AI-based sentiment analysis can evaluate comments and reactions to gauge audience mood and detect potential issues early. The dashboard turns raw data into actionable insights.
-
-### 5.⁠ ⁠Continuous improvement loop
-Leverage AI to highlight which campaigns performed best and explain why certain posts resonated. The system can recommend new angles, content formats, or posting strategies for future campaigns. This creates a feedback loop where every marketing effort becomes smarter and more effective over time.
-
-## Challenges
-
-### 1. Difficulty integrating different components
+### 1. Difficulty Integrating Components
 The backend scraping logic, AI content generation, scheduling system, and frontend dashboard all had to work together. Making these pieces communicate reliably required more time than expected, especially when connecting APIs with different formats and authentication requirements.
 
-### 2. No deployment to cloud platforms yet
+### 2. Cloud Deployment Delayal
 Because the entire stack was running on local machines, collaboration was harder and testing realistic scenarios (with external webhooks or cloud functions) was limited. It also meant that performance and deployment issues were not discovered early.
 
-### 3. Financial constraints limiting API access
+### 3. Financial Constraints
 Business accounts for Meta and X APIs require paid subscriptions. Without these, it was difficult to gather richer analytics data or fully automate publishing to those platforms. This restricted testing to only free tiers and workarounds.
 
-### 4. Manual testing inefficiency
+### 4. Manual Testing Inefficiency
 Testing every feature manually was time-consuming and error-prone. It was difficult to repeatedly verify that scraping, AI generation, posting, and dashboard features all worked correctly together.
 
 
-## Takeaways
-### 1. Modular design is essential
+## Our Takeaways
+### 1. Modular Design is Essential
 Breaking the system into smaller, well-defined modules (scraper, AI service, scheduler, dashboard) makes integration easier. Well-documented APIs between these modules reduce friction when different parts of the team work in parallel.
 
-### 2. Early cloud setup saves time later
+### 2. Early Cloud Setup Saves Time
 Even a lightweight cloud deployment (using free tiers) early in development helps catch integration and configuration issues before they become bigger problems. It also simplifies testing webhooks and multi-device workflows.
 
-### 3. Automated testing is worth the investment
+### 3. Automated Testing is Worth It
 Implementing even a small suite of unit tests or API tests early would have reduced the manual testing burden. Automated tests can verify that key features continue working after code changes, saving time and reducing bugs.
 
-## 🛠️ Tech Stack
+### 4. Structured Sprints Keep Everyone Aligned
+In the fast-paced, often chaotic environment of a hackathon, adopting a more structured Agile/Scrum approach is highly beneficial. Breaking down the project into smaller, focused sprints  creates clearer mini-deadlines. This methodology helps keep everyone on track and on the same page through short, regular check-ins, making final integration much smoother.
 
-| Backend       | Frontend       | AI & Automation    | APIs & Services         | Deployment |
-|---------------|----------------|--------------------|-------------------------|------------|
-| FastAPI      | SvelteKit      | Google GenAI SDK   | Reddit API (PRAW)       | Vercel     |
-| Pydantic      | Chart.js       | n8n Workflows      | Twitter API v2          | Docker     |
-| Python 3.11+  | Bootstrap      |                    | Google Calendar API     |            |
-| Uvicorn       |                |                    | Cloudinary              |            |
 
 ## 🤝 The Team
 
