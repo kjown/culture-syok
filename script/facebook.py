@@ -2,42 +2,47 @@ import requests
 import os
 from dotenv import load_dotenv
 import json
+from google.cloud import storage
+import schedule
+import time
 
-load_dotenv()
+def fetch_and_upload_facebook_data():
+    load_dotenv()
+    FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
+    PAGE_ID = os.getenv("PAGE_ID")
+    if not FACEBOOK_ACCESS_TOKEN or not PAGE_ID:
+        print("Missing FACEBOOK_ACCESS_TOKEN or PAGE_ID in environment variables.")
+        return
 
+    BASE_URL = f"https://graph.facebook.com/v20.0/{PAGE_ID}"
 
-# Replace with your Facebok & Page Access Token
-FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
-PAGE_ID = os.getenv("PAGE_ID")  
+    # Fetch recent posts
+    def get_page_posts():
+        url = f"{BASE_URL}/posts"
+        params = {
+            "fields": "id,message,created_time,permalink_url,likes.summary(true),comments.summary(true)",
+            "access_token": FACEBOOK_ACCESS_TOKEN
+        }
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            print(f"Failed to fetch Facebook posts: {response.text}")
+            return {}
+        return response.json()
 
+    # Fetch insights (reach, impressions, engagement)
+    def get_page_insights():
+        url = f"{BASE_URL}/insights"
+        params = {
+            "metric": "page_impressions,page_engaged_users,page_fans,page_post_engagements",
+            "period": "day",
+            "access_token": FACEBOOK_ACCESS_TOKEN
+        }
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            print(f"Failed to fetch Facebook insights: {response.text}")
+            return {}
+        return response.json()
 
-# Base URL
-BASE_URL = f"https://graph.facebook.com/v20.0/{PAGE_ID}"
-
-
-# Fetch recent posts
-def get_page_posts():
-    url = f"{BASE_URL}/posts"
-    params = {
-        "fields": "id,message,created_time,permalink_url,likes.summary(true),comments.summary(true)",
-        "access_token": FACEBOOK_ACCESS_TOKEN
-    }
-    response = requests.get(url, params=params)
-    return response.json()
-
-
-# Fetch insights (reach, impressions, engagement)
-def get_page_insights():
-    url = f"{BASE_URL}/insights"
-    params = {
-        "metric": "page_impressions,page_engaged_users,page_fans,page_post_engagements",
-        "period": "day",
-        "access_token": FACEBOOK_ACCESS_TOKEN
-    }
-    response = requests.get(url, params=params)
-    return response.json()
-
-if __name__ == "__main__":
     print("\n=== Facebook Posts ===")
     posts = get_page_posts()
     for post in posts.get("data", []):
@@ -52,15 +57,10 @@ if __name__ == "__main__":
     for insight in insights.get("data", []):
         print(f"{insight['name']} - {insight['values']}")
 
-
     # Upload posts and insights to Google Cloud Storage
-    from google.cloud import storage
-    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "ayam-debugging-engagement-api-1bd6ccd512be.json"
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ayam-debugging-engagement-api-1bd6ccd512be.json")
-
     client = storage.Client()
     bucket = client.get_bucket("ayam_debugging")
-
 
     # Upload posts
     blob_posts = bucket.blob("facebook_post.json")
@@ -69,7 +69,6 @@ if __name__ == "__main__":
         content_type="application/json"
     )
     print(f"\n🚀 Uploaded {len(posts.get('data', []))} Facebook posts to Google Cloud Storage!")
-
 
     # Upload insights
     blob_insights = bucket.blob("facebook_insights.json")
@@ -80,19 +79,11 @@ if __name__ == "__main__":
     print(f"🚀 Uploaded Facebook insights to Google Cloud Storage!")
 
 
-# --- Scheduling Example ---
-# To fetch data regularly, install 'schedule' package:
-# pip install schedule
+# Schedule the job every hour (change interval as needed)
+schedule.every().hour.do(fetch_and_upload_facebook_data)
 
-# import schedule
-# import time
-
-# def fetch_tweets():
-#     # Place your fetching code here (uncomment above)
-#     pass
-
-# schedule.every().hour.do(fetch_tweets)  # Change interval as needed
-
-# while True:
-#     schedule.run_pending()
-#     time.sleep(60)
+print("Starting scheduled Facebook data fetch/upload...")
+fetch_and_upload_facebook_data()  # Initial run
+while True:
+    schedule.run_pending()
+    time.sleep(60)
