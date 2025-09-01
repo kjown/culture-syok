@@ -293,6 +293,7 @@
         gap: 2rem;
         max-width: 1400px; /* Match the parent container width */
         width: 100%;
+        height: fit;
         margin: 0 auto;
     }
 
@@ -454,14 +455,14 @@
     }
 
     .trend-description {
-        margin: 0;
-        color: #718096;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+    margin: 0;
+    color: #718096;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    white-space: pre-line;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    display: block;
     }
 
     .trend-overlay {
@@ -595,19 +596,15 @@
     }
 
     .form-select {
-        cursor: pointer;
-        appearance: none;
-        width: 100%;
-        min-width: 0; /* Allows flex items to shrink properly */
-        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23667eea' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-        background-position: right 1rem center;
-        background-repeat: no-repeat;
-        background-size: 1rem;
-        padding-right: 3rem;
+    cursor: pointer;
+    appearance: none;
+    width: 100%;
+    min-width: 0; /* Allows flex items to shrink properly */
+    padding-right: 1rem;
     }
 
     .form-select:focus {
-        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23667eea' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    /* No custom arrow on focus */
     }
 
     /* Generate Button */
