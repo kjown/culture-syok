@@ -1,6 +1,3 @@
-bearer_token = os.getenv("X_BEARER_TOKEN")
-username = os.getenv("X_USERNAME")
-
 
 import requests
 from dotenv import load_dotenv
