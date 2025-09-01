@@ -6,8 +6,8 @@
     
     // Mock user data - in real app this would come from a store or API
     const user = {
-        name: "John Doe",
-        avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuD5ECcReYYZWnYgssqJt_SkajG8H4J3W3qeFVPJUWzzAC7qIY6MHGxj83J4-kj3CVlzFz-mWY-HHEYTZdPWiWZ-qjNvtnbwG8MC1rEoUu-OsxDyAt0gwfyZ4HbCuFslsh9-8eBf5mZCLsWLHsmQtslt0ozDk48-cVsEnzeUjEXTSXahshofjZht-hm8Lv1Fyc1sNeQlUtc1VZvF2jZiTOUDbVfKXF8ZW8DQXUKRbw_5P7ll9IJRYiGvrGS0eX3hbY7pnyfq4st5Y9k"
+        name: "LeBron",
+        avatar: "https://i.redd.it/g02yu8ecgvca1.jpg"
     };
     
     const navItems = [
@@ -69,10 +69,6 @@
                         <div class="user-name">{user.name}</div>
                         <div class="user-role">Administrator</div>
                     </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                    <li><a class="dropdown-item" href="/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                    <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item logout-item" href="/api/auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                 </ul>
             </div>

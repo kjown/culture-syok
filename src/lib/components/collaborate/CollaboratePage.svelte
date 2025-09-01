@@ -1,8 +1,8 @@
 <script>
     let ideas = [
-        { image: "/images/idea1.png" },
-        { image: "/images/idea2.png" },
-        { image: "/images/idea3.png" },
+        { image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBYiBwTZNX9tmOx_I5yC6hQmVg2PEfTqQnMA&s" },
+        { image: "https://media.tenor.com/18QkSCyju38AAAAe/tired-exhausted-yellow-creature.png" },
+        { image: "https://i.ytimg.com/vi/NhHb9usKy6Q/maxresdefault.jpg" },
     ];
     let activeTab = "Ideas";
     let tabs = ["Ideas", "To Do", "In Review", "Approved"];
