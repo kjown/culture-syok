@@ -1,0 +1,163 @@
+{
+  "name": "Text Upload Only",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "calendarId": {
+          "__rl": true,
+          "value": "=ayamdebugging@gmail.com",
+          "mode": "id"
+        },
+        "triggerOn": "eventStarted",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTrigger",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        -32
+      ],
+      "id": "a771359b-a656-4d78-94e8-c7eee461a6e9",
+      "name": "Google Calendar Trigger",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "1x0T29LxhdT6pg0c",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twitter.com/2/tweets",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twitterOAuth1Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\t\"text\": \"{{ $node[\"Code\"].json.contentText }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        336,
+        -128
+      ],
+      "id": "aa0d271b-c498-464e-acd9-63086fdd1d33",
+      "name": "HTTP Request (Create Tweet)",
+      "credentials": {
+        "twitterOAuth1Api": {
+          "id": "4pRt6h78tC2R42m0",
+          "name": "X OAuth Ayam"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// This code now runs for EACH event.\n// '$input.item.json' refers to the data for the current single event in the loop.\nconst item = $input.item.json;\n\n// Safety check: if there's no description for the current event, stop this loop iteration.\nif (!item.description) {\n  return {\n    platformIds: '', // Changed to platformIds\n    contentText: ''   // Changed for clarity\n  };\n}\n\nconst description = item.description;\n\n// --- CHANGE IS HERE ---\n// Use a robust regex to find only the content of [PLATFORM_IDS]\nconst platformIdsMatch = description.match(/\\[PLATFORM_IDS\\]: (.*?)(?=\\s*\\[|$)/);\n\n// The main content text is everything after the '---' separator\nconst parts = description.split('---');\nconst contentText = parts.length > 1 ? parts[1].trim() : '';\n\n// --- AND CHANGE IS HERE ---\n// Return the structured data for this single event, using 'platformIds'\nreturn {\n  platformIds: platformIdsMatch ? platformIdsMatch[1].trim() : '', // Changed to platformIds\n  contentText: contentText // Changed for clarity\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "45eb2103-e8bb-406f-a55b-17b3f4182fd2",
+      "name": "Code",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7f4b7aee-76bf-4581-ac82-063842064ba8",
+              "leftValue": "={{ $node[\"Code\"].json.platformIds }}",
+              "rightValue": "x",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        -32
+      ],
+      "id": "735a0e34-9a4b-469c-931b-a28cf8259a7b",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Calendar Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Create Tweet)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (Create Tweet)": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8b3e4780-1ab4-420f-b80e-72b9e52e5301",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4681c089c97e9b2465f93429adb6895b52aa69976f27bd5d7a4fc8b708b00fca"
+  },
+  "id": "CYEfLlA4PBgP9eSG",
+  "tags": []
+}

@@ -1,0 +1,350 @@
+{
+  "name": "Media Upload",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "calendarId": {
+          "__rl": true,
+          "value": "=ayamdebugging@gmail.com",
+          "mode": "id"
+        },
+        "triggerOn": "eventStarted",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTrigger",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        -32
+      ],
+      "id": "884e2184-94f6-443a-b7cb-7144d32571ed",
+      "name": "Google Calendar Trigger",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "1x0T29LxhdT6pg0c",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twitter.com/2/tweets",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twitterOAuth1Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\t\"text\": \"{{ $node[\"Code\"].json.tweetText }}\",\n\t\"media\": {\n\t\t\"media_ids\": [\n\t\t\t\"{{ $node[\"FINALIZE\"].json.media_id_string }}\"\n\t\t]\n\t}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1168,
+        -96
+      ],
+      "id": "8f752515-8215-4a8a-91fb-ef3b518870c8",
+      "name": "HTTP Request (Create Tweet)",
+      "credentials": {
+        "twitterOAuth1Api": {
+          "id": "tyZYCYCvepJOon2F",
+          "name": "X OAuth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $node[\"Code\"].json.mediaUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        -96
+      ],
+      "id": "b02bd6df-95f4-45b4-8c0e-04410f81bc5e",
+      "name": "Download Media"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// This code now runs for EACH event.\n// '$input.item.json' refers to the data for the current single event in the loop.\nconst item = $input.item.json;\n\n// Safety check: if there's no description for the current event, stop this loop iteration.\nif (!item.description) {\n  return {\n    platformIds: '', // Changed to platformIds\n    contentText: ''   // Changed for clarity\n  };\n}\n\nconst description = item.description;\n\n// Use a robust regex to find only the content of [PLATFORM_IDS]\nconst platformIdsMatch = description.match(/\\[PLATFORM_IDS\\]: (.*?)(?=\\s*\\[|$)/);\n\n// The main content text is everything after the '---' separator\nconst parts = description.split('---');\nconst contentText = parts.length > 1 ? parts[1].trim() : '';\n\n// Return the structured data for this single event, using 'platformIds'\nreturn {\n  platformIds: platformIdsMatch ? platformIdsMatch[1].trim() : '',\n  contentText: contentText\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "fd2fc833-ef7b-4937-a610-40c09f76f3a5",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a8c6b779-4600-454d-9f35-0c247a2eef09",
+              "leftValue": "={{ $node[\"Code\"].json.platformIds }}",
+              "rightValue": "x",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        -32
+      ],
+      "id": "c3b2bab1-c316-4119-9cd8-e2e3da131905",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://upload.twitter.com/1.1/media/upload.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twitterOAuth1Api",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "command",
+              "value": "INIT"
+            },
+            {
+              "name": "total_bytes",
+              "value": "={{ $node[\"Download Media\"].json.data.binary.data.size }}"
+            },
+            {
+              "name": "media_type",
+              "value": "={{ $node[\"Download Media\"].json.data.binary.data.mimeType }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        -96
+      ],
+      "id": "4dd3a067-cde5-49ab-80f4-a138f7408e06",
+      "name": "INIT",
+      "credentials": {
+        "twitterOAuth1Api": {
+          "id": "tyZYCYCvepJOon2F",
+          "name": "X OAuth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://upload.twitter.com/1.1/media/upload.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twitterOAuth1Api",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "command",
+              "value": "APPEND"
+            },
+            {
+              "name": "media_id",
+              "value": "={{ $node[\"INIT\"].json.media_id_string }}"
+            },
+            {
+              "name": "segment_index",
+              "value": "0"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "media",
+              "inputDataFieldName": "={{ $node[\"Download Media\"].json.data.binary }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        -96
+      ],
+      "id": "56122c92-1869-422a-a958-ff1a6db23ca0",
+      "name": "APPEND",
+      "credentials": {
+        "twitterOAuth1Api": {
+          "id": "tyZYCYCvepJOon2F",
+          "name": "X OAuth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://upload.twitter.com/1.1/media/upload.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twitterOAuth1Api",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "command",
+              "value": "FINALIZE"
+            },
+            {
+              "name": "media_id",
+              "value": "={{ $node[\"INIT\"].json.media_id_string }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        -96
+      ],
+      "id": "45a117fb-9250-4554-b5c4-1efeb7fe8a00",
+      "name": "FINALIZE",
+      "credentials": {
+        "twitterOAuth1Api": {
+          "id": "tyZYCYCvepJOon2F",
+          "name": "X OAuth"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Calendar Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Media": {
+      "main": [
+        [
+          {
+            "node": "INIT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Download Media",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (Create Tweet)": {
+      "main": [
+        []
+      ]
+    },
+    "INIT": {
+      "main": [
+        [
+          {
+            "node": "APPEND",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "APPEND": {
+      "main": [
+        [
+          {
+            "node": "FINALIZE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FINALIZE": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Create Tweet)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d049a264-fcf2-4591-9253-660b49df9577",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4681c089c97e9b2465f93429adb6895b52aa69976f27bd5d7a4fc8b708b00fca"
+  },
+  "id": "ox2DEwBveNk2pya9",
+  "tags": []
+}
