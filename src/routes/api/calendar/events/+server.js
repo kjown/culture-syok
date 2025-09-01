@@ -43,6 +43,7 @@ export async function POST({ request, cookies }) {
     const eventData = await request.json();
 
     try {
+        // Create calendar event with platform-aware metadata
         const response = await calendar.events.insert({
             calendarId: 'primary',
             requestBody: {
@@ -54,10 +55,26 @@ export async function POST({ request, cookies }) {
                 end: {
                     dateTime: eventData.end,
                 },
+                // Store platform data in extended properties for future API processing
+                extendedProperties: {
+                    private: {
+                        platforms: eventData.platforms ? eventData.platforms.join(',') : '',
+                        isPostingEvent: 'true'
+                    }
+                }
             },
         });
 
-        return json({ success: true, event: response.data });
+        // Log platform targeting for debugging
+        if (eventData.platforms && eventData.platforms.length > 0) {
+            console.log(`📅 Scheduled post for platforms: ${eventData.platforms.join(', ')}`);
+        }
+
+        return json({ 
+            success: true, 
+            event: response.data,
+            targetPlatforms: eventData.platforms || []
+        });
     } catch (error) {
         console.error('Error creating calendar event:', error);
         return json({ error: 'Failed to create calendar event.'}, { status: 500 });

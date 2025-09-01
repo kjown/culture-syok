@@ -22,18 +22,37 @@
 
     // State for the dropdown selection
     let selectedIdeaId = "";
+    let hasPrefilledFromIdea = false; // Track if we've already prefilled from an idea
 
-    // Reactive statement to populate the form when an idea is selected from the dropdown
-    $: {
-        if (selectedIdeaId) {
+    // Social platform selection
+    /** @type {string[]} */
+    let selectedPlatforms = [];
+    const socialPlatforms = [
+        { id: 'facebook', name: 'Facebook', icon: 'fab fa-facebook-f', color: '#1877f2' },
+        { id: 'instagram', name: 'Instagram', icon: 'fab fa-instagram', color: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' },
+        { id: 'x', name: 'X', icon: 'fab fa-x-twitter', color: '#000000' },
+        { id: 'linkedin', name: 'LinkedIn', icon: 'fab fa-linkedin-in', color: '#0077b5' },
+        { id: 'tiktok', name: 'TikTok', icon: 'fab fa-tiktok', color: '#000000' }
+    ];
+
+    // Function to handle idea selection and prefill form
+    function handleIdeaSelection() {
+        if (selectedIdeaId && !hasPrefilledFromIdea) {
             const selectedIdea = approvedIdeas.find((idea) => idea.id === Number(selectedIdeaId));
             if (selectedIdea) {
                 postContent = selectedIdea.description || "";
                 campaign = selectedIdea.title || "";
                 tagsString = (selectedIdea.tags || []).join(", ");
+                hasPrefilledFromIdea = true; // Mark as prefilled
             }
+        } else if (!selectedIdeaId) {
+            // Reset the prefill flag when no idea is selected
+            hasPrefilledFromIdea = false;
         }
     }
+
+    // Watch for changes in selectedIdeaId
+    $: selectedIdeaId, handleIdeaSelection();
 
     onMount(() => {
         // If prefilledData exists, populate the form's state variables.
@@ -64,9 +83,21 @@
         mediaUrl = event.detail.url;
     }
 
+    /**
+     * Toggle platform selection
+     * @param {string} platformId
+     */
+    function togglePlatform(platformId) {
+        if (selectedPlatforms.includes(platformId)) {
+            selectedPlatforms = selectedPlatforms.filter(id => id !== platformId);
+        } else {
+            selectedPlatforms = [...selectedPlatforms, platformId];
+        }
+    }
+
     async function handleSchedule() {
-        if (!postContent || !scheduledTime) {
-            alert("Please fill in both the content and the schedule date.");
+        if (!postContent || !scheduledTime || selectedPlatforms.length === 0) {
+            alert("Please fill in the content, schedule date, and select at least one social platform.");
             return;
         }
         isSubmitting = true;
@@ -74,9 +105,23 @@
         const startTime = new Date(scheduledTime);
         const endTime = new Date(startTime.getTime() + 30 * 60000);
 
-        // Build structured description
+        // Build structured description with platform IDs as primary source of truth
         /** @type {string[]} */
         const descriptionParts = [];
+        
+        // PRIMARY: Selected platforms determine posting destinations
+        if (selectedPlatforms.length > 0) {
+            // Store platform IDs for programmatic processing
+            descriptionParts.push(`[PLATFORM_IDS]: ${selectedPlatforms.join(',')}`);
+            
+            // Also store human-readable names for reference
+            const platformNames = selectedPlatforms.map(id => 
+                socialPlatforms.find(p => p.id === id)?.name || id
+            ).join(', ');
+            descriptionParts.push(`[PLATFORMS]: ${platformNames}`);
+        }
+        
+        // SECONDARY: Other metadata (tags are for content description, not posting targets)
         if (mediaUrl) {
             descriptionParts.push(`[MEDIA_URL]: ${mediaUrl}`);
         }
@@ -103,6 +148,8 @@
                 description: description,
                 start: startTime.toISOString(),
                 end: endTime.toISOString(),
+                // Add platform data directly to event metadata for future API processing
+                platforms: selectedPlatforms, // This could be used by a future posting service
             }),
         });
 
@@ -119,6 +166,8 @@
             campaign = "";
             tagsString = "";
             selectedIdeaId = ""; // Reset dropdown selection
+            selectedPlatforms = []; // Reset platform selection
+            hasPrefilledFromIdea = false; // Reset prefill flag
             dispatch("postsUpdated");
         } else {
             const result = await response.json();
@@ -204,6 +253,33 @@
             />
         </div>
 
+        <!-- Social Platform Selection -->
+        <div class="form-section">
+            <label class="form-label">
+                <i class="fas fa-share-alt me-2"></i>
+                Social Platforms
+            </label>
+            <div class="platforms-grid">
+                {#each socialPlatforms as platform}
+                    <div class="platform-item">
+                        <input
+                            type="checkbox"
+                            id="platform-{platform.id}"
+                            value={platform.id}
+                            checked={selectedPlatforms.includes(platform.id)}
+                            on:change={() => togglePlatform(platform.id)}
+                        />
+                        <label for="platform-{platform.id}" class="platform-label">
+                            <div class="platform-icon" style="background: {platform.color}">
+                                <i class="{platform.icon}"></i>
+                            </div>
+                            <span class="platform-name">{platform.name}</span>
+                        </label>
+                    </div>
+                {/each}
+            </div>
+        </div>
+
         <!-- Campaign Section -->
         <div class="form-section">
             <label for="campaign" class="form-label">
@@ -223,15 +299,16 @@
         <div class="form-section">
             <label for="tags" class="form-label">
                 <i class="fas fa-hashtag me-2"></i>
-                Tags
+                Hashtags & Tags
             </label>
             <input
                 type="text"
                 class="form-control"
                 id="tags"
-                placeholder="Enter comma-separated tags (e.g., #marketing, #social)"
+                placeholder="Enter hashtags and tags (e.g., #marketing, #socialmedia, content)"
                 bind:value={tagsString}
             />
+            <small class="form-text">Use hashtags (#) and keywords separated by commas</small>
         </div>
 
         <!-- Schedule Section -->
@@ -450,6 +527,74 @@
         background: #000000;
     }
 
+    /* Social Platform Selection Styles */
+    .platforms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+
+    .platform-item {
+        position: relative;
+    }
+
+    .platform-item input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .platform-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.5rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        text-align: center;
+    }
+
+    .platform-item input:checked + .platform-label {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+
+    .platform-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.3rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .platform-name {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 0.9rem;
+        line-height: 1.2;
+    }
+
+    .form-text {
+        color: #718096;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
     .form-control {
         border: 2px solid #e2e8f0;
         border-radius: 10px;
@@ -530,7 +675,11 @@
             grid-template-columns: repeat(2, 1fr);
         }
 
-        .channel-label {
+        .platforms-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .channel-label, .platform-label {
             padding: 1rem 0.5rem;
         }
 

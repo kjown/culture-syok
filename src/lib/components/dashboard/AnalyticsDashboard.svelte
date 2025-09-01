@@ -6,9 +6,9 @@
 
     // IF USING A REAL API, REPLACE THE MOCK DATA WITH API CALLS
     // API endpoint URLs (these should point to backend/server routes that fetch from GCS)
-    const X_API_URL = "http://127.0.0.1:8000/api/x/"; // Should return tweets.json from GCS
-    const IG_API_URL = "http://127.0.0.1:8000/api/instagram/"; // Should return instagram.json from GCS
-    const FB_API_URL = "http://127.0.0.1:8000/api/facebook/"; // Should return facebook_post.json from GCS
+    const X_API_URL = "http://127.0.0.1:8001/api/x/"; // Should return tweets.json from GCS
+    const IG_API_URL = "http://127.0.0.1:8001/api/instagram/"; // Should return instagram.json from GCS
+    const FB_API_URL = "http://127.0.0.1:8001/api/facebook/"; // Should return facebook_post.json from GCS
 
 
     // State for fetched data
