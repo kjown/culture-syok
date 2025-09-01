@@ -1,16 +1,21 @@
 # CultureSyok
-This project is an AI-powered marketing assistant designed to help growth-stage companies plan, create, and manage their social media content efficiently. The platform automatically scrapes social media trends using PRAW (Reddit API) and other data sources, then feeds this information into an AI model to generate fresh, relevant content ideas. Teams can draft and schedule posts directly from the platform, and once published, the tool tracks engagement metrics with intuitive dashboards.
 
-Beyond basic analytics, it also uses AI-driven sentiment analysis to evaluate audience reactions, helping marketing teams continuously refine their campaigns without needing a dedicated analytics department. The system streamlines the entire workflow—trend detection, content generation, post scheduling, and performance improvement into one seamless tool.
+**Your AI Marketing *Kawan* for the Malaysian Market.**
+
+CultureSyok is an AI-powered marketing assistant designed to help SMEs and startups plan, create, and manage their social media content that truly resonates with the local audience. The platform automatically scrapes social media trends using PRAW (Reddit API) and other data sources, then feeds this information into an AI model to generate fresh, relevant content ideas. Teams can draft and schedule posts directly from the platform, and once published, the tool tracks engagement metrics with intuitive dashboards.
+
+Beyond basic analytics, it also uses AI-driven sentiment analysis to evaluate audience reactions, helping marketing teams continuously refine their campaigns without needing a dedicated analytics department. The system streamlines the entire workflow—trend detection, content generation, post scheduling, and performance improvement into one seamless tool. 
+
+<img width="2872" height="1002" alt="image" src="https://github.com/user-attachments/assets/9ebce3b8-c851-4a5d-8980-104cf0e496c8" />
 
 ## Setup Instructions
-### 1. Clone the repository
+**1. Clone the repository**
 ```
 git clone https://github.com/kjown/ayam-debugging-frontend.git
 cd ayam-debugging-frontend
 ```
-### 2. Set up a Python virtual environment
-It’s recommended to use a virtual environment to isolate dependencies:
+**2. Set up a Python virtual environment**
+* Create and activate a Python virtual environment:
 ```
 python -m venv venv
 ```
@@ -26,7 +31,7 @@ On Windows (Command Prompt):
 ```
 venv\Scripts\activate
 ```
-### 3. Create an .env file in the project root
+**3. Create an .env file in the project root**
 ```
 # Google Calendar
 GOOGLE_CLIENT_ID="YOUR_CLIENT_ID"
@@ -39,18 +44,18 @@ CLOUDINARY_API_KEY="YOUR_CLOUDINARY_API_KEY"
 CLOUDINARY_API_SECRET="YOUR_CLOUDINARY_API_SECRET"
 
 # Reddit
-REDDIT_CLIENT_ID= YOUR_CLIENT_ID
-REDDIT_CLIENT_SECRET= YOUR_CLIENT_SECRET
-REDDIT_USER_AGENT='YOUR_USER_AGENT'
+REDDIT_CLIENT_ID="YOUR_CLIENT_ID"
+REDDIT_CLIENT_SECRET="YOUR_CLIENT_SECRET"
+REDDIT_USER_AGENT="YOUR_USER_AGENT"
 
 # Gemini
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
 
 # X
-X_USERNAME=YOUR_USER_NAME
-X_API_KEY=YOUR_API_KEY
-X_API_SECRET_KEY=YOUR_SECRET_KEY
-X_BEARER_TOKEN=YOUR_BEARER_TOKEN
+X_USERNAME="YOUR_USER_NAME"
+X_API_KEY="YOUR_API_KEY"
+X_API_SECRET_KEY="YOUR_SECRET_KEY"
+X_BEARER_TOKEN="YOUR_BEARER_TOKEN"
  
 ```
 Get your Google Calendar credentials here: https://console.cloud.google.com/apis/credentials
@@ -62,33 +67,26 @@ Get your Reddit credentials by creating an app here: https://www.reddit.com/pref
 Get your X credentials here: https://developer.x.com/en
 
 Generate your API key here: https://aistudio.google.com/apikey
-### 4. Install Python dependencies
+**4. Install Python dependencies**
 ```
 pip install -r requirements.txt
 ```
-### 5. Start the backend (FastAPI server)
+**5. Start the backend (FastAPI server)**
 ```
-uvicorn main:app --reload
+python /content-gen/run.py
 ```
 
-### 6. Install frontend dependencies
+**6. Install frontend dependencies**
 ```
 npm install
 ```
 
-### 7. Start the frontend development server
+**7. Start the frontend development server**
 ```
 npm run dev
 ```
 
-## Team Members
-1. ⁠Tee Kai Xin
-2. ⁠Chang Kai Le
-3. Nathaniel Inn Tsin Qian
-4. Own Kai Jian
-5. ⁠Wan Muhammad Hisham Bin Md Edlan Jafny
-
-## Problems 
+## Problems and Status Quo
 ### 1. Lack of insight into trending topics
 Growth-stage companies often operate with small marketing teams that are too busy executing daily tasks to monitor what’s trending online. As a result, they miss opportunities to align content with topics that are currently drawing attention. Without these insights, their posts feel disconnected from audience conversations and fail to gain traction.
 
@@ -135,7 +133,7 @@ Business accounts for Meta and X APIs require paid subscriptions. Without these,
 Testing every feature manually was time-consuming and error-prone. It was difficult to repeatedly verify that scraping, AI generation, posting, and dashboard features all worked correctly together.
 
 
-## Learnings
+## Takeaways
 ### 1. Modular design is essential
 Breaking the system into smaller, well-defined modules (scraper, AI service, scheduler, dashboard) makes integration easier. Well-documented APIs between these modules reduce friction when different parts of the team work in parallel.
 
@@ -145,16 +143,19 @@ Even a lightweight cloud deployment (using free tiers) early in development help
 ### 3. Automated testing is worth the investment
 Implementing even a small suite of unit tests or API tests early would have reduced the manual testing burden. Automated tests can verify that key features continue working after code changes, saving time and reducing bugs.
 
-## Tech Stacks
-1. ⁠Svetlekit
-2. ⁠⁠Chart.js
-3. ⁠⁠n8n
-4. ⁠⁠Gemini LLM
-5. ⁠⁠Docker
-6. PRAW
-7. ⁠FastAPI
-8. ⁠⁠Ngrok
-9. ⁠GenAI SDK
-10. Twitter API v2
-11. Google Calendar API
-12. Cloudinary
+## 🛠️ Tech Stack
+
+| Backend       | Frontend       | AI & Automation    | APIs & Services         | Deployment |
+|---------------|----------------|--------------------|-------------------------|------------|
+| FastAPI      | SvelteKit      | Google GenAI SDK   | Reddit API (PRAW)       | Vercel     |
+| Pydantic      | Chart.js       | n8n Workflows      | Twitter API v2          | Docker     |
+| Python 3.11+  | Bootstrap      |                    | Google Calendar API     |            |
+| Uvicorn       |                |                    | Cloudinary              |            |
+
+## 🤝 The Team
+
+* [Tee Kai Xin](https://github.com/kaixinishappy)
+* [Chang Kai Le](https://github.com/ckl515)
+* [Nathaniel Inn Tsin Qian](https://github.com/nat-inn)
+* [Own Kai Jian](https://github.com/kjown)
+* [Wan Muhammad Hisham Bin Md Edlan Jafny](https://github.com/wmh004)
