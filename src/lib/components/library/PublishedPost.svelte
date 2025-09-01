@@ -6,8 +6,8 @@
             id: "1",
             content:
                 "Check out my latest blog post on sustainable living! #ecofriendly #sustainability",
-            channel: "Blog",
-            published: "2023-08-15",
+            channel: "Facebook",
+            published: "2025-08-15",
             impressions: 1200,
             likes: 50,
             comments: 10,
@@ -18,7 +18,7 @@
             content:
                 "Just finished a great workout! Feeling energized and ready to tackle the day. #fitness #healthylifestyle",
             channel: "Instagram",
-            published: "2023-08-14",
+            published: "2025-08-14",
             impressions: 1500,
             likes: 75,
             comments: 15,
@@ -29,7 +29,7 @@
             content:
                 "Excited to announce our new partnership with GreenTech Solutions! Together, we'll be working towards a greener future. #collaboration #innovation",
             channel: "LinkedIn",
-            published: "2023-08-13",
+            published: "2025-08-13",
             impressions: 1800,
             likes: 90,
             comments: 20,
@@ -40,7 +40,7 @@
             content:
                 "Happy Friday everyone! What are your plans for the weekend? #weekendvibes #friyay",
             channel: "Twitter",
-            published: "2023-08-12",
+            published: "2025-08-12",
             impressions: 2000,
             likes: 100,
             comments: 25,
@@ -51,7 +51,7 @@
             content:
                 "Throwback to our team retreat last month. Such a fun and productive time! #teamwork #retreat",
             channel: "Facebook",
-            published: "2023-08-11",
+            published: "2025-08-11",
             impressions: 2200,
             likes: 110,
             comments: 30,
@@ -65,7 +65,6 @@
     let selectedSort = "Sort";
     let channels = [
         "Channel",
-        "Blog",
         "Instagram",
         "LinkedIn",
         "Twitter",
