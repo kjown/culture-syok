@@ -1,8 +1,52 @@
 <script>
+    // Define the idea type
+    /** @typedef {{
+        id: number,
+        image: string,
+        title: string,
+        description: string,
+        status: string,
+        createdDate: string,
+        assignee: string,
+        platform: string,
+        notes: string
+    }} Idea */
+
+    /** @type {Idea[]} */
     let ideas = [
-        { image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBYiBwTZNX9tmOx_I5yC6hQmVg2PEfTqQnMA&s" },
-        { image: "https://media.tenor.com/18QkSCyju38AAAAe/tired-exhausted-yellow-creature.png" },
-        { image: "https://i.ytimg.com/vi/NhHb9usKy6Q/maxresdefault.jpg" },
+        { 
+            id: 1,
+            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBYiBwTZNX9tmOx_I5yC6hQmVg2PEfTqQnMA&s",
+            title: "Summer Campaign Concept",
+            description: "Vibrant summer-themed social media campaign with beach vibes",
+            status: "Ideas",
+            createdDate: "2025-08-30",
+            assignee: "John Doe",
+            platform: "Instagram, Facebook",
+            notes: "Focus on bright colors and summer activities"
+        },
+        { 
+            id: 2,
+            image: "https://media.tenor.com/18QkSCyju38AAAAe/tired-exhausted-yellow-creature.png",
+            title: "Relatable Content Series",
+            description: "Funny and relatable content targeting young professionals",
+            status: "Ideas",
+            createdDate: "2025-08-28",
+            assignee: "Jane Smith",
+            platform: "Twitter, LinkedIn",
+            notes: "Use memes and trending formats"
+        },
+        { 
+            id: 3,
+            image: "https://i.ytimg.com/vi/NhHb9usKy6Q/maxresdefault.jpg",
+            title: "Product Showcase Video",
+            description: "Creative product demonstration with engaging visuals",
+            status: "Ideas",
+            createdDate: "2025-08-25",
+            assignee: "Mike Johnson",
+            platform: "YouTube, TikTok",
+            notes: "Include customer testimonials"
+        },
     ];
     let activeTab = "Ideas";
     let tabs = ["Ideas", "To Do", "In Review", "Approved"];
@@ -10,7 +54,172 @@
     let date = "";
     let time = "";
     let reminder = "";
+
+    // Modal states
+    let showViewModal = false;
+    let showEditModal = false;
+    let showAddModal = false;
+    /** @type {Idea | null} */
+    let selectedIdea = null;
+    /** @type {Partial<Idea>} */
+    let editingIdea = {};
+    /** @type {Partial<Idea>} */
+    let newIdea = {
+        title: "",
+        description: "",
+        assignee: "",
+        platform: "",
+        image: "",
+        notes: ""
+    };
+
+    // Image upload state
+    let imageUploadMethod = "url"; // "url" or "file"
+    /** @type {File | null} */
+    let selectedImageFile = null;
+    let imagePreview = "";
+
+    // Functions for button actions
+    /** @param {Idea} idea */
+    function viewIdea(idea) {
+        selectedIdea = idea;
+        showViewModal = true;
+    }
+
+    /** @param {Idea} idea */
+    function editIdea(idea) {
+        selectedIdea = idea;
+        editingIdea = { ...idea }; // Create a copy for editing
+        showEditModal = true;
+    }
+
+    /** @param {number} ideaId */
+    function moveToNextPhase(ideaId) {
+        const currentTabIndex = tabs.indexOf(activeTab);
+        if (currentTabIndex < tabs.length - 1) {
+            const nextStatus = tabs[currentTabIndex + 1];
+            ideas = ideas.map(idea => 
+                idea.id === ideaId 
+                    ? { ...idea, status: nextStatus }
+                    : idea
+            );
+        }
+    }
+
+    function closeModal() {
+        showViewModal = false;
+        showEditModal = false;
+        showAddModal = false;
+        selectedIdea = null;
+        editingIdea = {};
+        newIdea = {
+            title: "",
+            description: "",
+            assignee: "",
+            platform: "",
+            image: "",
+            notes: ""
+        };
+        // Reset image upload state
+        imageUploadMethod = "url";
+        selectedImageFile = null;
+        imagePreview = "";
+    }
+
+    function saveEdit() {
+        if (editingIdea.id) {
+            ideas = ideas.map(idea => 
+                idea.id === editingIdea.id 
+                    ? { ...idea, ...editingIdea }
+                    : idea
+            );
+        }
+        closeModal();
+    }
+
+    function addNewIdea() {
+        showAddModal = true;
+    }
+
+    function saveNewIdea() {
+        if (newIdea.title && newIdea.description) {
+            const nextId = Math.max(...ideas.map(idea => idea.id)) + 1;
+            const currentDate = new Date().toISOString().split('T')[0];
+            
+            // Use the appropriate image source
+            let finalImageUrl = "";
+            if (imageUploadMethod === "file" && imagePreview) {
+                finalImageUrl = imagePreview; // Use the preview URL for the uploaded file
+            } else if (imageUploadMethod === "url" && newIdea.image) {
+                finalImageUrl = newIdea.image;
+            } else {
+                finalImageUrl = "https://via.placeholder.com/300x200?text=No+Image";
+            }
+            
+            const ideaToAdd = {
+                id: nextId,
+                title: newIdea.title || "",
+                description: newIdea.description || "",
+                status: "Ideas",
+                createdDate: currentDate,
+                assignee: newIdea.assignee || "Unassigned",
+                platform: newIdea.platform || "Not specified",
+                image: finalImageUrl,
+                notes: newIdea.notes || ""
+            };
+            
+            ideas = [...ideas, ideaToAdd];
+            closeModal();
+        }
+    }
+
+    // Handle escape key for modals
+    /** @param {KeyboardEvent} event */
+    function handleKeydown(event) {
+        if (event.key === 'Escape' && (showViewModal || showEditModal || showAddModal)) {
+            closeModal();
+        }
+    }
+
+    // Handle image upload method change
+    /** @param {string} method */
+    function handleImageMethodChange(method) {
+        imageUploadMethod = method;
+        if (method === "url") {
+            selectedImageFile = null;
+            imagePreview = "";
+        } else {
+            newIdea.image = "";
+        }
+    }
+
+    // Handle file upload
+    /** @param {Event} event */
+    function handleImageUpload(event) {
+        const target = /** @type {HTMLInputElement} */ (event.target);
+        if (target && target.files && target.files.length > 0) {
+            const file = target.files[0];
+            if (file) {
+                selectedImageFile = file;
+                
+                // Create preview URL
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const result = e.target?.result;
+                    if (typeof result === 'string') {
+                        imagePreview = result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+
+    // Filter ideas based on active tab
+    $: filteredIdeas = ideas.filter(idea => idea.status === activeTab);
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <div class="collaborate-container">
     <!-- Enhanced Page Header -->
@@ -46,7 +255,7 @@
                     >
                         <div class="tab-content">
                             <span class="tab-label">{tab}</span>
-                            <span class="tab-count">({ideas.length})</span>
+                            <span class="tab-count">({ideas.filter(idea => idea.status === tab).length})</span>
                         </div>
                         {#if tab === "Ideas"}
                             <i class="fas fa-lightbulb tab-icon"></i>
@@ -63,44 +272,56 @@
 
             <!-- Tab Content -->
             <div class="tab-content-area">
-                {#if ideas.length > 0}
+                {#if filteredIdeas.length > 0}
                     <div class="ideas-grid">
-                        {#each ideas as idea, index}
+                        {#each filteredIdeas as idea, index}
                             <div class="idea-card">
                                 <div class="card-image">
                                     <img
                                         src={idea.image}
-                                        alt="Content Idea {index + 1}"
+                                        alt={idea.title}
                                         class="idea-image"
                                     />
                                     <div class="image-overlay">
-                                        <button class="overlay-btn view-btn">
+                                        <button class="overlay-btn view-btn" on:click={() => viewIdea(idea)}>
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="overlay-btn edit-btn">
+                                        <button class="overlay-btn edit-btn" on:click={() => editIdea(idea)}>
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="overlay-btn move-btn">
-                                            <i class="fas fa-arrow-right"></i>
-                                        </button>
+                                        {#if activeTab !== "Approved"}
+                                            <button class="overlay-btn move-btn" on:click={() => moveToNextPhase(idea.id)}>
+                                                <i class="fas fa-arrow-right"></i>
+                                            </button>
+                                        {/if}
                                     </div>
                                 </div>
                                 <div class="card-content">
-                                    <h6 class="idea-title">Content Idea #{index + 1}</h6>
-                                    <p class="idea-description">Creative concept for social media campaign</p>
+                                    <h6 class="idea-title">{idea.title}</h6>
+                                    <p class="idea-description">{idea.description}</p>
                                     <div class="idea-meta">
-                                        <span class="status-badge {activeTab.toLowerCase().replace(' ', '-')}">
-                                            {activeTab}
+                                        <span class="status-badge {idea.status.toLowerCase().replace(' ', '-')}">
+                                            {idea.status}
                                         </span>
                                         <span class="date-badge">
                                             <i class="fas fa-clock"></i>
-                                            2 days ago
+                                            {new Date(idea.createdDate).toLocaleDateString()}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         {/each}
                     </div>
+                    
+                    <!-- Add Button below ideas grid for Ideas tab -->
+                    {#if activeTab === "Ideas"}
+                        <div class="add-btn-container">
+                            <button class="add-ideas-btn" on:click={addNewIdea}>
+                                <i class="fas fa-plus"></i>
+                                <span>Add New Idea</span>
+                            </button>
+                        </div>
+                    {/if}
                 {:else}
                     <div class="empty-state">
                         <div class="empty-icon">
@@ -126,16 +347,348 @@
                                 Approved content ready for publishing will be shown here.
                             {/if}
                         </p>
-                        <button class="empty-action-btn">
-                            <i class="fas fa-plus"></i>
-                            Add New Content
-                        </button>
+                        {#if activeTab === "Ideas"}
+                            <button class="empty-action-btn" on:click={addNewIdea}>
+                                <i class="fas fa-plus"></i>
+                                Add New Content
+                            </button>
+                        {/if}
                     </div>
                 {/if}
             </div>
         </div>
     </div>
 </div>
+
+<!-- View Modal -->
+{#if showViewModal && selectedIdea}
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div 
+        class="modal-backdrop" 
+        role="dialog" 
+        aria-modal="true"
+        on:click={closeModal}
+    >
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div 
+            class="modal-content" 
+            role="document"
+            on:click|stopPropagation
+        >
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-eye"></i>
+                    View Content Idea
+                </h3>
+                <button class="modal-close" on:click={closeModal}>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="idea-image-container">
+                    <img src={selectedIdea.image} alt={selectedIdea.title} class="modal-image" />
+                </div>
+                <div class="idea-details">
+                    <div class="detail-group">
+                        <span class="detail-label">Title:</span>
+                        <p>{selectedIdea.title}</p>
+                    </div>
+                    <div class="detail-group">
+                        <span class="detail-label">Description:</span>
+                        <p>{selectedIdea.description}</p>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-group">
+                            <span class="detail-label">Status:</span>
+                            <span class="status-badge {selectedIdea.status.toLowerCase().replace(' ', '-')}">{selectedIdea.status}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Created:</span>
+                            <p>{new Date(selectedIdea.createdDate).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-group">
+                            <span class="detail-label">Assignee:</span>
+                            <p>{selectedIdea.assignee}</p>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Platform:</span>
+                            <p>{selectedIdea.platform}</p>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <span class="detail-label">Notes:</span>
+                        <p>{selectedIdea.notes}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+
+<!-- Edit Modal -->
+{#if showEditModal && editingIdea}
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div 
+        class="modal-backdrop" 
+        role="dialog" 
+        aria-modal="true"
+        on:click={closeModal}
+    >
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div 
+            class="modal-content" 
+            role="document"
+            on:click|stopPropagation
+        >
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-edit"></i>
+                    Edit Content Idea
+                </h3>
+                <button class="modal-close" on:click={closeModal}>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label for="edit-title">Title:</label>
+                        <input 
+                            id="edit-title"
+                            type="text" 
+                            bind:value={editingIdea.title} 
+                            class="form-input"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-description">Description:</label>
+                        <textarea 
+                            id="edit-description"
+                            bind:value={editingIdea.description} 
+                            class="form-textarea"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-assignee">Assignee:</label>
+                            <input 
+                                id="edit-assignee"
+                                type="text" 
+                                bind:value={editingIdea.assignee} 
+                                class="form-input"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-platform">Platform:</label>
+                            <input 
+                                id="edit-platform"
+                                type="text" 
+                                bind:value={editingIdea.platform} 
+                                class="form-input"
+                            />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-image">Image URL:</label>
+                        <input 
+                            id="edit-image"
+                            type="url" 
+                            bind:value={editingIdea.image} 
+                            class="form-input"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-notes">Notes:</label>
+                        <textarea 
+                            id="edit-notes"
+                            bind:value={editingIdea.notes} 
+                            class="form-textarea"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-cancel" on:click={closeModal}>Cancel</button>
+                        <button class="btn-save" on:click={saveEdit}>Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+
+<!-- Add New Content Modal -->
+{#if showAddModal}
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div 
+        class="modal-backdrop" 
+        role="dialog" 
+        aria-modal="true"
+        on:click={closeModal}
+    >
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div 
+            class="modal-content" 
+            role="document"
+            on:click|stopPropagation
+        >
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-plus"></i>
+                    Add New Content Idea
+                </h3>
+                <button class="modal-close" on:click={closeModal}>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="edit-form">
+                    <div class="form-group">
+                        <label for="new-title">Title: <span class="required">*</span></label>
+                        <input 
+                            id="new-title"
+                            type="text" 
+                            bind:value={newIdea.title} 
+                            class="form-input"
+                            placeholder="Enter content idea title"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="new-description">Description: <span class="required">*</span></label>
+                        <textarea 
+                            id="new-description"
+                            bind:value={newIdea.description} 
+                            class="form-textarea"
+                            rows="3"
+                            placeholder="Describe your content idea"
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="new-assignee">Assignee:</label>
+                            <input 
+                                id="new-assignee"
+                                type="text" 
+                                bind:value={newIdea.assignee} 
+                                class="form-input"
+                                placeholder="Who will work on this?"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="new-platform">Platform:</label>
+                            <input 
+                                id="new-platform"
+                                type="text" 
+                                bind:value={newIdea.platform} 
+                                class="form-input"
+                                placeholder="Instagram, Facebook, etc."
+                            />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <fieldset class="image-fieldset">
+                            <legend class="form-label">Image:</legend>
+                        
+                        <!-- Image upload method selection -->
+                        <div class="image-method-tabs">
+                            <button 
+                                type="button"
+                                class="method-tab"
+                                class:active={imageUploadMethod === "url"}
+                                on:click={() => handleImageMethodChange("url")}
+                            >
+                                <i class="fas fa-link"></i>
+                                URL
+                            </button>
+                            <button 
+                                type="button"
+                                class="method-tab"
+                                class:active={imageUploadMethod === "file"}
+                                on:click={() => handleImageMethodChange("file")}
+                            >
+                                <i class="fas fa-upload"></i>
+                                Upload
+                            </button>
+                        </div>
+
+                        {#if imageUploadMethod === "url"}
+                            <input 
+                                id="new-image"
+                                type="url" 
+                                bind:value={newIdea.image} 
+                                class="form-input"
+                                placeholder="https://example.com/image.jpg"
+                            />
+                        {:else}
+                            <div class="file-upload-area">
+                                <input 
+                                    id="new-image-file"
+                                    type="file"
+                                    accept="image/*"
+                                    on:change={handleImageUpload}
+                                    class="file-input"
+                                />
+                                <label for="new-image-file" class="file-upload-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Choose an image file</span>
+                                    <small>JPG, PNG, GIF up to 5MB</small>
+                                </label>
+                                {#if selectedImageFile}
+                                    <div class="file-info">
+                                        <i class="fas fa-file-image"></i>
+                                        <span>{selectedImageFile.name}</span>
+                                    </div>
+                                {/if}
+                            </div>
+                        {/if}
+
+                        <!-- Image preview -->
+                        {#if (imageUploadMethod === "url" && newIdea.image) || (imageUploadMethod === "file" && imagePreview)}
+                            <div class="image-preview">
+                                <img 
+                                    src={imageUploadMethod === "url" ? newIdea.image : imagePreview} 
+                                    alt="Preview" 
+                                    class="preview-image"
+                                />
+                            </div>
+                        {/if}
+                        </fieldset>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-notes">Notes:</label>
+                        <textarea 
+                            id="new-notes"
+                            bind:value={newIdea.notes} 
+                            class="form-textarea"
+                            rows="3"
+                            placeholder="Additional notes or requirements"
+                        ></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-cancel" on:click={closeModal}>Cancel</button>
+                        <button 
+                            class="btn-save" 
+                            on:click={saveNewIdea}
+                            disabled={!newIdea.title || !newIdea.description}
+                        >
+                            Add to Ideas
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
 
 <style>
     .collaborate-container {
@@ -509,6 +1062,70 @@
         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     }
 
+    /* Add Button Container */
+    .add-btn-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .add-ideas-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        font-size: 0.95rem;
+    }
+
+    .add-ideas-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .add-ideas-btn i {
+        font-size: 1.1rem;
+    }
+
+    /* Required field indicator */
+    .required {
+        color: #e53e3e;
+        font-weight: 700;
+    }
+
+    /* Fieldset styles */
+    .image-fieldset {
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .image-fieldset legend {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        padding: 0;
+    }
+
+    /* Disabled button styles */
+    .btn-save:disabled {
+        background: rgba(108, 117, 125, 0.3) !important;
+        color: rgba(108, 117, 125, 0.7) !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
     /* Responsive design */
     @media (max-width: 1200px) {
         .collaborate-container {
@@ -573,6 +1190,414 @@
 
         .empty-description {
             font-size: 0.9rem;
+        }
+
+        .add-btn-container {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+
+        .add-ideas-btn {
+            padding: 0.875rem 1.5rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Modal Styles */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 1rem;
+        padding-top: 2rem;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 90vw;
+        width: 100%;
+        max-width: 600px;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin: 2rem auto;
+        position: relative;
+    }
+
+    .modal-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        border-radius: 20px 20px 0 0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .modal-title {
+        margin: 0;
+        color: #2d3748;
+        font-weight: 700;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-title i {
+        color: #667eea;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        color: #718096;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+    }
+
+    .modal-close:hover {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+    }
+
+    .modal-body {
+        padding: 1.5rem 2rem 2rem;
+        max-height: calc(85vh - 120px);
+        overflow-y: auto;
+    }
+
+    .idea-image-container {
+        margin-bottom: 1.5rem;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .modal-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .idea-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .detail-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .detail-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .detail-group .detail-label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.9rem;
+    }
+
+    .detail-group p {
+        margin: 0;
+        color: #718096;
+        line-height: 1.4;
+    }
+
+    .edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        max-height: none;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.9rem;
+    }
+
+    .form-input,
+    .form-textarea {
+        padding: 0.75rem 1rem;
+        border: 2px solid rgba(102, 126, 234, 0.1);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-cancel,
+    .btn-save {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+
+    .btn-cancel {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+        border: 2px solid rgba(108, 117, 125, 0.2);
+    }
+
+    .btn-cancel:hover {
+        background: rgba(108, 117, 125, 0.2);
+        border-color: rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Image Upload Styles */
+    .image-method-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        background: rgba(102, 126, 234, 0.05);
+        padding: 0.25rem;
+        border-radius: 8px;
+    }
+
+    .method-tab {
+        flex: 1;
+        background: transparent;
+        border: none;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        color: #4a5568;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .method-tab:hover {
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    .method-tab.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .file-upload-area {
+        border: 2px dashed rgba(102, 126, 234, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-upload-area:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.02);
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .file-upload-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        color: #4a5568;
+    }
+
+    .file-upload-label i {
+        font-size: 2rem;
+        color: #667eea;
+    }
+
+    .file-upload-label span {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .file-upload-label small {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+
+    .file-info {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #667eea;
+    }
+
+    .file-info i {
+        font-size: 1.2rem;
+    }
+
+    .image-preview {
+        margin-top: 1rem;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 2px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    /* Mobile Modal Styles */
+    @media (max-width: 768px) {
+        .modal-backdrop {
+            padding: 0.5rem;
+            align-items: flex-start;
+            padding-top: 1rem;
+        }
+
+        .modal-content {
+            max-height: 95vh;
+            max-width: 95vw;
+            margin: 0;
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+        }
+
+        .modal-body {
+            padding: 1rem 1.5rem 1.5rem;
+            max-height: calc(95vh - 100px);
+        }
+
+        .modal-image {
+            height: 150px;
+        }
+
+        .detail-row,
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-cancel,
+        .btn-save {
+            width: 100%;
+        }
+
+        .image-method-tabs {
+            margin-bottom: 0.75rem;
+        }
+
+        .method-tab {
+            padding: 0.625rem 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .file-upload-area {
+            padding: 1rem;
+        }
+
+        .file-upload-label i {
+            font-size: 1.5rem;
+        }
+
+        .file-upload-label span {
+            font-size: 0.9rem;
+        }
+
+        .file-upload-label small {
+            font-size: 0.8rem;
+        }
+
+        .preview-image {
+            height: 120px;
         }
     }
 </style>
