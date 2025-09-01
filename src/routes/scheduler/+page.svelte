@@ -1,5 +1,7 @@
 <script>
     import { onMount } from "svelte";
+    import { page } from "$app/stores";
+    import { postToSchedule } from "$lib/stores/schedulingStore.js";
     import CreatePostForm from "$lib/components/scheduler/CreatePostForm.svelte";
     import SchedulerCalendar from "$lib/components/scheduler/SchedulerCalendar.svelte";
 
@@ -9,6 +11,10 @@
     let events = [];
     /** @type {boolean} */
     let isLoading = true;
+
+    // This variable will hold the data from the store to pass as a prop.
+    /** @type {{ caption: string; campaign: string; tags: string[] } | null} */
+    let prefilledData = null;
 
     async function fetchEvents() {
         isLoading = true;
@@ -34,9 +40,25 @@
         isLoading = false;
     }
 
-    onMount(fetchEvents);
+    onMount(() => {
+        // Fetch calendar events when the component mounts
+        fetchEvents();
+
+        // Subscribe to the store for pre-filled data from other pages
+        const unsubscribe = postToSchedule.subscribe((data) => {
+            if (data) {
+                prefilledData = data;
+                postToSchedule.set(null); // Clear the store after use
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    });
 
     function handlePostsUpdated() {
+        // Re-fetch events when a new post is created
         fetchEvents();
     }
 </script>
@@ -47,18 +69,29 @@
             <i class="fas fa-calendar-alt me-3"></i>
             Content Scheduler
         </h1>
-        <p class="page-subtitle">Schedule and manage your social media content across all platforms</p>
+        <p class="page-subtitle">
+            Schedule and manage your social media content across all platforms
+        </p>
     </div>
 
     <div class="row g-4">
         <div class="col-lg-4">
-            <CreatePostForm on:postsUpdated={handlePostsUpdated} />
+            <!-- Pass both prefilledData (from store) and approvedIdeas (from load function) -->
+            <CreatePostForm
+                {prefilledData}
+                approvedIdeas={$page.data.approvedIdeas || []}
+                on:postsUpdated={handlePostsUpdated}
+            />
         </div>
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
                     {#if isLoading}
-                        <p>Loading Calendar...</p>
+                        <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
                     {:else}
                         <SchedulerCalendar
                             bind:this={calendarComponent}

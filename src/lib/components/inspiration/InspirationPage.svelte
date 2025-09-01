@@ -1,10 +1,21 @@
 <script>
-    import IdeaGeneratorForm from "./IdeaGeneratorForm.svelte";
-    import TrendingTopics from "./TrendingTopics.svelte";
-    import IdeaBoard from "./IdeaBoard.svelte";
+    import IdeaGeneratorForm from './IdeaGeneratorForm.svelte';
+    import IdeaBoard from './IdeaBoard.svelte';
+
+    /** @type {any | null} */
+    let generatedPlan = null;
+    let isLoading = false;
+
+    /**
+     * @param {CustomEvent<any>} event
+     */
+    function handlePlanGenerated(event) {
+        generatedPlan = event.detail;
+        isLoading = false;
+    }
 </script>
 
-<div class="container py-4">
+<div class="inspiration-container">
     <div class="page-header">
         <h1 class="page-title">
             <i class="fas fa-lightbulb me-3"></i>
@@ -12,12 +23,24 @@
         </h1>
         <p class="page-subtitle">Discover trending topics and generate creative content ideas powered by AI</p>
     </div>
-    <TrendingTopics />
-    <IdeaGeneratorForm />
-    <IdeaBoard />
+
+    <div class="content-wrapper">
+        <!-- Main content generation form -->
+        <IdeaGeneratorForm on:loading={() => (isLoading = true)} on:planGenerated={handlePlanGenerated} />
+        
+        <!-- Generated plan display -->
+        <IdeaBoard {generatedPlan} {isLoading} />
+    </div>
 </div>
 
 <style>
+    .inspiration-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        min-height: 100vh;
+    }
+
     .page-header {
         text-align: center;
         margin-bottom: 3rem;
@@ -55,8 +78,18 @@
         margin-right: auto;
     }
 
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
     /* Responsive design */
     @media (max-width: 768px) {
+        .inspiration-container {
+            padding: 1.5rem 1rem;
+        }
+
         .page-title {
             font-size: 2rem;
             flex-direction: column;
