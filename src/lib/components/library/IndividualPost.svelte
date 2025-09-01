@@ -875,7 +875,7 @@
                         <div class="summary-value {(sentimentData._metadata?.overallScore || 7.8) >= 7 ? 'sentiment-positive' : (sentimentData._metadata?.overallScore || 7.8) >= 5 ? 'sentiment-neutral' : 'sentiment-negative'}">{sentimentData._metadata?.overallScore || 7.8}/10</div>
                         <div class="summary-change positive">
                             <i class="fas fa-{(sentimentData._metadata?.overallScore || 7.8) >= 7 ? 'smile' : (sentimentData._metadata?.overallScore || 7.8) >= 5 ? 'meh' : 'frown'} me-1"></i>
-                            Analyzed {sentimentData._metadata?.totalComments || 25} comments with AI
+                            Analyzed {sentimentData._metadata?.totalComments || 25} comments with VADER
                         </div>
                     </div>
                 </div>

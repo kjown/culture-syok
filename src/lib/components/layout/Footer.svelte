@@ -187,6 +187,7 @@
         font-size: 1.5rem;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
     }
     
     .brand-name {
@@ -195,6 +196,9 @@
         font-size: 1.5rem;
         margin: 0;
         letter-spacing: -0.5px;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
     }
     
     .brand-description {

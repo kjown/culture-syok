@@ -20,14 +20,21 @@
 
 <style>
     .idea-card {
-        background: rgba(255, 255, 255, 0.98);
+        background: rgba(255, 255, 255, 0.95);
         border-radius: 15px;
-        border: 1px solid #e2e8f0;
+        border: 2px solid rgba(102, 126, 234, 0.1);
         transition: all 0.3s ease;
         overflow: hidden;
         height: 100%;
         display: flex;
         flex-direction: column;
+        backdrop-filter: blur(10px);
+    }
+
+    .idea-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        border-color: rgba(102, 126, 234, 0.3);
     }
 
     .card-header {
@@ -35,20 +42,22 @@
         display: flex;
         align-items: center;
         gap: 1rem;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
     }
 
     .idea-icon {
         width: 40px;
         height: 40px;
         background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-        border-radius: 10px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #667eea;
         font-size: 1.1rem;
         flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
     }
 
     .card-title {
@@ -62,6 +71,8 @@
     .card-body {
         padding: 1rem 1.5rem 1.5rem;
         flex-grow: 1;
+        display: flex;
+        flex-direction: column;
     }
 
     .card-description {
@@ -69,5 +80,6 @@
         font-size: 0.95rem;
         line-height: 1.6;
         margin: 0;
+        flex-grow: 1;
     }
 </style>

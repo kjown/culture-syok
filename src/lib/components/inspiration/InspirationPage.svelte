@@ -15,23 +15,32 @@
     }
 </script>
 
-<div class="container py-4">
+<div class="inspiration-container">
     <div class="page-header">
         <h1 class="page-title">
-            <i class="fas fa-lightbulb me-3" />
+            <i class="fas fa-lightbulb me-3"></i>
             Content Inspiration
         </h1>
         <p class="page-subtitle">Discover trending topics and generate creative content ideas powered by AI</p>
     </div>
 
-    <!-- The form now handles trend selection and plan generation -->
-    <IdeaGeneratorForm on:loading={() => (isLoading = true)} on:planGenerated={handlePlanGenerated} />
-
-    <!-- The board now receives the generated plan as a prop -->
-    <IdeaBoard {generatedPlan} {isLoading} />
+    <div class="content-wrapper">
+        <!-- Main content generation form -->
+        <IdeaGeneratorForm on:loading={() => (isLoading = true)} on:planGenerated={handlePlanGenerated} />
+        
+        <!-- Generated plan display -->
+        <IdeaBoard {generatedPlan} {isLoading} />
+    </div>
 </div>
 
 <style>
+    .inspiration-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        min-height: 100vh;
+    }
+
     .page-header {
         text-align: center;
         margin-bottom: 3rem;
@@ -69,8 +78,18 @@
         margin-right: auto;
     }
 
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
     /* Responsive design */
     @media (max-width: 768px) {
+        .inspiration-container {
+            padding: 1.5rem 1rem;
+        }
+
         .page-title {
             font-size: 2rem;
             flex-direction: column;

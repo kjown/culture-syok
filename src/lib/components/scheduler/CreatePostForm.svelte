@@ -1,40 +1,77 @@
 <script>
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher, onMount } from "svelte";
     import MediaUploader from "./MediaUploader.svelte";
 
     const dispatch = createEventDispatcher();
 
+    /** @type {{ caption: string; campaign: string; tags: string[] } | null} */
+    export let prefilledData = null;
+    /** @type {Array<{id: number; title: string; description: string; tags: string[]}>} */
+    export let approvedIdeas = [];
+
+    // Local state for the form fields
     let postContent = "";
-    let scheduleDate = "";
+    let campaign = "";
+    let tagsString = "";
+    let scheduledTime = "";
     /** @type {string} */
     let mediaUrl = "";
     let isSubmitting = false;
     /** @type {import("./MediaUploader.svelte").default|null} */
     let mediaUploaderRef = null; // Used to reset MediaUploader
 
-    // New state variables
-    /** @type {string[]} */
-    let channels = [];
-    let altText = "";
-    let campaign = "";
-    let tags = "";
-    let firstComment = "";
+    // State for the dropdown selection
+    let selectedIdeaId = "";
+
+    // Reactive statement to populate the form when an idea is selected from the dropdown
+    $: {
+        if (selectedIdeaId) {
+            const selectedIdea = approvedIdeas.find((idea) => idea.id === Number(selectedIdeaId));
+            if (selectedIdea) {
+                postContent = selectedIdea.description || "";
+                campaign = selectedIdea.title || "";
+                tagsString = (selectedIdea.tags || []).join(", ");
+            }
+        }
+    }
+
+    onMount(() => {
+        // If prefilledData exists, populate the form's state variables.
+        if (prefilledData) {
+            postContent = prefilledData.caption || "";
+            campaign = prefilledData.campaign || "";
+            // Join the array of tags into a comma-separated string for the input field.
+            tagsString = (prefilledData.tags || []).join(", ");
+            // Clear the selected idea since we're using prefilled data
+            selectedIdeaId = "";
+        }
+    });
+
+    // Watch for changes in prefilledData and update form accordingly
+    $: {
+        if (prefilledData) {
+            postContent = prefilledData.caption || "";
+            campaign = prefilledData.campaign || "";
+            tagsString = (prefilledData.tags || []).join(", ");
+            selectedIdeaId = ""; // Clear dropdown selection when using prefilled data
+        }
+    }
 
     /**
-     * @param {CustomEvent<string|null>} event
+     * @param {CustomEvent<{ url: string }>} event
      */
-    function handleUploadComplete(event) {
-        mediaUrl = event.detail || "";
+    function handleMediaUpload(event) {
+        mediaUrl = event.detail.url;
     }
 
     async function handleSchedule() {
-        if (!postContent || !scheduleDate) {
+        if (!postContent || !scheduledTime) {
             alert("Please fill in both the content and the schedule date.");
             return;
         }
         isSubmitting = true;
 
-        const startTime = new Date(scheduleDate);
+        const startTime = new Date(scheduledTime);
         const endTime = new Date(startTime.getTime() + 30 * 60000);
 
         // Build structured description
@@ -43,20 +80,14 @@
         if (mediaUrl) {
             descriptionParts.push(`[MEDIA_URL]: ${mediaUrl}`);
         }
-        if (channels.length > 0) {
-            descriptionParts.push(`[CHANNELS]: ${channels.join(", ")}`);
-        }
-        if (altText) {
-            descriptionParts.push(`[ALT_TEXT]: ${altText}`);
-        }
         if (campaign) {
             descriptionParts.push(`[CAMPAIGN]: ${campaign}`);
         }
-        if (tags) {
-            descriptionParts.push(`[TAGS]: ${tags}`);
+        if (tagsString) {
+            descriptionParts.push(`[TAGS]: ${tagsString}`);
         }
-        if (firstComment) {
-            descriptionParts.push(`[FIRST_COMMENT]: ${firstComment}`);
+        if (postContent) {
+            descriptionParts.push(`[CONTENT]: ${postContent}`);
         }
 
         const metadataString = descriptionParts.join("\n");
@@ -80,21 +111,31 @@
             alert("Post scheduled successfully!");
             // Reset all form state
             postContent = "";
-            scheduleDate = "";
+            scheduledTime = "";
             mediaUrl = "";
             if (mediaUploaderRef && typeof mediaUploaderRef.reset === "function") {
                 mediaUploaderRef.reset();
             }
-            channels = [];
-            altText = "";
             campaign = "";
-            tags = "";
-            firstComment = "";
+            tagsString = "";
+            selectedIdeaId = ""; // Reset dropdown selection
             dispatch("postsUpdated");
         } else {
             const result = await response.json();
             alert(`Error: ${result.error}`);
         }
+    }
+
+    function handleSubmit() {
+        const tags = tagsString.split(",").map((t) => t.trim()).filter((t) => t);
+        console.log("Submitting post:", {
+            postContent,
+            campaign,
+            tags,
+            scheduledTime,
+            mediaUrl,
+        });
+        // ... form submission logic
     }
 </script>
 
@@ -110,6 +151,27 @@
     </div>
 
     <form on:submit|preventDefault={handleSchedule} class="post-form">
+        <!-- Approved Ideas Dropdown -->
+        {#if approvedIdeas.length > 0}
+            <div class="form-section">
+                <label for="approved-idea" class="form-label">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Start from an Approved Idea
+                </label>
+                <select
+                    id="approved-idea"
+                    class="form-control"
+                    bind:value={selectedIdeaId}
+                >
+                    <option disabled selected value="">-- Select an idea to pre-fill form --</option>
+                    {#each approvedIdeas as idea (idea.id)}
+                        <option value={idea.id}>{idea.title}</option>
+                    {/each}
+                </select>
+            </div>
+            <div style="text-align: center; margin: 1.5rem 0; color: #9ca3af;">OR</div>
+        {/if}
+
         <!-- Content Section -->
         <div class="form-section">
             <label for="postContent" class="form-label">
@@ -138,110 +200,11 @@
             </label>
             <MediaUploader
                 bind:this={mediaUploaderRef}
-                on:uploadComplete={handleUploadComplete}
+                on:uploadComplete={handleMediaUpload}
             />
         </div>
 
-        <!-- Channels Section -->
-        <div class="form-section">
-            <label class="form-label">
-                <i class="fas fa-share-alt me-2"></i>
-                Social Platforms
-            </label>
-            <div class="channels-grid">
-                <div class="channel-item">
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="facebook"
-                        value="Facebook"
-                        bind:group={channels}
-                    />
-                    <label class="channel-label" for="facebook">
-                        <div class="channel-icon facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </div>
-                        <span>Facebook</span>
-                    </label>
-                </div>
-                <div class="channel-item">
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="instagram"
-                        value="Instagram"
-                        bind:group={channels}
-                    />
-                    <label class="channel-label" for="instagram">
-                        <div class="channel-icon instagram">
-                            <i class="fab fa-instagram"></i>
-                        </div>
-                        <span>Instagram</span>
-                    </label>
-                </div>
-                <div class="channel-item">
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="x"
-                        value="X"
-                        bind:group={channels}
-                    />
-                    <label class="channel-label" for="x">
-                        <div class="channel-icon x">
-                            <i class="fab fa-x-twitter"></i>
-                        </div>
-                        <span>X</span>
-                    </label>
-                </div>
-                <div class="channel-item">
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="linkedin"
-                        value="LinkedIn"
-                        bind:group={channels}
-                    />
-                    <label class="channel-label" for="linkedin">
-                        <div class="channel-icon linkedin">
-                            <i class="fab fa-linkedin-in"></i>
-                        </div>
-                        <span>LinkedIn</span>
-                    </label>
-                </div>
-                <div class="channel-item">
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="tiktok"
-                        value="TikTok"
-                        bind:group={channels}
-                    />
-                    <label class="channel-label" for="tiktok">
-                        <div class="channel-icon tiktok">
-                            <i class="fab fa-tiktok"></i>
-                        </div>
-                        <span>TikTok</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Additional Options -->
-        <div class="form-section">
-            <label for="altText" class="form-label">
-                <i class="fas fa-universal-access me-2"></i>
-                Alt Text
-            </label>
-            <input
-                type="text"
-                class="form-control"
-                id="altText"
-                placeholder="Describe your media for accessibility"
-                bind:value={altText}
-            />
-        </div>
-
+        <!-- Campaign Section -->
         <div class="form-section">
             <label for="campaign" class="form-label">
                 <i class="fas fa-bullhorn me-2"></i>
@@ -256,6 +219,7 @@
             />
         </div>
 
+        <!-- Tags Section -->
         <div class="form-section">
             <label for="tags" class="form-label">
                 <i class="fas fa-hashtag me-2"></i>
@@ -266,35 +230,21 @@
                 class="form-control"
                 id="tags"
                 placeholder="Enter comma-separated tags (e.g., #marketing, #social)"
-                bind:value={tags}
+                bind:value={tagsString}
             />
-        </div>
-
-        <div class="form-section">
-            <label for="firstComment" class="form-label">
-                <i class="fas fa-comment me-2"></i>
-                First Comment <span class="optional">(Optional)</span>
-            </label>
-            <textarea
-                class="form-control"
-                id="firstComment"
-                rows="2"
-                placeholder="This will be posted as the first comment on supported platforms"
-                bind:value={firstComment}
-            ></textarea>
         </div>
 
         <!-- Schedule Section -->
         <div class="form-section schedule-section">
-            <label for="scheduleDate" class="form-label">
+            <label for="scheduledTime" class="form-label">
                 <i class="fas fa-clock me-2"></i>
                 Schedule Date & Time
             </label>
             <input
                 type="datetime-local"
                 class="form-control datetime-input"
-                id="scheduleDate"
-                bind:value={scheduleDate}
+                id="scheduledTime"
+                bind:value={scheduledTime}
             />
         </div>
 
