@@ -1,20 +1,34 @@
 <script>
-    import IdeaGeneratorForm from "./IdeaGeneratorForm.svelte";
-    import TrendingTopics from "./TrendingTopics.svelte";
-    import IdeaBoard from "./IdeaBoard.svelte";
+    import IdeaGeneratorForm from './IdeaGeneratorForm.svelte';
+    import IdeaBoard from './IdeaBoard.svelte';
+
+    /** @type {any | null} */
+    let generatedPlan = null;
+    let isLoading = false;
+
+    /**
+     * @param {CustomEvent<any>} event
+     */
+    function handlePlanGenerated(event) {
+        generatedPlan = event.detail;
+        isLoading = false;
+    }
 </script>
 
 <div class="container py-4">
     <div class="page-header">
         <h1 class="page-title">
-            <i class="fas fa-lightbulb me-3"></i>
+            <i class="fas fa-lightbulb me-3" />
             Content Inspiration
         </h1>
         <p class="page-subtitle">Discover trending topics and generate creative content ideas powered by AI</p>
     </div>
-    <TrendingTopics />
-    <IdeaGeneratorForm />
-    <IdeaBoard />
+
+    <!-- The form now handles trend selection and plan generation -->
+    <IdeaGeneratorForm on:loading={() => (isLoading = true)} on:planGenerated={handlePlanGenerated} />
+
+    <!-- The board now receives the generated plan as a prop -->
+    <IdeaBoard {generatedPlan} {isLoading} />
 </div>
 
 <style>

@@ -726,78 +726,78 @@
 
 <div class="container py-4 mt-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 100vh;">
     <div class="mb-4 text-center">
-        <h1 class="mb-2" style="font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 2.5rem;">
-            <i class="fas fa-chart-line me-3" style="color: #667eea;"></i>Analytics Overview
+        <h1 class="mb-2 title-responsive" style="font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 2.5rem;">
+            <i class="fas fa-chart-line me-3 title-icon" style="color: #667eea;"></i>Analytics Overview
         </h1>
-        <div class="text-muted mb-4" style="font-size:1.1rem; color: #718096 !important; font-weight: 500;">
+        <div class="text-muted mb-4 subtitle-responsive" style="font-size:1.1rem; color: #718096 !important; font-weight: 500;">
             Analyze your social media performance across all connected accounts.
         </div>
     </div>
 
     <div class="mb-4 d-flex justify-content-center">
-        <select class="form-select" style="width: auto; border-radius: 15px; border: 2px solid #e2e8f0; padding: 10px 20px; font-weight: 600; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" bind:value={selectedRange}>
+        <select class="form-select range-select" style="width: auto; border-radius: 15px; border: 2px solid #e2e8f0; padding: 10px 20px; font-weight: 600; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" bind:value={selectedRange}>
             {#each ranges as range}
                 <option value={range}>{range}</option>
             {/each}
         </select>
     </div>
 
-    <div class="row mb-4 g-3">
-        <div class="col-md-3">
-            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <div class="card-body d-flex flex-column justify-content-center">
+    <div class="row mb-4 g-3 kpi-cards">
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm h-100 kpi-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center kpi-card-body">
                     <div class="mb-2">
-                        <i class="fas fa-eye" style="font-size: 2rem; opacity: 0.8;"></i>
+                        <i class="fas fa-eye kpi-icon" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
                     <!-- Dummy Total Reach -->
-                    <div class="fw-bold" style="font-size:1.8rem;">125,340</div>
-                    <div style="opacity: 0.9; font-weight: 500;">Total Reach</div>
-                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                    <div class="fw-bold kpi-number" style="font-size:1.8rem;">125,340</div>
+                    <div class="kpi-label" style="opacity: 0.9; font-weight: 500;">Total Reach</div>
+                    <div class="mt-2 px-2 py-1 rounded kpi-badge" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-up me-1"></i>+12%
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-                <div class="card-body d-flex flex-column justify-content-center">
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm h-100 kpi-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center kpi-card-body">
                     <div class="mb-2">
-                        <i class="fas fa-heart" style="font-size: 2rem; opacity: 0.8;"></i>
+                        <i class="fas fa-heart kpi-icon" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
                     <!-- Dummy Total Engagement -->
-                    <div class="fw-bold" style="font-size:1.8rem;">8,234</div>
-                    <div style="opacity: 0.9; font-weight: 500;">Engagement</div>
-                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                    <div class="fw-bold kpi-number" style="font-size:1.8rem;">8,234</div>
+                    <div class="kpi-label" style="opacity: 0.9; font-weight: 500;">Engagement</div>
+                    <div class="mt-2 px-2 py-1 rounded kpi-badge" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-up me-1"></i>+8%
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-                <div class="card-body d-flex flex-column justify-content-center">
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm h-100 kpi-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center kpi-card-body">
                     <div class="mb-2">
-                        <i class="fas fa-chart-line" style="font-size: 2rem; opacity: 0.8;"></i>
+                        <i class="fas fa-chart-line kpi-icon" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
                     <!-- Dummy Engagement Rate -->
-                    <div class="fw-bold" style="font-size:1.8rem;">6.6%</div>
-                    <div style="opacity: 0.9; font-weight: 500;">Engagement Rate</div>
-                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                    <div class="fw-bold kpi-number" style="font-size:1.8rem;">6.6%</div>
+                    <div class="kpi-label" style="opacity: 0.9; font-weight: 500;">Engagement Rate</div>
+                    <div class="mt-2 px-2 py-1 rounded kpi-badge" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-up me-1"></i>+2%
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-center border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
-                <div class="card-body d-flex flex-column justify-content-center">
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm h-100 kpi-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                <div class="card-body d-flex flex-column justify-content-center kpi-card-body">
                     <div class="mb-2">
-                        <i class="fas fa-user-plus" style="font-size: 2rem; opacity: 0.8;"></i>
+                        <i class="fas fa-user-plus kpi-icon" style="font-size: 2rem; opacity: 0.8;"></i>
                     </div>
                     <!-- Dummy New Followers -->
-                    <div class="fw-bold" style="font-size:1.8rem;">1,247</div>
-                    <div style="opacity: 0.9; font-weight: 500;">New Followers</div>
-                    <div class="mt-2 px-2 py-1 rounded" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
+                    <div class="fw-bold kpi-number" style="font-size:1.8rem;">1,247</div>
+                    <div class="kpi-label" style="opacity: 0.9; font-weight: 500;">New Followers</div>
+                    <div class="mt-2 px-2 py-1 rounded kpi-badge" style="background: rgba(255,255,255,0.2); font-size:0.9rem; display: inline-block;">
                         <i class="fas fa-arrow-up me-1"></i>+15%
                     </div>
                 </div>
@@ -806,60 +806,60 @@
     </div>
 
     <!-- Tabs for Engagement/Reach -->
-    <div class="d-flex mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 6px; width: 100%; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+    <div class="tab-container d-flex mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 6px; width: 100%; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
         <button 
-            class="btn flex-fill" 
+            class="btn flex-fill tab-button" 
             type="button" 
             style="background-color: {activeTab === 'Engagement' ? 'white' : 'transparent'}; border: none; border-radius: 12px; font-weight: 600; padding: 12px 20px; margin: 0; transition: all 0.3s ease; {activeTab === 'Engagement' ? 'box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px);' : ''} color: {activeTab === 'Engagement' ? '#667eea' : 'rgba(255,255,255,0.8)'};"
             on:click={() => switchTab('Engagement')}
         >
-            <i class="fas fa-heart me-2"></i>
-            Engagement
+            <i class="fas fa-heart me-2 tab-icon"></i>
+            <span class="tab-text">Engagement</span>
         </button>
         <button 
-            class="btn flex-fill" 
+            class="btn flex-fill tab-button" 
             type="button" 
             style="background-color: {activeTab === 'Reach' ? 'white' : 'transparent'}; border: none; border-radius: 12px; font-weight: 600; padding: 12px 20px; margin: 0; transition: all 0.3s ease; {activeTab === 'Reach' ? 'box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px);' : ''} color: {activeTab === 'Reach' ? '#667eea' : 'rgba(255,255,255,0.8)'};"
             on:click={() => switchTab('Reach')}
         >
-            <i class="fas fa-eye me-2"></i>
-            Reach
+            <i class="fas fa-eye me-2 tab-icon"></i>
+            <span class="tab-text">Reach</span>
         </button>
     </div>
 
     <!-- Engagement Over Time Chart -->
     <div class="mb-4">
-        <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%); border-radius: 20px;">
-            <div class="card-body" style="padding: 2rem;">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="card border-0 shadow-lg chart-card" style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%); border-radius: 20px;">
+            <div class="card-body chart-card-body" style="padding: 2rem;">
+                <div class="d-flex align-items-center mb-3 chart-header">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center chart-icon" style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <i class="fas fa-chart-area text-white" style="font-size: 1.2rem;"></i>
                     </div>
                     <div>
-                        <h5 class="card-title mb-1" style="color: #2d3748; font-weight: 700;">Performance Over Time</h5>
-                        <p class="text-muted small mb-0" style="color: #718096 !important;">{activeTab} {activeTab === 'Engagement' ? 'Rate' : ''}</p>
+                        <h5 class="card-title mb-1 chart-title" style="color: #2d3748; font-weight: 700;">Performance Over Time</h5>
+                        <p class="text-muted small mb-0 chart-subtitle" style="color: #718096 !important;">{activeTab} {activeTab === 'Engagement' ? 'Rate' : ''}</p>
                     </div>
                 </div>
                 
-                <div class="row align-items-center mb-4">
+                <div class="row align-items-center mb-4 chart-stats">
                     <div class="col-md-6">
                         {#if activeTab === 'Engagement'}
                             <!-- Dummy engagement rate data aligned with KPI cards -->
-                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                            <div class="fw-bold chart-metric" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                                 6.6%
                             </div>
-                            <div class="text-muted">Current Engagement Rate
-                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
+                            <div class="text-muted chart-label">Current Engagement Rate
+                                <span class="badge rounded-pill chart-badge" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
                                     <i class="fas fa-chart-line me-1"></i>Demo Data
                                 </span>
                             </div>
                         {:else}
                             <!-- Dummy reach data aligned with KPI cards -->
-                            <div class="fw-bold" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                            <div class="fw-bold chart-metric" style="font-size:2.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                                 125.3K
                             </div>
-                            <div class="text-muted">Current Total Reach
-                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
+                            <div class="text-muted chart-label">Current Total Reach
+                                <span class="badge rounded-pill chart-badge" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 4px 8px;">
                                     <i class="fas fa-chart-line me-1"></i>Demo Data
                                 </span>
                             </div>
@@ -867,7 +867,7 @@
                     </div>
                 </div>
                 
-                <div style="height: 300px; position: relative; width: 100%; background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <div class="chart-container" style="height: 300px; position: relative; width: 100%; background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
                     <canvas bind:this={engagementChartCanvas} style="width: 100% !important; height: 100% !important;"></canvas>
                 </div>
             </div>
@@ -876,114 +876,114 @@
 
     <!-- Top Platforms Table -->
     <div class="mb-4">
-        <div class="d-flex align-items-center mb-3">
-            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <div class="d-flex align-items-center mb-3 platforms-header">
+            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center platforms-icon" style="width: 45px; height: 45px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                 <i class="fas fa-share-alt text-white" style="font-size: 1.1rem;"></i>
             </div>
-            <div class="fw-bold" style="font-size: 1.3rem; color: #2d3748;">Top Platforms</div>
+            <div class="fw-bold platforms-title" style="font-size: 1.3rem; color: #2d3748;">Top Platforms</div>
         </div>
-        <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+        <div class="card border-0 shadow-lg platforms-card" style="border-radius: 20px; overflow: hidden;">
             <div class="card-body px-0 py-0">
-                <table class="table mb-0" style="border-radius: 20px; overflow: hidden;">
-                    <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                        <tr>
-                            <th style="border: none; padding: 1rem 2rem; font-weight: 600;">Platform</th>
-                            <th style="border: none; padding: 1rem 1rem; font-weight: 600;">Engagement</th>
-                            <th style="border: none; padding: 1rem 2rem; font-weight: 600;">Reach</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
-                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:linear-gradient(135deg,#fdc468 0%,#df4996 50%,#4f5bd5 100%); box-shadow: 0 4px 12px rgba(253, 196, 104, 0.4);">
-                                    <i class="fab fa-instagram" style="color:white; font-size: 1.2rem;"></i>
-                                </span>
-                                <span style="font-weight: 600; color: #2d3748;">Instagram</span>
-                            </td>
-                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,234</td>
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,345</td>
-                        </tr>
-                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
-                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#1877F3; box-shadow: 0 4px 12px rgba(24, 119, 243, 0.4);">
-                                    <i class="fab fa-facebook" style="color:white; font-size: 1.2rem;"></i>
-                                </span>
-                                <span style="font-weight: 600; color: #2d3748;">Facebook</span>
-                            </td>
-                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,122</td>
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,233</td>
-                        </tr>
-                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
-                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
-                                    <i class="fab fa-x-twitter" style="color:white; font-size: 1.2rem;"></i>
-                                </span>
-                                <span style="font-weight: 600; color: #2d3748;">X</span>
-                            </td>
-                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,010</td>
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,121</td>      
-                        </tr>
-                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0;">
-                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#0a66c2; box-shadow: 0 4px 12px rgba(10, 102, 194, 0.4);">
-                                    <i class="fab fa-linkedin" style="color:white; font-size: 1.2rem;"></i>
-                                </span>
-                                <span style="font-weight: 600; color: #2d3748;">LinkedIn</span>
-                            </td>
-                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">800</td>
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,010</td>
-                        </tr>
-                        <tr style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; border-bottom: none;">
-                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background:#000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
-                                    <i class="fab fa-tiktok" style="color:white; font-size: 1.2rem;"></i>
-                                </span>
-                                <span style="font-weight: 600; color: #2d3748;">TikTok</span>
-                            </td>
-                            <td style="padding: 1rem 1rem; border-color: #e2e8f0; border-bottom: none; font-weight: 600; color: #4a5568;">800</td>
-                            <td style="padding: 1rem 2rem; border-color: #e2e8f0; border-bottom: none; font-weight: 600; color: #4a5568;">1,900</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table mb-0 platforms-table" style="border-radius: 20px; overflow: hidden;">
+                        <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <tr>
+                                <th class="platform-th" style="border: none; padding: 1rem 2rem; font-weight: 600;">Platform</th>
+                                <th class="engagement-th" style="border: none; padding: 1rem 1rem; font-weight: 600;">Engagement</th>
+                                <th class="reach-th" style="border: none; padding: 1rem 2rem; font-weight: 600;">Reach</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="platform-row" style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                                <td class="platform-cell" style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                    <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3 platform-logo" style="width: 40px; height: 40px; background:linear-gradient(135deg,#fdc468 0%,#df4996 50%,#4f5bd5 100%); box-shadow: 0 4px 12px rgba(253, 196, 104, 0.4);">
+                                        <i class="fab fa-instagram" style="color:white; font-size: 1.2rem;"></i>
+                                    </span>
+                                    <span class="platform-name" style="font-weight: 600; color: #2d3748;">Instagram</span>
+                                </td>
+                                <td class="metric-cell" style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,234</td>
+                                <td class="metric-cell" style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,345</td>
+                            </tr>
+                            <tr class="platform-row" style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                                <td class="platform-cell" style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                    <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3 platform-logo" style="width: 40px; height: 40px; background:#1877F3; box-shadow: 0 4px 12px rgba(24, 119, 243, 0.4);">
+                                        <i class="fab fa-facebook" style="color:white; font-size: 1.2rem;"></i>
+                                    </span>
+                                    <span class="platform-name" style="font-weight: 600; color: #2d3748;">Facebook</span>
+                                </td>
+                                <td class="metric-cell" style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,122</td>
+                                <td class="metric-cell" style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,233</td>
+                            </tr>
+                            <tr class="platform-row" style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                                <td class="platform-cell" style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                    <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3 platform-logo" style="width: 40px; height: 40px; background:#000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);">
+                                        <i class="fab fa-x-twitter" style="color:white; font-size: 1.2rem;"></i>
+                                    </span>
+                                    <span class="platform-name" style="font-weight: 600; color: #2d3748;">X</span>
+                                </td>
+                                <td class="metric-cell" style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">1,010</td>
+                                <td class="metric-cell" style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,121</td>      
+                            </tr>
+                            <tr class="platform-row" style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                                <td class="platform-cell" style="padding: 1rem 2rem; border-color: #e2e8f0;">
+                                    <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3 platform-logo" style="width: 40px; height: 40px; background:#0a66c2; box-shadow: 0 4px 12px rgba(10, 102, 194, 0.4);">
+                                        <i class="fab fa-linkedin" style="color:white; font-size: 1.2rem;"></i>
+                                    </span>
+                                    <span class="platform-name" style="font-weight: 600; color: #2d3748;">LinkedIn</span>
+                                </td>
+                                <td class="metric-cell" style="padding: 1rem 1rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">800</td>
+                                <td class="metric-cell" style="padding: 1rem 2rem; border-color: #e2e8f0; font-weight: 600; color: #4a5568;">2,010</td>
+                            </tr>
+                            <tr class="platform-row" style="cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#f8f9ff'" onmouseout="this.style.backgroundColor='white'">
+                                <td class="platform-cell" style="padding: 1rem 2rem; border-color: #e2e8f0; border-bottom: none;">
+                                    <span class="rounded-circle d-inline-flex align-items-center justify-content-center me-3 platform-logo" style="width: 40px; height: 40px; background:#000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
+                                        <i class="fab fa-tiktok" style="color:white; font-size: 1.2rem;"></i>
+                                    </span>
+                                    <span class="platform-name" style="font-weight: 600; color: #2d3748;">TikTok</span>
+                                </td>
+                                <td class="metric-cell" style="padding: 1rem 1rem; border-color: #e2e8f0; border-bottom: none; font-weight: 600; color: #4a5568;">800</td>
+                                <td class="metric-cell" style="padding: 1rem 2rem; border-color: #e2e8f0; border-bottom: none; font-weight: 600; color: #4a5568;">1,900</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Live Social Media Analytics Dashboard -->
     <div class="card border-0 shadow-lg mt-5" style="border-radius: 20px; background: linear-gradient(135deg, #fafbff 0%, #f0f4ff 100%);">
-        <div class="card-body" style="padding: 2rem;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <i class="fas fa-broadcast-tower text-white" style="font-size: 1.2rem;"></i>
-                    </div>
-                    <div>
-                        <h5 class="card-title mb-0" style="color: #2d3748; font-weight: 700;">Live Social Media Analytics</h5>
-                        <p class="text-muted mb-0" style="font-size: 0.9rem;">Real-time engagement tracking</p>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
+            <div class="card-body" style="padding: 2rem;">
+                <div class="d-flex justify-content-between align-items-center mb-4 live-header">
                     <div class="d-flex align-items-center">
-                        <label for="platformSelect" class="form-label me-2 mb-0" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Platform:</label>
-                        <select id="platformSelect" class="form-select form-select-sm" style="width:auto; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPlatform} on:change={handlePlatformChange}>
-                            {#each platforms as platform}
-                                <option value={platform}>{platform}</option>
-                            {/each}
-                        </select>
+                        <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fas fa-broadcast-tower text-white" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0 live-title" style="color: #2d3748; font-weight: 700;">Live Social Media Analytics</h5>
+                            <p class="text-muted mb-0 live-subtitle" style="font-size: 0.9rem;">Real-time engagement tracking</p>
+                        </div>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <label for="postSelect" class="form-label me-2 mb-0" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Post:</label>
-                        <select id="postSelect" class="form-select form-select-sm post-select" style="max-width: 300px; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPost} on:change={handlePostChange}>
-                            <option value="All Posts">All Posts</option>
-                            {#each posts as post}
-                                <option value={post} title={post}>{post}</option>
-                            {/each}
-                        </select>
+                    <div class="d-flex align-items-center gap-3 live-controls">
+                        <div class="d-flex align-items-center control-group">
+                            <label for="platformSelect" class="form-label me-2 mb-0 control-label" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Platform:</label>
+                            <select id="platformSelect" class="form-select form-select-sm platform-select" style="width:auto; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPlatform} on:change={handlePlatformChange}>
+                                {#each platforms as platform}
+                                    <option value={platform}>{platform}</option>
+                                {/each}
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center control-group">
+                            <label for="postSelect" class="form-label me-2 mb-0 control-label" style="font-size:0.9rem; font-weight: 600; color: #4a5568;">Post:</label>
+                            <select id="postSelect" class="form-select form-select-sm post-select" style="max-width: 300px; border-radius: 10px; border: 2px solid #e2e8f0; font-weight: 500;" bind:value={selectedPost} on:change={handlePostChange}>
+                                <option value="All Posts">All Posts</option>
+                                {#each posts as post}
+                                    <option value={post} title={post}>{post}</option>
+                                {/each}
+                            </select>
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="mb-4">
+                </div>            <div class="mb-4">
                 <span class="badge me-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 500;">
                     <i class="fas fa-broadcast-tower me-2"></i>{selectedPlatform}
                 </span>
@@ -1017,18 +1017,287 @@
         max-width: 300px;
     }
     
-    /* Ensure dropdowns don't break layout on mobile */
+    /* Mobile responsive styles */
     @media (max-width: 768px) {
+        /* Title and subtitle */
+        .title-responsive {
+            font-size: 2rem !important;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .title-icon {
+            display: block;
+            margin: 0 0 0.5rem 0 !important;
+        }
+        
+        .subtitle-responsive {
+            font-size: 1rem !important;
+            padding: 0 1rem;
+        }
+        
+        /* Range select */
+        .range-select {
+            width: 100% !important;
+            max-width: 300px;
+        }
+        
+        /* KPI Cards */
+        .kpi-cards {
+            margin-bottom: 2rem !important;
+        }
+        
+        .kpi-card-body {
+            padding: 1rem !important;
+        }
+        
+        .kpi-icon {
+            font-size: 1.5rem !important;
+        }
+        
+        .kpi-number {
+            font-size: 1.5rem !important;
+        }
+        
+        .kpi-label {
+            font-size: 0.85rem !important;
+        }
+        
+        .kpi-badge {
+            font-size: 0.8rem !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+        
+        /* Tab container */
+        .tab-container {
+            flex-direction: row;
+            padding: 4px !important;
+        }
+        
+        .tab-button {
+            padding: 10px 8px !important;
+            font-size: 0.9rem;
+        }
+        
+        .tab-icon {
+            font-size: 0.9rem !important;
+        }
+        
+        .tab-text {
+            display: none;
+        }
+        
+        /* Chart card */
+        .chart-card-body {
+            padding: 1.5rem 1rem !important;
+        }
+        
+        .chart-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+        
+        .chart-icon {
+            width: 40px !important;
+            height: 40px !important;
+            margin: 0 !important;
+        }
+        
+        .chart-title {
+            font-size: 1.2rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .chart-subtitle {
+            font-size: 0.85rem !important;
+        }
+        
+        .chart-metric {
+            font-size: 2rem !important;
+            text-align: center;
+        }
+        
+        .chart-label {
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .chart-badge {
+            font-size: 0.8rem !important;
+            padding: 3px 6px !important;
+        }
+        
+        .chart-container {
+            height: 250px !important;
+            padding: 10px !important;
+        }
+        
+        /* Platforms section */
+        .platforms-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+        
+        .platforms-icon {
+            width: 40px !important;
+            height: 40px !important;
+            margin: 0 !important;
+        }
+        
+        .platforms-title {
+            font-size: 1.2rem !important;
+        }
+        
+        /* Platforms table */
+        .platforms-table {
+            font-size: 0.9rem;
+        }
+        
+        .platform-th,
+        .engagement-th,
+        .reach-th {
+            padding: 0.75rem 1rem !important;
+            font-size: 0.85rem !important;
+        }
+        
+        .platform-cell {
+            padding: 0.75rem 1rem !important;
+        }
+        
+        .metric-cell {
+            padding: 0.75rem 0.5rem !important;
+            font-size: 0.9rem !important;
+        }
+        
+        .platform-logo {
+            width: 32px !important;
+            height: 32px !important;
+            margin-right: 0.75rem !important;
+        }
+        
+        .platform-logo i {
+            font-size: 1rem !important;
+        }
+        
+        .platform-name {
+            font-size: 0.9rem !important;
+        }
+        
+        /* Live analytics */
+        .live-header {
+            flex-direction: column !important;
+            gap: 1rem;
+            align-items: flex-start !important;
+        }
+        
+        .live-title {
+            font-size: 1.2rem !important;
+        }
+        
+        .live-subtitle {
+            font-size: 0.85rem !important;
+        }
+        
+        .live-controls {
+            flex-direction: column !important;
+            width: 100%;
+            gap: 1rem !important;
+        }
+        
+        .control-group {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .control-label {
+            font-size: 0.85rem !important;
+            white-space: nowrap;
+        }
+        
+        .platform-select,
         .post-select {
-            max-width: 250px;
-            min-width: 150px;
+            flex: 1;
+            min-width: 150px !important;
+            max-width: none !important;
+        }
+        
+        /* Container padding */
+        .container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
         }
     }
     
     @media (max-width: 576px) {
+        .title-responsive {
+            font-size: 1.75rem !important;
+        }
+        
+        .subtitle-responsive {
+            font-size: 0.95rem !important;
+        }
+        
+        .kpi-number {
+            font-size: 1.3rem !important;
+        }
+        
+        .kpi-label {
+            font-size: 0.8rem !important;
+        }
+        
+        .chart-metric {
+            font-size: 1.75rem !important;
+        }
+        
+        .chart-container {
+            height: 200px !important;
+            padding: 8px !important;
+        }
+        
+        .platforms-table {
+            font-size: 0.85rem;
+        }
+        
+        .platform-th,
+        .engagement-th,
+        .reach-th {
+            padding: 0.5rem 0.75rem !important;
+            font-size: 0.8rem !important;
+        }
+        
+        .platform-cell {
+            padding: 0.5rem 0.75rem !important;
+        }
+        
+        .metric-cell {
+            padding: 0.5rem 0.25rem !important;
+            font-size: 0.85rem !important;
+        }
+        
+        .platform-logo {
+            width: 28px !important;
+            height: 28px !important;
+            margin-right: 0.5rem !important;
+        }
+        
+        .platform-logo i {
+            font-size: 0.9rem !important;
+        }
+        
+        .platform-name {
+            font-size: 0.85rem !important;
+        }
+        
+        .control-label {
+            font-size: 0.8rem !important;
+        }
+        
+        .platform-select,
         .post-select {
-            max-width: 200px;
-            min-width: 120px;
+            min-width: 120px !important;
+            font-size: 0.85rem !important;
         }
     }
 </style>
