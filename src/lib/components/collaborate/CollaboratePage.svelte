@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from 'svelte';
+    
     // Define the idea type
     /** @typedef {{
         id: number,
@@ -9,51 +11,96 @@
         createdDate: string,
         assignee: string,
         platform: string,
-        notes: string
+        notes: string,
+        content?: string
     }} Idea */
 
     /** @type {Idea[]} */
-    let ideas = [
-        { 
-            id: 1,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBYiBwTZNX9tmOx_I5yC6hQmVg2PEfTqQnMA&s",
-            title: "Summer Campaign Concept",
-            description: "Vibrant summer-themed social media campaign with beach vibes",
-            status: "Ideas",
-            createdDate: "2025-08-30",
-            assignee: "John Doe",
-            platform: "Instagram, Facebook",
-            notes: "Focus on bright colors and summer activities"
-        },
-        { 
-            id: 2,
-            image: "https://media.tenor.com/18QkSCyju38AAAAe/tired-exhausted-yellow-creature.png",
-            title: "Relatable Content Series",
-            description: "Funny and relatable content targeting young professionals",
-            status: "Ideas",
-            createdDate: "2025-08-28",
-            assignee: "Jane Smith",
-            platform: "Twitter, LinkedIn",
-            notes: "Use memes and trending formats"
-        },
-        { 
-            id: 3,
-            image: "https://i.ytimg.com/vi/NhHb9usKy6Q/maxresdefault.jpg",
-            title: "Product Showcase Video",
-            description: "Creative product demonstration with engaging visuals",
-            status: "Ideas",
-            createdDate: "2025-08-25",
-            assignee: "Mike Johnson",
-            platform: "YouTube, TikTok",
-            notes: "Include customer testimonials"
-        },
-    ];
+    export let initialIdeas = [];
+    
+    /** @type {Idea[]} */
+    let ideas = [];
+    
     let activeTab = "Ideas";
     let tabs = ["Ideas", "To Do", "In Review", "Approved"];
     let link = "";
     let date = "";
     let time = "";
     let reminder = "";
+
+    // Initialize ideas from props
+    onMount(() => {
+        ideas = [...initialIdeas];
+    });
+
+    // API functions
+    /**
+     * @param {Partial<Idea>} idea
+     */
+    async function saveIdeaToAPI(idea) {
+        try {
+            const response = await fetch('/api/collaborate/cards', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(idea)
+            });
+            
+            if (response.ok) {
+                const savedIdea = await response.json();
+                return savedIdea;
+            } else {
+                throw new Error('Failed to save idea');
+            }
+        } catch (error) {
+            console.error('Error saving idea:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * @param {Idea} idea
+     */
+    async function updateIdeaInAPI(idea) {
+        try {
+            const response = await fetch('/api/collaborate/cards', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(idea)
+            });
+            
+            if (response.ok) {
+                const updatedIdea = await response.json();
+                return updatedIdea;
+            } else {
+                throw new Error('Failed to update idea');
+            }
+        } catch (error) {
+            console.error('Error updating idea:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * @param {number} ideaId
+     */
+    async function deleteIdeaFromAPI(ideaId) {
+        try {
+            const response = await fetch('/api/collaborate/cards', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: ideaId })
+            });
+            
+            if (response.ok) {
+                return true;
+            } else {
+                throw new Error('Failed to delete idea');
+            }
+        } catch (error) {
+            console.error('Error deleting idea:', error);
+            throw error;
+        }
+    }
 
     // Modal states
     let showViewModal = false;
@@ -94,15 +141,41 @@
     }
 
     /** @param {number} ideaId */
-    function moveToNextPhase(ideaId) {
+    async function moveToNextPhase(ideaId) {
         const currentTabIndex = tabs.indexOf(activeTab);
         if (currentTabIndex < tabs.length - 1) {
             const nextStatus = tabs[currentTabIndex + 1];
-            ideas = ideas.map(idea => 
-                idea.id === ideaId 
-                    ? { ...idea, status: nextStatus }
-                    : idea
-            );
+            const ideaToUpdate = ideas.find(idea => idea.id === ideaId);
+            
+            if (ideaToUpdate) {
+                try {
+                    const updatedIdea = { ...ideaToUpdate, status: nextStatus };
+                    await updateIdeaInAPI(updatedIdea);
+                    
+                    ideas = ideas.map(idea => 
+                        idea.id === ideaId 
+                            ? { ...idea, status: nextStatus }
+                            : idea
+                    );
+                } catch (error) {
+                    console.error('Failed to move idea to next phase:', error);
+                    // Could show a toast notification here
+                }
+            }
+        }
+    }
+
+    /** @param {number} ideaId */
+    async function deleteIdea(ideaId) {
+        if (confirm('Are you sure you want to delete this idea? This action cannot be undone.')) {
+            try {
+                await deleteIdeaFromAPI(ideaId);
+                
+                ideas = ideas.filter(idea => idea.id !== ideaId);
+            } catch (error) {
+                console.error('Failed to delete idea:', error);
+                // Could show a toast notification here
+            }
         }
     }
 
@@ -126,26 +199,44 @@
         imagePreview = "";
     }
 
-    function saveEdit() {
+    async function saveEdit() {
         if (editingIdea.id) {
-            ideas = ideas.map(idea => 
-                idea.id === editingIdea.id 
-                    ? { ...idea, ...editingIdea }
-                    : idea
-            );
+            try {
+                /** @type {Idea} */
+                const ideaToUpdate = {
+                    id: editingIdea.id,
+                    title: editingIdea.title || "",
+                    description: editingIdea.description || "",
+                    status: editingIdea.status || "Ideas",
+                    createdDate: editingIdea.createdDate || new Date().toISOString().split('T')[0],
+                    assignee: editingIdea.assignee || "Unassigned",
+                    platform: editingIdea.platform || "Not specified",
+                    image: editingIdea.image || "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=300&h=200&fit=crop&crop=center",
+                    notes: editingIdea.notes || "",
+                    content: editingIdea.content || ""
+                };
+                
+                await updateIdeaInAPI(ideaToUpdate);
+                
+                ideas = ideas.map(idea => 
+                    idea.id === editingIdea.id 
+                        ? { ...idea, ...ideaToUpdate }
+                        : idea
+                );
+                closeModal();
+            } catch (error) {
+                console.error('Failed to save edit:', error);
+                // Could show a toast notification here
+            }
         }
-        closeModal();
     }
 
     function addNewIdea() {
         showAddModal = true;
     }
 
-    function saveNewIdea() {
+    async function saveNewIdea() {
         if (newIdea.title && newIdea.description) {
-            const nextId = Math.max(...ideas.map(idea => idea.id)) + 1;
-            const currentDate = new Date().toISOString().split('T')[0];
-            
             // Use the appropriate image source
             let finalImageUrl = "";
             if (imageUploadMethod === "file" && imagePreview) {
@@ -153,23 +244,28 @@
             } else if (imageUploadMethod === "url" && newIdea.image) {
                 finalImageUrl = newIdea.image;
             } else {
-                finalImageUrl = "https://via.placeholder.com/300x200?text=No+Image";
+                finalImageUrl = "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=300&h=200&fit=crop&crop=center";
             }
             
+            /** @type {Partial<Idea>} */
             const ideaToAdd = {
-                id: nextId,
                 title: newIdea.title || "",
                 description: newIdea.description || "",
                 status: "Ideas",
-                createdDate: currentDate,
                 assignee: newIdea.assignee || "Unassigned",
                 platform: newIdea.platform || "Not specified",
                 image: finalImageUrl,
                 notes: newIdea.notes || ""
             };
             
-            ideas = [...ideas, ideaToAdd];
-            closeModal();
+            try {
+                const savedIdea = await saveIdeaToAPI(ideaToAdd);
+                ideas = [...ideas, savedIdea];
+                closeModal();
+            } catch (error) {
+                console.error('Failed to save new idea:', error);
+                // Could show a toast notification here
+            }
         }
     }
 
@@ -294,6 +390,9 @@
                                                 <i class="fas fa-arrow-right"></i>
                                             </button>
                                         {/if}
+                                        <button class="overlay-btn delete-btn" on:click={() => deleteIdea(idea.id)}>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="card-content">
@@ -362,16 +461,14 @@
 
 <!-- View Modal -->
 {#if showViewModal && selectedIdea}
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
     <div 
         class="modal-backdrop" 
         role="dialog" 
         aria-modal="true"
         on:click={closeModal}
     >
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
         <div 
             class="modal-content" 
             role="document"
@@ -399,6 +496,12 @@
                         <span class="detail-label">Description:</span>
                         <p>{selectedIdea.description}</p>
                     </div>
+                    {#if selectedIdea.content}
+                        <div class="detail-group">
+                            <span class="detail-label">Full Content Plan:</span>
+                            <div class="content-preview">{@html selectedIdea.content.replace(/\n/g, '<br>')}</div>
+                        </div>
+                    {/if}
                     <div class="detail-row">
                         <div class="detail-group">
                             <span class="detail-label">Status:</span>
@@ -424,6 +527,24 @@
                         <p>{selectedIdea.notes}</p>
                     </div>
                 </div>
+                
+                <!-- Action buttons in view modal -->
+                <div class="modal-actions">
+                    <button class="btn-edit" on:click={() => { closeModal(); if(selectedIdea) editIdea(selectedIdea); }}>
+                        <i class="fas fa-edit"></i>
+                        Edit
+                    </button>
+                    {#if selectedIdea.status !== "Approved"}
+                        <button class="btn-move" on:click={() => { if(selectedIdea) moveToNextPhase(selectedIdea.id); closeModal(); }}>
+                            <i class="fas fa-arrow-right"></i>
+                            Move to Next
+                        </button>
+                    {/if}
+                    <button class="btn-delete" on:click={() => { if(selectedIdea) deleteIdea(selectedIdea.id); closeModal(); }}>
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -431,16 +552,14 @@
 
 <!-- Edit Modal -->
 {#if showEditModal && editingIdea}
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
     <div 
         class="modal-backdrop" 
         role="dialog" 
         aria-modal="true"
         on:click={closeModal}
     >
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
         <div 
             class="modal-content" 
             role="document"
@@ -525,16 +644,14 @@
 
 <!-- Add New Content Modal -->
 {#if showAddModal}
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
     <div 
         class="modal-backdrop" 
         role="dialog" 
         aria-modal="true"
         on:click={closeModal}
     >
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
         <div 
             class="modal-content" 
             role="document"
@@ -947,6 +1064,15 @@
         transform: scale(1.1);
     }
 
+    .overlay-btn.delete-btn {
+        color: #e53e3e;
+    }
+
+    .overlay-btn.delete-btn:hover {
+        background: #fed7d7;
+        color: #c53030;
+    }
+
     .card-content {
         padding: 1.5rem;
     }
@@ -1331,6 +1457,76 @@
         line-height: 1.4;
     }
 
+    .content-preview {
+        background: rgba(102, 126, 234, 0.05);
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+        color: #4a5568;
+        line-height: 1.6;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        flex-wrap: wrap;
+    }
+
+    .btn-edit,
+    .btn-move,
+    .btn-delete {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-move {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-move:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
     .edit-form {
         display: flex;
         flex-direction: column;
@@ -1566,8 +1762,15 @@
             flex-direction: column;
         }
 
+        .modal-actions {
+            flex-direction: column;
+        }
+
         .btn-cancel,
-        .btn-save {
+        .btn-save,
+        .btn-edit,
+        .btn-move,
+        .btn-delete {
             width: 100%;
         }
 
