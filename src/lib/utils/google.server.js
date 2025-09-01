@@ -22,6 +22,3 @@ export function getGoogleCalendarClient(tokensCookie) {
         return null;
     }
 }
-
-// Add the 'export' keyword here
-export { google };

@@ -1,41 +1,43 @@
 <script>
     import { onMount } from "svelte";
-    import { page } from "$app/stores";
-    import { postToSchedule } from "$lib/stores/schedulingStore.js";
     import CreatePostForm from "$lib/components/scheduler/CreatePostForm.svelte";
     import SchedulerCalendar from "$lib/components/scheduler/SchedulerCalendar.svelte";
 
     /** @type {any} */
     let calendarComponent;
     /** @type {Array<any>} */
-    let events = $page.data.events || [];
+    let events = [];
     /** @type {boolean} */
-    let isLoading = false;
-
-    // This variable will hold the data from the store to pass as a prop.
-    /** @type {{ caption: string; campaign: string; tags: string[] } | null} */
-    let prefilledData = null;
+    let isLoading = true;
 
     async function fetchEvents() {
-        // This function can be simplified or removed if all data comes from the load function
-        events = $page.data.events || [];
+        isLoading = true;
+        try {
+            const response = await fetch("/api/calendar/events");
+            if (response.ok) {
+                const rawEvents = await response.json();
+                events = rawEvents.map((/** @type {any} */ event) => ({
+                    id: event.id,
+                    title: event.summary,
+                    start: event.start.dateTime || event.start.date,
+                    end: event.end.dateTime || event.end.date,
+                    extendedProps: {
+                        description: event.description || "",
+                    },
+                }));
+            } else {
+                console.error("Failed to fetch events");
+            }
+        } catch (error) {
+            console.error("Error fetching events:", error);
+        }
+        isLoading = false;
     }
 
-    onMount(() => {
-        const unsubscribe = postToSchedule.subscribe((data) => {
-            if (data) {
-                prefilledData = data;
-                postToSchedule.set(null);
-            }
-        });
-
-        return () => {
-            unsubscribe();
-        };
-    });
+    onMount(fetchEvents);
 
     function handlePostsUpdated() {
-        // Re-fetch or update data as needed
+        fetchEvents();
     }
 </script>
 
@@ -45,19 +47,12 @@
             <i class="fas fa-calendar-alt me-3"></i>
             Content Scheduler
         </h1>
-        <p class="page-subtitle">
-            Schedule and manage your social media content across all platforms
-        </p>
+        <p class="page-subtitle">Schedule and manage your social media content across all platforms</p>
     </div>
 
     <div class="row g-4">
         <div class="col-lg-4">
-            <!-- Pass both prefilledData and the new approvedIdeas prop -->
-            <CreatePostForm
-                {prefilledData}
-                approvedIdeas={$page.data.approvedIdeas || []}
-                on:postsUpdated={handlePostsUpdated}
-            />
+            <CreatePostForm on:postsUpdated={handlePostsUpdated} />
         </div>
         <div class="col-lg-8">
             <div class="card">

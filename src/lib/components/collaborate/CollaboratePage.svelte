@@ -1,7 +1,4 @@
 <script>
-    import { goto } from "$app/navigation";
-    import { postToSchedule } from "$lib/stores/schedulingStore.js";
-
     // Define the idea type
     /** @typedef {{
         id: number,
@@ -17,31 +14,29 @@
 
     /** @type {Idea[]} */
     let ideas = [
-        {
+        { 
             id: 1,
             image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBYiBwTZNX9tmOx_I5yC6hQmVg2PEfTqQnMA&s",
             title: "Summer Campaign Concept",
-            description:
-                "Vibrant summer-themed social media campaign with beach vibes",
+            description: "Vibrant summer-themed social media campaign with beach vibes",
             status: "Ideas",
             createdDate: "2025-08-30",
             assignee: "John Doe",
             platform: "Instagram, Facebook",
-            notes: "Focus on bright colors and summer activities",
+            notes: "Focus on bright colors and summer activities"
         },
-        {
+        { 
             id: 2,
             image: "https://media.tenor.com/18QkSCyju38AAAAe/tired-exhausted-yellow-creature.png",
             title: "Relatable Content Series",
-            description:
-                "Funny and relatable content targeting young professionals",
+            description: "Funny and relatable content targeting young professionals",
             status: "Ideas",
             createdDate: "2025-08-28",
             assignee: "Jane Smith",
             platform: "Twitter, LinkedIn",
-            notes: "Use memes and trending formats",
+            notes: "Use memes and trending formats"
         },
-        {
+        { 
             id: 3,
             image: "https://i.ytimg.com/vi/NhHb9usKy6Q/maxresdefault.jpg",
             title: "Product Showcase Video",
@@ -50,19 +45,7 @@
             createdDate: "2025-08-25",
             assignee: "Mike Johnson",
             platform: "YouTube, TikTok",
-            notes: "Include customer testimonials",
-        },
-        {
-            id: 4,
-            image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
-            title: "Healthy Eating Week",
-            description:
-                "A campaign promoting healthy recipes and lifestyle tips.",
-            status: "Approved",
-            createdDate: "2025-08-29",
-            assignee: "Jane Smith",
-            platform: "Instagram, Blog",
-            notes: "Final graphics are ready.",
+            notes: "Include customer testimonials"
         },
     ];
     let activeTab = "Ideas";
@@ -87,7 +70,7 @@
         assignee: "",
         platform: "",
         image: "",
-        notes: "",
+        notes: ""
     };
 
     // Image upload state
@@ -95,21 +78,6 @@
     /** @type {File | null} */
     let selectedImageFile = null;
     let imagePreview = "";
-
-    /**
-     * Sets the approved content in the store and navigates to the scheduler.
-     * @param {Idea} idea The approved idea object.
-     */
-    function handleScheduleClick(idea) {
-        const approvedContent = {
-            caption: idea.description,
-            campaign: idea.title,
-            // Safely handle cases where idea.platform might be missing or null
-            tags: (idea.platform || "").split(",").map((tag) => tag.trim()),
-        };
-        postToSchedule.set(approvedContent);
-        goto("/scheduler");
-    }
 
     // Functions for button actions
     /** @param {Idea} idea */
@@ -130,8 +98,10 @@
         const currentTabIndex = tabs.indexOf(activeTab);
         if (currentTabIndex < tabs.length - 1) {
             const nextStatus = tabs[currentTabIndex + 1];
-            ideas = ideas.map((idea) =>
-                idea.id === ideaId ? { ...idea, status: nextStatus } : idea,
+            ideas = ideas.map(idea => 
+                idea.id === ideaId 
+                    ? { ...idea, status: nextStatus }
+                    : idea
             );
         }
     }
@@ -148,7 +118,7 @@
             assignee: "",
             platform: "",
             image: "",
-            notes: "",
+            notes: ""
         };
         // Reset image upload state
         imageUploadMethod = "url";
@@ -158,8 +128,10 @@
 
     function saveEdit() {
         if (editingIdea.id) {
-            ideas = ideas.map((idea) =>
-                idea.id === editingIdea.id ? { ...idea, ...editingIdea } : idea,
+            ideas = ideas.map(idea => 
+                idea.id === editingIdea.id 
+                    ? { ...idea, ...editingIdea }
+                    : idea
             );
         }
         closeModal();
@@ -171,9 +143,9 @@
 
     function saveNewIdea() {
         if (newIdea.title && newIdea.description) {
-            const nextId = Math.max(...ideas.map((idea) => idea.id)) + 1;
-            const currentDate = new Date().toISOString().split("T")[0];
-
+            const nextId = Math.max(...ideas.map(idea => idea.id)) + 1;
+            const currentDate = new Date().toISOString().split('T')[0];
+            
             // Use the appropriate image source
             let finalImageUrl = "";
             if (imageUploadMethod === "file" && imagePreview) {
@@ -181,10 +153,9 @@
             } else if (imageUploadMethod === "url" && newIdea.image) {
                 finalImageUrl = newIdea.image;
             } else {
-                finalImageUrl =
-                    "https://via.placeholder.com/300x200?text=No+Image";
+                finalImageUrl = "https://via.placeholder.com/300x200?text=No+Image";
             }
-
+            
             const ideaToAdd = {
                 id: nextId,
                 title: newIdea.title || "",
@@ -194,9 +165,9 @@
                 assignee: newIdea.assignee || "Unassigned",
                 platform: newIdea.platform || "Not specified",
                 image: finalImageUrl,
-                notes: newIdea.notes || "",
+                notes: newIdea.notes || ""
             };
-
+            
             ideas = [...ideas, ideaToAdd];
             closeModal();
         }
@@ -205,10 +176,7 @@
     // Handle escape key for modals
     /** @param {KeyboardEvent} event */
     function handleKeydown(event) {
-        if (
-            event.key === "Escape" &&
-            (showViewModal || showEditModal || showAddModal)
-        ) {
+        if (event.key === 'Escape' && (showViewModal || showEditModal || showAddModal)) {
             closeModal();
         }
     }
@@ -233,12 +201,12 @@
             const file = target.files[0];
             if (file) {
                 selectedImageFile = file;
-
+                
                 // Create preview URL
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const result = e.target?.result;
-                    if (typeof result === "string") {
+                    if (typeof result === 'string') {
                         imagePreview = result;
                     }
                 };
@@ -248,7 +216,7 @@
     }
 
     // Filter ideas based on active tab
-    $: filteredIdeas = ideas.filter((idea) => idea.status === activeTab);
+    $: filteredIdeas = ideas.filter(idea => idea.status === activeTab);
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -260,10 +228,7 @@
             <i class="fas fa-users me-3"></i>
             Team Collaboration
         </h1>
-        <p class="page-subtitle">
-            Collaborate with your team to plan, review, and approve content
-            across all platforms
-        </p>
+        <p class="page-subtitle">Collaborate with your team to plan, review, and approve content across all platforms</p>
     </div>
 
     <div class="collaboration-workspace">
@@ -275,9 +240,7 @@
                 </div>
                 <div>
                     <h3 class="board-title">Content Pipeline</h3>
-                    <p class="board-subtitle">
-                        Track your content through every stage of production
-                    </p>
+                    <p class="board-subtitle">Track your content through every stage of production</p>
                 </div>
             </div>
 
@@ -292,10 +255,7 @@
                     >
                         <div class="tab-content">
                             <span class="tab-label">{tab}</span>
-                            <span class="tab-count"
-                                >({ideas.filter((idea) => idea.status === tab)
-                                    .length})</span
-                            >
+                            <span class="tab-count">({ideas.filter(idea => idea.status === tab).length})</span>
                         </div>
                         {#if tab === "Ideas"}
                             <i class="fas fa-lightbulb tab-icon"></i>
@@ -323,76 +283,36 @@
                                         class="idea-image"
                                     />
                                     <div class="image-overlay">
-                                        <button
-                                            class="overlay-btn view-btn"
-                                            on:click={() => viewIdea(idea)}
-                                        >
+                                        <button class="overlay-btn view-btn" on:click={() => viewIdea(idea)}>
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button
-                                            class="overlay-btn edit-btn"
-                                            on:click={() => editIdea(idea)}
-                                        >
+                                        <button class="overlay-btn edit-btn" on:click={() => editIdea(idea)}>
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         {#if activeTab !== "Approved"}
-                                            <button
-                                                class="overlay-btn move-btn"
-                                                on:click={() =>
-                                                    moveToNextPhase(idea.id)}
-                                            >
-                                                <i class="fas fa-arrow-right"
-                                                ></i>
-                                            </button>
-                                        {:else}
-                                            <!-- ADD THIS BUTTON for the schedule action -->
-                                            <button
-                                                class="overlay-btn schedule-btn"
-                                                on:click={() =>
-                                                    handleScheduleClick(idea)}
-                                            >
-                                                <i class="fas fa-calendar-alt"
-                                                ></i>
+                                            <button class="overlay-btn move-btn" on:click={() => moveToNextPhase(idea.id)}>
+                                                <i class="fas fa-arrow-right"></i>
                                             </button>
                                         {/if}
                                     </div>
                                 </div>
                                 <div class="card-content">
                                     <h6 class="idea-title">{idea.title}</h6>
-                                    <p class="idea-description">
-                                        {idea.description}
-                                    </p>
+                                    <p class="idea-description">{idea.description}</p>
                                     <div class="idea-meta">
-                                        <span
-                                            class="status-badge {idea.status
-                                                .toLowerCase()
-                                                .replace(' ', '-')}"
-                                        >
+                                        <span class="status-badge {idea.status.toLowerCase().replace(' ', '-')}">
                                             {idea.status}
                                         </span>
                                         <span class="date-badge">
                                             <i class="fas fa-clock"></i>
-                                            {new Date(
-                                                idea.createdDate,
-                                            ).toLocaleDateString()}
+                                            {new Date(idea.createdDate).toLocaleDateString()}
                                         </span>
                                     </div>
-                                    <!-- ADD THIS BUTTON for a more visible schedule action -->
-                                    {#if activeTab === "Approved"}
-                                        <button
-                                            class="schedule-action-btn"
-                                            on:click={() =>
-                                                handleScheduleClick(idea)}
-                                        >
-                                            <i class="fas fa-calendar-alt"></i>
-                                            Schedule Post
-                                        </button>
-                                    {/if}
                                 </div>
                             </div>
                         {/each}
                     </div>
-
+                    
                     <!-- Add Button below ideas grid for Ideas tab -->
                     {#if activeTab === "Ideas"}
                         <div class="add-btn-container">
@@ -415,28 +335,20 @@
                                 <i class="fas fa-check-circle"></i>
                             {/if}
                         </div>
-                        <h4 class="empty-title">
-                            No content in {activeTab.toLowerCase()}
-                        </h4>
+                        <h4 class="empty-title">No content in {activeTab.toLowerCase()}</h4>
                         <p class="empty-description">
                             {#if activeTab === "Ideas"}
-                                Start by adding new content ideas to your
-                                pipeline.
+                                Start by adding new content ideas to your pipeline.
                             {:else if activeTab === "To Do"}
-                                Move ideas here when they're ready to be
-                                developed.
+                                Move ideas here when they're ready to be developed.
                             {:else if activeTab === "In Review"}
                                 Content awaiting review will appear here.
                             {:else}
-                                Approved content ready for publishing will be
-                                shown here.
+                                Approved content ready for publishing will be shown here.
                             {/if}
                         </p>
                         {#if activeTab === "Ideas"}
-                            <button
-                                class="empty-action-btn"
-                                on:click={addNewIdea}
-                            >
+                            <button class="empty-action-btn" on:click={addNewIdea}>
                                 <i class="fas fa-plus"></i>
                                 Add New Content
                             </button>
@@ -452,15 +364,19 @@
 {#if showViewModal && selectedIdea}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div
-        class="modal-backdrop"
-        role="dialog"
+    <div 
+        class="modal-backdrop" 
+        role="dialog" 
         aria-modal="true"
         on:click={closeModal}
     >
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="modal-content" role="document" on:click|stopPropagation>
+        <div 
+            class="modal-content" 
+            role="document"
+            on:click|stopPropagation
+        >
             <div class="modal-header">
                 <h3 class="modal-title">
                     <i class="fas fa-eye"></i>
@@ -472,11 +388,7 @@
             </div>
             <div class="modal-body">
                 <div class="idea-image-container">
-                    <img
-                        src={selectedIdea.image}
-                        alt={selectedIdea.title}
-                        class="modal-image"
-                    />
+                    <img src={selectedIdea.image} alt={selectedIdea.title} class="modal-image" />
                 </div>
                 <div class="idea-details">
                     <div class="detail-group">
@@ -490,20 +402,11 @@
                     <div class="detail-row">
                         <div class="detail-group">
                             <span class="detail-label">Status:</span>
-                            <span
-                                class="status-badge {selectedIdea.status
-                                    .toLowerCase()
-                                    .replace(' ', '-')}"
-                                >{selectedIdea.status}</span
-                            >
+                            <span class="status-badge {selectedIdea.status.toLowerCase().replace(' ', '-')}">{selectedIdea.status}</span>
                         </div>
                         <div class="detail-group">
                             <span class="detail-label">Created:</span>
-                            <p>
-                                {new Date(
-                                    selectedIdea.createdDate,
-                                ).toLocaleDateString()}
-                            </p>
+                            <p>{new Date(selectedIdea.createdDate).toLocaleDateString()}</p>
                         </div>
                     </div>
                     <div class="detail-row">
@@ -530,15 +433,19 @@
 {#if showEditModal && editingIdea}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div
-        class="modal-backdrop"
-        role="dialog"
+    <div 
+        class="modal-backdrop" 
+        role="dialog" 
         aria-modal="true"
         on:click={closeModal}
     >
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="modal-content" role="document" on:click|stopPropagation>
+        <div 
+            class="modal-content" 
+            role="document"
+            on:click|stopPropagation
+        >
             <div class="modal-header">
                 <h3 class="modal-title">
                     <i class="fas fa-edit"></i>
@@ -552,18 +459,18 @@
                 <div class="edit-form">
                     <div class="form-group">
                         <label for="edit-title">Title:</label>
-                        <input
+                        <input 
                             id="edit-title"
-                            type="text"
-                            bind:value={editingIdea.title}
+                            type="text" 
+                            bind:value={editingIdea.title} 
                             class="form-input"
                         />
                     </div>
                     <div class="form-group">
                         <label for="edit-description">Description:</label>
-                        <textarea
+                        <textarea 
                             id="edit-description"
-                            bind:value={editingIdea.description}
+                            bind:value={editingIdea.description} 
                             class="form-textarea"
                             rows="3"
                         ></textarea>
@@ -571,48 +478,44 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="edit-assignee">Assignee:</label>
-                            <input
+                            <input 
                                 id="edit-assignee"
-                                type="text"
-                                bind:value={editingIdea.assignee}
+                                type="text" 
+                                bind:value={editingIdea.assignee} 
                                 class="form-input"
                             />
                         </div>
                         <div class="form-group">
                             <label for="edit-platform">Platform:</label>
-                            <input
+                            <input 
                                 id="edit-platform"
-                                type="text"
-                                bind:value={editingIdea.platform}
+                                type="text" 
+                                bind:value={editingIdea.platform} 
                                 class="form-input"
                             />
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="edit-image">Image URL:</label>
-                        <input
+                        <input 
                             id="edit-image"
-                            type="url"
-                            bind:value={editingIdea.image}
+                            type="url" 
+                            bind:value={editingIdea.image} 
                             class="form-input"
                         />
                     </div>
                     <div class="form-group">
                         <label for="edit-notes">Notes:</label>
-                        <textarea
+                        <textarea 
                             id="edit-notes"
-                            bind:value={editingIdea.notes}
+                            bind:value={editingIdea.notes} 
                             class="form-textarea"
                             rows="3"
                         ></textarea>
                     </div>
                     <div class="form-actions">
-                        <button class="btn-cancel" on:click={closeModal}
-                            >Cancel</button
-                        >
-                        <button class="btn-save" on:click={saveEdit}
-                            >Save Changes</button
-                        >
+                        <button class="btn-cancel" on:click={closeModal}>Cancel</button>
+                        <button class="btn-save" on:click={saveEdit}>Save Changes</button>
                     </div>
                 </div>
             </div>
@@ -624,15 +527,19 @@
 {#if showAddModal}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div
-        class="modal-backdrop"
-        role="dialog"
+    <div 
+        class="modal-backdrop" 
+        role="dialog" 
         aria-modal="true"
         on:click={closeModal}
     >
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="modal-content" role="document" on:click|stopPropagation>
+        <div 
+            class="modal-content" 
+            role="document"
+            on:click|stopPropagation
+        >
             <div class="modal-header">
                 <h3 class="modal-title">
                     <i class="fas fa-plus"></i>
@@ -645,25 +552,21 @@
             <div class="modal-body">
                 <div class="edit-form">
                     <div class="form-group">
-                        <label for="new-title"
-                            >Title: <span class="required">*</span></label
-                        >
-                        <input
+                        <label for="new-title">Title: <span class="required">*</span></label>
+                        <input 
                             id="new-title"
-                            type="text"
-                            bind:value={newIdea.title}
+                            type="text" 
+                            bind:value={newIdea.title} 
                             class="form-input"
                             placeholder="Enter content idea title"
                             required
                         />
                     </div>
                     <div class="form-group">
-                        <label for="new-description"
-                            >Description: <span class="required">*</span></label
-                        >
-                        <textarea
+                        <label for="new-description">Description: <span class="required">*</span></label>
+                        <textarea 
                             id="new-description"
-                            bind:value={newIdea.description}
+                            bind:value={newIdea.description} 
                             class="form-textarea"
                             rows="3"
                             placeholder="Describe your content idea"
@@ -673,20 +576,20 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="new-assignee">Assignee:</label>
-                            <input
+                            <input 
                                 id="new-assignee"
-                                type="text"
-                                bind:value={newIdea.assignee}
+                                type="text" 
+                                bind:value={newIdea.assignee} 
                                 class="form-input"
                                 placeholder="Who will work on this?"
                             />
                         </div>
                         <div class="form-group">
                             <label for="new-platform">Platform:</label>
-                            <input
+                            <input 
                                 id="new-platform"
-                                type="text"
-                                bind:value={newIdea.platform}
+                                type="text" 
+                                bind:value={newIdea.platform} 
                                 class="form-input"
                                 placeholder="Instagram, Facebook, etc."
                             />
@@ -695,96 +598,86 @@
                     <div class="form-group">
                         <fieldset class="image-fieldset">
                             <legend class="form-label">Image:</legend>
+                        
+                        <!-- Image upload method selection -->
+                        <div class="image-method-tabs">
+                            <button 
+                                type="button"
+                                class="method-tab"
+                                class:active={imageUploadMethod === "url"}
+                                on:click={() => handleImageMethodChange("url")}
+                            >
+                                <i class="fas fa-link"></i>
+                                URL
+                            </button>
+                            <button 
+                                type="button"
+                                class="method-tab"
+                                class:active={imageUploadMethod === "file"}
+                                on:click={() => handleImageMethodChange("file")}
+                            >
+                                <i class="fas fa-upload"></i>
+                                Upload
+                            </button>
+                        </div>
 
-                            <!-- Image upload method selection -->
-                            <div class="image-method-tabs">
-                                <button
-                                    type="button"
-                                    class="method-tab"
-                                    class:active={imageUploadMethod === "url"}
-                                    on:click={() =>
-                                        handleImageMethodChange("url")}
-                                >
-                                    <i class="fas fa-link"></i>
-                                    URL
-                                </button>
-                                <button
-                                    type="button"
-                                    class="method-tab"
-                                    class:active={imageUploadMethod === "file"}
-                                    on:click={() =>
-                                        handleImageMethodChange("file")}
-                                >
-                                    <i class="fas fa-upload"></i>
-                                    Upload
-                                </button>
-                            </div>
-
-                            {#if imageUploadMethod === "url"}
-                                <input
-                                    id="new-image"
-                                    type="url"
-                                    bind:value={newIdea.image}
-                                    class="form-input"
-                                    placeholder="https://example.com/image.jpg"
+                        {#if imageUploadMethod === "url"}
+                            <input 
+                                id="new-image"
+                                type="url" 
+                                bind:value={newIdea.image} 
+                                class="form-input"
+                                placeholder="https://example.com/image.jpg"
+                            />
+                        {:else}
+                            <div class="file-upload-area">
+                                <input 
+                                    id="new-image-file"
+                                    type="file"
+                                    accept="image/*"
+                                    on:change={handleImageUpload}
+                                    class="file-input"
                                 />
-                            {:else}
-                                <div class="file-upload-area">
-                                    <input
-                                        id="new-image-file"
-                                        type="file"
-                                        accept="image/*"
-                                        on:change={handleImageUpload}
-                                        class="file-input"
-                                    />
-                                    <label
-                                        for="new-image-file"
-                                        class="file-upload-label"
-                                    >
-                                        <i class="fas fa-cloud-upload-alt"></i>
-                                        <span>Choose an image file</span>
-                                        <small>JPG, PNG, GIF up to 5MB</small>
-                                    </label>
-                                    {#if selectedImageFile}
-                                        <div class="file-info">
-                                            <i class="fas fa-file-image"></i>
-                                            <span>{selectedImageFile.name}</span
-                                            >
-                                        </div>
-                                    {/if}
-                                </div>
-                            {/if}
+                                <label for="new-image-file" class="file-upload-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Choose an image file</span>
+                                    <small>JPG, PNG, GIF up to 5MB</small>
+                                </label>
+                                {#if selectedImageFile}
+                                    <div class="file-info">
+                                        <i class="fas fa-file-image"></i>
+                                        <span>{selectedImageFile.name}</span>
+                                    </div>
+                                {/if}
+                            </div>
+                        {/if}
 
-                            <!-- Image preview -->
-                            {#if (imageUploadMethod === "url" && newIdea.image) || (imageUploadMethod === "file" && imagePreview)}
-                                <div class="image-preview">
-                                    <img
-                                        src={imageUploadMethod === "url"
-                                            ? newIdea.image
-                                            : imagePreview}
-                                        alt="Preview"
-                                        class="preview-image"
-                                    />
-                                </div>
-                            {/if}
+                        <!-- Image preview -->
+                        {#if (imageUploadMethod === "url" && newIdea.image) || (imageUploadMethod === "file" && imagePreview)}
+                            <div class="image-preview">
+                                <img 
+                                    src={imageUploadMethod === "url" ? newIdea.image : imagePreview} 
+                                    alt="Preview" 
+                                    class="preview-image"
+                                />
+                            </div>
+                        {/if}
                         </fieldset>
                     </div>
                     <div class="form-group">
                         <label for="new-notes">Notes:</label>
-                        <textarea
+                        <textarea 
                             id="new-notes"
-                            bind:value={newIdea.notes}
+                            bind:value={newIdea.notes} 
                             class="form-textarea"
                             rows="3"
                             placeholder="Additional notes or requirements"
                         ></textarea>
                     </div>
                     <div class="form-actions">
-                        <button class="btn-cancel" on:click={closeModal}
-                            >Cancel</button
-                        >
-                        <button
-                            class="btn-save"
+                        <button class="btn-cancel" on:click={closeModal}>Cancel</button>
+                        <button 
+                            class="btn-save" 
                             on:click={saveNewIdea}
                             disabled={!newIdea.title || !newIdea.description}
                         >
@@ -859,11 +752,7 @@
 
     .board-header {
         padding: 2rem 2rem 1rem;
-        background: linear-gradient(
-            135deg,
-            rgba(102, 126, 234, 0.05) 0%,
-            rgba(118, 75, 162, 0.05) 100%
-        );
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         display: flex;
         align-items: center;
@@ -921,17 +810,13 @@
     }
 
     .tab-btn::before {
-        content: "";
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(
-            135deg,
-            rgba(102, 126, 234, 0.1) 0%,
-            rgba(118, 75, 162, 0.1) 100%
-        );
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -1062,25 +947,15 @@
         transform: scale(1.1);
     }
 
-    /* ADD THIS STYLE for the new schedule button in the overlay */
-    .overlay-btn.schedule-btn {
-        color: #10b981; /* Green to match 'Approved' status */
-    }
-
     .card-content {
         padding: 1.5rem;
-        display: flex; /* Use flexbox for better layout */
-        flex-direction: column; /* Stack content vertically */
-        flex-grow: 1; /* Allow content to fill space */
     }
 
     .idea-title {
         color: #2d3748;
         font-weight: 700;
         font-size: 1.1rem;
-        margin-bottom: 1rem;
-        line-height: 1.4;
-        flex-grow: 1; /* Allow description to take up available space */
+        margin-bottom: 0.5rem;
     }
 
     .idea-description {
@@ -1127,29 +1002,6 @@
         display: flex;
         align-items: center;
         gap: 0.3rem;
-    }
-
-    .schedule-action-btn {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        border: none;
-        color: white;
-        padding: 0.75rem 1rem;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        width: 100%;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
-    }
-
-    .schedule-action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
     }
 
     /* Empty State */
@@ -1388,11 +1240,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: linear-gradient(
-            135deg,
-            rgba(102, 126, 234, 0.05) 0%,
-            rgba(118, 75, 162, 0.05) 100%
-        );
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
         border-radius: 20px 20px 0 0;
         position: sticky;
         top: 0;
