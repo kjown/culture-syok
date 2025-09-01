@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "ayam-debugging-engagement-api",
+  "private_key_id": "1bd6ccd512be5dec68861ded6adea8a8c199776d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDApbivFTi08tep\nNNeviHRJBx/1F2Wbm2dGFieugDaba++u7rzCbw36VBO9H1GjGwV0c60VDh+vsfKI\nBDZeK8nFSIzlLmGETAQM4A7OuOP1t9QlOI2WkV4T5laZFgBINZK6ZkjjY+Ac88VN\nMbI8eADl5ecvw8WK+ML8cPM8OSK4abTQZIFr2QLfbHnpvLqsdSlmM+2wxc/exMPX\nbJAVtsaSk+kpS7FXBmjfj1VAkeqhc4lO9Freggq/48G7P12xKsN1YZB9wxqZ/e37\n/o+ImdoCoiyBQDmDXz4N0A5esR1ooBBwk/sevJARnm40ES1eAGpoFqpUn6TtotCW\ntc76aETVAgMBAAECggEACOT94Gjglot/GosGiaO0CWp19sPER17G8gz0JbyPXjX/\nDyVq+1J+TjhTNaWnCBqncfzPQ8wZpBaEBfSlKqGR7h+55ZudGVXF0BmzhVGIW4rH\nwDTau1YYhl8EUOAbq48m/Z/bA1NUAHI0LKq75HUpRslfwaxOcr/73K+TA2JN8JQC\n6BFwNeuGvOuUO0KhGE1iHwB78JqRQCCg+4N2FzZJcBpii1Mr0NNWRo7oM2dbQu7g\nDRgwiyg2Ne3HCvjXZkBOPD6mmEUGn4aXeWlBVrsaP0FvjO2eTm3mJbSVIoLZckrB\nUWySr3tw6SOFAwAVlEWuzXdtD+XM8o7ywnEOTNMqQQKBgQDzn0F+T3uLGRZaA8po\nFUNRQqStXoOJUt5z7VfR/XCNIOM2O/EV2zv/YR3xxmAyv4B6v/x7a5D6XamrR9Io\n85YrRM03fbl+SQCiAS1M/zC0cH7NZabEsX03JTS+kihObiVve76l7kRuwXdQEdEy\nleOWX7TvRhLgRKLG0uhXGx+qoQKBgQDKb3J9Jq5SlNR0ddCQPr4DQTgAHOo6eUv7\n1VfwKouS0wPL7Jo7fFBGyV+LEwOJzg5F0nLKu9lxN1G1fJ2yCEweFjFCxRmfxEYD\nvbo57B8MhpaXaOK/HOj1RhbyamFNOZr3drX91IkTAhUj++M7YCAQquqazyLXjZU5\n1GaYuRoBtQKBgQCSsWRYUDfNy+9fiETKY3NDbOOH2Q9PEu0L1PA6a2boM9Nchr9m\nL7pyzeGgAZlPNWyBfTTkhCKp/tf5YKe1LOdRan4/WZ7l4cNVyWujn02OeOaBeyHt\n8gm5uNeHoK5Qe5ZjCJoFg/EE182mEvRqh0Kg+0QRh5o6HFn/amOof5aTwQKBgE/R\nAWM3DSSiaeJBUaqOEn1WCa6BuBi2Gq+AvtuC6uVJLgYJlAZATaabX4CGTq7W/+mn\nwHsO9f0dwqm8KLE5dEmolmOtMx07Vh/Dftm3r8ZQiq/IOx7/VxreN839A8BfJirM\nM5WRZzqHZ654cm/Gxt3LhhTj9ujmeiADDzDISujBAoGAddxi1kRA2q65Xu69+Mrv\naNPvvv93fyycYpSPVHMDphnekes/WwDXbXbjcuuJMRkuyieGHxstrQT7wNVzoEmg\nuLa82jwlYajw5tYwaUrcR8kaUqgMoArbxB6EjeCsR0x3TCVwSmUeS4HqT/DYTLWC\n1003CbBaMorWuwvfC3ZkjpM=\n-----END PRIVATE KEY-----\n",
+  "client_email": "ayam-debugging@ayam-debugging-engagement-api.iam.gserviceaccount.com",
+  "client_id": "108052816636070813687",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ayam-debugging%40ayam-debugging-engagement-api.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
