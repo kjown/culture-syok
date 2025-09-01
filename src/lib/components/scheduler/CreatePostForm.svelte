@@ -209,6 +209,21 @@
                         <span>LinkedIn</span>
                     </label>
                 </div>
+                <div class="channel-item">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="tiktok"
+                        value="TikTok"
+                        bind:group={channels}
+                    />
+                    <label class="channel-label" for="tiktok">
+                        <div class="channel-icon tiktok">
+                            <i class="fab fa-tiktok"></i>
+                        </div>
+                        <span>TikTok</span>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -479,6 +494,10 @@
 
     .channel-icon.linkedin {
         background: #0077b5;
+    }
+
+    .channel-icon.tiktok {
+        background: #000000;
     }
 
     .form-control {
